@@ -1,0 +1,16 @@
+{
+  "name": "Directives generator",
+  "version": "1.0.0",
+  "description": "Application for daily directives generation",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mykhailo Aloshyn",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^32.0.1"
+  },
+  "type": "module"
+}
