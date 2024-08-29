@@ -1,16 +1,27 @@
 {
-  "name": "Directives generator",
-  "version": "1.0.0",
-  "description": "Application for daily directives generation",
-  "main": "main.js",
+  "name": "directive_generator",
+  "description": "An applet for easy directives generation",
+  "version": "0.1.0",
+  "private": true,
+  "main": "main/main.js",
   "scripts": {
-    "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "electron": "electron .",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "author": "Mykhailo Aloshyn",
-  "license": "ISC",
+  "dependencies": {
+    "electron-serve": "^2.1.0",
+    "next": "14.2.7",
+    "react": "^18",
+    "react-dom": "^18"
+  },
   "devDependencies": {
-    "electron": "^32.0.1"
-  },
-  "type": "module"
+    "concurrently": "^8.2.2",
+    "electron": "^32.0.1",
+    "electron-builder": "^24.13.3",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.7"
+  }
 }

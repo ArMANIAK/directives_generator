@@ -1,0 +1,50 @@
+[
+    {
+        "id": "1",
+        "first_name_nominative": "Василь Сергійович",
+        "first_name_dative": "Василю Сергійовичу",
+        "first_name_accusative": "Василя Сергійовича",
+        "first_name_short": "В.С.",
+        "last_name_nominative": "ІВАНОВ",
+        "last_name_dative": "ІВАНОВУ",
+        "last_name_accusative": "ІВАНОВА",
+        "rank_nominative": "підполковник",
+        "rank_dative": "підполковнику",
+        "rank_accusative": "підполковника",
+        "gender": "m",
+        "department": "1",
+        "title": "1"
+    },
+    {
+        "id": "2",
+        "first_name_nominative": "Олена Ігорівна",
+        "first_name_dative": "Олені Ігорівні",
+        "first_name_accusative": "Олену Ігорівну",
+        "first_name_short": "О.І.",
+        "last_name_nominative": "ГРАБОВА",
+        "last_name_dative": "ГРАБОВІЙ",
+        "last_name_accusative": "ГРАБОВУ",
+        "rank_nominative": "лейтенант",
+        "rank_dative": "лейтенанту",
+        "rank_accusative": "лейтенанта",
+        "gender": "f",
+        "department": "6",
+        "title": "4"
+    },
+    {
+        "id": "3",
+        "first_name_nominative": "Анатолій Олегович",
+        "first_name_dative": "Анатолію Олеговичу",
+        "first_name_accusative": "Анатолія Олеговича",
+        "first_name_short": "А.О.",
+        "last_name_nominative": "ГРЕЦЬКИХ",
+        "last_name_dative": "ГРЕЦЬКИХ",
+        "last_name_accusative": "ГРЕЦЬКИХ",
+        "rank_nominative": "старший солдат",
+        "rank_dative": "старшому солдату",
+        "rank_accusative": "старшого солдата",
+        "gender": "m",
+        "department": "3",
+        "title": "3"
+    }
+]

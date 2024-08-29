@@ -1,0 +1,12 @@
+appId: "io.github.armaniak"
+productName: "Directives generator"
+copyright: "Copyright (c) 2024 ArMANIAK"
+win:
+  target: ["dir", "portable", "zip"]
+  icon: "src/app/favicon.ico"
+linux:
+  target: ["dir", "appimage", "zip"]
+  icon: "src/app/favicon.ico"
+mac:
+  target: ["dir", "dmg", "zip"]
+  icon: "src/app/favicon.ico"
