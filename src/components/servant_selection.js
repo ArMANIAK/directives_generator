@@ -1,15 +1,23 @@
 "use client";
 
-import { GenerateName } from "@/utilities/generators";
+import { GenerateName, GetGeneralDepartmentName } from "@/utilities/generators";
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
-export default function ServantSelection({ handleSelect }) {
+export default function ServantSelection() {
     const servants = require("../dictionaries/servants.json");
-
+    const servantsList = servants.map(el => {
+        return {
+            'label' : `${el.rank_nominative} ${GenerateName(el.id, 'nominative')} - ${GetGeneralDepartmentName(el.department)}`,
+            'value' : el.id
+        }
+    })
     return (
-            <select name="servants" onChange={ handleSelect }>
-                {servants.map(el => (
-                    <option key={el.id} value={el.id}>{ GenerateName(el.id, 'nominative') }</option>
-                ))}
-            </select>
-        )
+        <Autocomplete
+            disablePortal
+            renderInput={(params) => <TextField {...params} label="Військовослужбовець/працівник ЗСУ" />}
+            sx={{ width: 300 }}
+            options={servantsList}
+        />
+    )
 }

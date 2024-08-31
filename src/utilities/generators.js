@@ -28,3 +28,16 @@ export function GenerateFullDepartment(id, departmentCase = 'genitive') {
     }
     return departmentName;
 }
+
+export function GetGeneralDepartmentName(id) {
+    const department = departments.find(el => el.id === id);
+    let departmentName = department.name_nominative;
+    let parentId = department.parent_id;
+    let parent = null;
+    while(parentId) {
+        parent = departments.find(el => el.id === parentId);
+        departmentName = ' ' + parent.name_nominative;
+        parentId = parent.parent_id;
+    }
+    return departmentName;
+}
