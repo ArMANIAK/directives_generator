@@ -1,0 +1,30 @@
+[
+  {
+    "label": "Відрядження",
+    "value": "mission"
+  },
+  {
+    "label": "Лікарняний",
+    "value": "sick_leave"
+  },
+  {
+    "label": "Стаціонар",
+    "value": "medical_care"
+  },
+  {
+    "label": "Відпустка основна",
+    "value": "vacation"
+  },
+  {
+    "label": "Відпустка за сімейними обставинами",
+    "value": "family_circumstances"
+  },
+  {
+    "label": "Відпустка за станом здоров'я",
+    "value": "health_circumstances"
+  },
+  {
+    "label": "ВЛК",
+    "value": "medical_board"
+  }
+]

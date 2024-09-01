@@ -3,11 +3,11 @@
 import ServantSelection from "@/components/servant_selection";
 import { useState } from 'react';
 import Grid from '@mui/material/Grid2';
-import {FormControl, FormControlLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField} from "@mui/material";
-import {GenerateFullTitle} from "@/utilities/generators";
+import { FormControl, FormControlLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField } from "@mui/material";
+import { GenerateFullTitle } from "@/utilities/generators";
 
 export default function MainScreen() {
-    // const handleSelect = event => setServant(GenerateFullTitle(event.target.value))
+
     const [ record, setRecord ] = useState({
         "direction": "",
         "servant": "",
@@ -24,38 +24,9 @@ export default function MainScreen() {
         "ratio_certificate_issue_date": ""
     })
 
-    const absence_types = [
-        {
-            "label": "Відрядження",
-            "value": "mission"
-        },
-        {
-            "label": "Лікарняний",
-            "value": "sick_leave"
-        },
-        {
-            "label": "Стаціонар",
-            "value": "medical_care"
-        },
-        {
-            "label": "Відпустка основна",
-            "value": "vacation"
-        },
-        {
-            "label": "Відпустка за сімейними обставинами",
-            "value": "family_circumstances"
-        },
-        {
-            "label": "Відпустка за станом здоров'я",
-            "value": "health_circumstances"
-        },
-        {
-            "label": "ВЛК",
-            "value": "medical_board"
-        }
-    ];
+    const absence_types = require("@/dictionaries/absence_types.json");
 
-    const handleChange = event => console.dir(event.target) || setRecord({...record, [event.target.name]: event.target.value })
+    const handleChange = event => setRecord({...record, [event.target.name]: event.target.value })
 
     console.log("RENDER ", record)
 
