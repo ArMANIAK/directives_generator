@@ -1,19 +1,27 @@
 const servants = require("../dictionaries/servants.json");
 const departments = require("../dictionaries/departments.json");
 const titles = require("../dictionaries/titles.json");
+const ranks = require("../dictionaries/ranks.json");
 
 export function GenerateName(id, servantCase = "accusative", form = "short") {
     const servant = servants.find(el => el.id === id);
     return servant['last_name_' + servantCase] + ' ' + (form === 'short' ? servant.first_name_short : servant['first_name_' + servantCase])
 }
 
+export function GenerateRankName(id, rankCase = "accusative") {
+    const rank = ranks.find(el => el.id === id);
+    return rank["name_" + rankCase];
+}
+
 export function GenerateFullTitle(id, servantCase = "accusative", form = "short") {
+    console.dir({ servants, titles, ranks, departments })
     const servant = servants.find(el => el.id === id);
     const fullName = GenerateName(id, servantCase, form);
-    const title = titles.find(el => servant.title === servant.title);
-    const titleName = title["title_" + servantCase]
+    const title = titles.find(el => el.id === servant.title);
+    const titleName = title["name_" + servantCase];
+    const rankName = GenerateRankName(servant.rank, servantCase);
     const departmentName = GenerateFullDepartment(servant.department);
-    return `${servant['rank_' + servantCase]} ${fullName}, ${titleName} ${departmentName}`;
+    return `${rankName} ${fullName}, ${titleName} ${departmentName}`;
 }
 
 export function GenerateFullDepartment(id, departmentCase = 'genitive') {

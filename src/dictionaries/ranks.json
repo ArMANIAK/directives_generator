@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name_nominative": "солдат",
+    "name_accusative": "солдата",
+    "name_dative": "солдату"
+  },
+  {
+    "id": 2,
+    "name_nominative": "матрос",
+    "name_accusative": "матроса",
+    "name_dative": "матросу"
+  },
+  {
+    "id": 3,
+    "name_nominative": "старший солдат",
+    "name_accusative": "старшого солдата",
+    "name_dative": "старшому солдату"
+  },
+  {
+    "id": 4,
+    "name_nominative": "старший матрос",
+    "name_accusative": "старшого матроса",
+    "name_dative": "старшому матросу"
+  },
+  {
+    "id": 5,
+    "name_nominative": "працівник ЗСУ",
+    "name_accusative": "працівника ЗСУ",
+    "name_dative": "працівнику ЗСУ"
+  }
+]
