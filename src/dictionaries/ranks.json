@@ -28,5 +28,11 @@
     "name_nominative": "працівник ЗСУ",
     "name_accusative": "працівника ЗСУ",
     "name_dative": "працівнику ЗСУ"
+  },
+  {
+    "id": 6,
+    "name_nominative": "полковник",
+    "name_accusative": "полковника",
+    "name_dative": "полковнику"
   }
 ]
