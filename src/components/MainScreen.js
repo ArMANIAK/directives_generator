@@ -6,6 +6,7 @@ import { useState } from 'react';
 import Grid from '@mui/material/Grid2';
 import {
     Button,
+    Checkbox,
     FormControl,
     FormControlLabel,
     MenuItem,
@@ -13,7 +14,7 @@ import {
     RadioGroup,
     TextField
 } from "@mui/material";
-import { GenerateFullTitle } from "@/utilities/generators";
+import { GenerateDirective, GenerateFullTitle } from "@/utilities/generators";
 
 export default function MainScreen() {
 
@@ -27,6 +28,7 @@ export default function MainScreen() {
         "single_day": false,
         "until_order": false,
         "destination": "",
+        "purpose": "",
         "reason": "",
         "certificate": "",
         "certificate_issue_date": "",
@@ -41,6 +43,25 @@ export default function MainScreen() {
 
     const absence_types = require("@/dictionaries/absence_types.json");
 
+    let reasonLabel = '';
+    switch (record.absence_type) {
+        case 'mission':
+            reasonLabel = "Посвідчення про відрядження №";
+            break;
+        case 'sick_leave':
+        case 'health_circumstances':
+            reasonLabel = "Довідка №";
+            break;
+        case 'medical_care':
+        case 'medical_board':
+            reasonLabel = "Направлення №";
+            break;
+        case 'vacation':
+        case 'family_circumstances':
+            reasonLabel = "Відпускний квиток №";
+            break;
+    }
+
     const handleChange = event => setRecord({...record, [event.target.name]: event.target.value })
 
     const onSubmit = () => {
@@ -48,25 +69,34 @@ export default function MainScreen() {
         setRecord(defaultRecord)
     }
 
-    const generateDirective = () => {}
+    const generateDirective = () => {
+        console.dir(GenerateDirective(pull))
+    }
 
     console.log("RENDER ", {record, pull})
 
     return (
         <Grid direction={'column'} container spacing={2}>
             <Grid container spacing={24}>
-                <FormControl>
-                    <RadioGroup
-                        row
-                        name="activity"
-                        value={ record.activity }
-                        onChange={ handleChange }
-                    >
-                        <FormControlLabel value="arrive" control={ <Radio /> } label="Прибуття" />
-                        <FormControlLabel value="depart" control={ <Radio /> } label="Вибуття" />
-                        <FormControlLabel value="other_points" control={ <Radio /> } label="Інші пункти" />
-                    </RadioGroup>
-                </FormControl>
+                <Grid size={6}>
+                    <FormControl>
+                        <RadioGroup
+                            row
+                            name="activity"
+                            value={ record.activity }
+                            onChange={ handleChange }
+                        >
+                            <FormControlLabel value="arrive" control={ <Radio /> } label="Прибуття" />
+                            <FormControlLabel value="depart" control={ <Radio /> } label="Вибуття" />
+                            <FormControlLabel value="other_points" control={ <Radio /> } label="Інші пункти" />
+                        </RadioGroup>
+                    </FormControl>
+                </Grid>
+                <Grid size={5}>
+                    { record.activity !== 'other_points' && ["mission", "medical_care"].includes(record.absence_type) &&
+                        <FormControlLabel control={ <Checkbox name="with_ration_certificate" /> } label="з продовольчим атестатом" />
+                    }
+                </Grid>
             </Grid>
             <Grid container>
                 <Grid size={6}>
@@ -91,8 +121,9 @@ export default function MainScreen() {
                 </Grid>
             </Grid>
             <Grid container>
-                <Grid>
+                <Grid size={3}>
                     <TextField
+                        fullWidth
                         type="date"
                         label="З"
                         name="date_start"
@@ -102,7 +133,7 @@ export default function MainScreen() {
                     />
                 </Grid>
                 { record.absence_type !== "" && record.activity === "depart" && !["medical_care", "health_circumstances", "medical_board"].includes(record.absence_type) && <>
-                    <Grid>
+                    <Grid size={2}>
                         <TextField
                             type='number'
                             label="На діб"
@@ -112,8 +143,9 @@ export default function MainScreen() {
                             slotProps={ { inputLabel: { shrink: true } } }
                         />
                     </Grid>
-                    <Grid>
+                    <Grid size={3}>
                         <TextField
+                            fullWidth
                             type="date"
                             label="ПО"
                             name="date_end"
@@ -123,31 +155,86 @@ export default function MainScreen() {
                         />
                     </Grid>
                 </> }
-                { record.absence_type === "mission" && record.activity === "depart" && <Grid>
+                { record.activity === 'depart' && record.absence_type === "mission" &&
+                <>
+                    <Grid size={2}>
+                        <FormControlLabel control={ <Checkbox name="single_day" /> } label="На одну добу" />
+                    </Grid>
+                    <Grid size={2}>
+                        <FormControlLabel control={ <Checkbox name="until_order" /> } label="До окремого розпорядження" />
+                    </Grid>
+                </>}
+            </Grid>
+            <Grid container>
+            { record.absence_type !== "" && !["sick_leave", "health_circumstances"].includes(record.absence_type) &&
+                <Grid size={7}>
                     <TextField
+                        fullWidth
+                        multiline
+                        rows={2}
+                        label="Пункт призначення (в родовому відмінку)"
+                        name="destination"
+                        onChange={ handleChange }
+                        slotProps={ { inputLabel: { shrink: true } } }
+                    />
+                </Grid>
+            }
+            { record.absence_type === "mission" && record.activity === "depart" &&
+                <Grid size={5}>
+                    <TextField
+                        fullWidth
+                        multiline
+                        rows={2}
                         label="Мета"
-                        name="reason"
-                        value={record.reason}
+                        name="purpose"
+                        value={record.purpose}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
                 </Grid> }
             </Grid>
-            { record.absence_type !== "" && !["sick_leave", "health_circumstances"].includes(record.absence_type) &&
-                <Grid container>
-                    <Grid size={8}>
+            <Grid container>
+                { record.absence_type === "mission" && record.activity === "depart" &&
+                    <Grid size={5}>
                         <TextField
                             fullWidth
                             multiline
                             rows={2}
-                            label="Пункт призначення (в родовому відмінку)"
-                            name="destination"
+                            label="Підстава"
+                            name="reason"
+                            value={record.reason}
                             onChange={ handleChange }
                             slotProps={ { inputLabel: { shrink: true } } }
                         />
                     </Grid>
-                </Grid>
-            }
+                }
+                { record.absence_type !== "" &&
+                    <>
+                        <Grid size={5}>
+                            <TextField
+                                fullWidth
+                                label={ reasonLabel }
+                                name="certificate"
+                                value={record.certificate}
+                                onChange={ handleChange }
+                                slotProps={ { inputLabel: { shrink: true } } }
+                            />
+                        </Grid>
+                        <Grid size={3}>
+                            <TextField
+                                fullWidth
+                                type="date"
+                                label="від"
+                                name="certificate_issue_date"
+                                value={record.certificate_issue_date}
+                                onChange={ handleChange }
+                                slotProps={ { inputLabel: { shrink: true } } }
+                            />
+                        </Grid>
+                    </>
+                }
+            </Grid>
+
             <Grid container>
                 {record.servant === "" ? "" : GenerateFullTitle(record.servant, "nominative")}
             </Grid>
