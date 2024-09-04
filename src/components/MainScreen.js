@@ -94,7 +94,11 @@ export default function MainScreen() {
                 </Grid>
                 <Grid size={5}>
                     { record.activity !== 'other_points' && ["mission", "medical_care"].includes(record.absence_type) &&
-                        <FormControlLabel control={ <Checkbox name="with_ration_certificate" /> } label="з продовольчим атестатом" />
+                        <FormControlLabel
+                            control={ <Checkbox name="with_ration_certificate" /> }
+                            label="з продовольчим атестатом"
+                            onChange={ handleChange }
+                        />
                     }
                 </Grid>
             </Grid>
@@ -235,6 +239,33 @@ export default function MainScreen() {
                 }
             </Grid>
 
+            <Grid container>
+                { record.absence_type !== "" && record.with_ration_certificate &&
+                    <>
+                        <Grid size={5}>
+                            <TextField
+                                fullWidth
+                                label="Продовольчий атестат"
+                                name="ration_certificate"
+                                value={record.ration_certificate}
+                                onChange={ handleChange }
+                                slotProps={ { inputLabel: { shrink: true } } }
+                            />
+                        </Grid>
+                        <Grid size={3}>
+                            <TextField
+                                fullWidth
+                                type="date"
+                                label="від"
+                                name="ration_certificate_issue_date"
+                                value={record.ration_certificate_issue_date}
+                                onChange={ handleChange }
+                                slotProps={ { inputLabel: { shrink: true } } }
+                            />
+                        </Grid>
+                    </>
+                }
+            </Grid>
             <Grid container>
                 {record.servant === "" ? "" : GenerateFullTitle(record.servant, "nominative")}
             </Grid>
