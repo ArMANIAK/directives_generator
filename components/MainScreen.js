@@ -1,7 +1,7 @@
 "use client";
 
-import ServantSelection from "@/components/servant_selection";
-import PullViewer from "@/components/PullViewer";
+import ServantSelection from "../components/servant_selection";
+import PullViewer from "../components/PullViewer";
 import { useState } from 'react';
 import Grid from '@mui/material/Grid2';
 import {
@@ -14,7 +14,7 @@ import {
     RadioGroup,
     TextField
 } from "@mui/material";
-import { GenerateDirective, GenerateFullTitle } from "@/utilities/generators";
+import { GenerateDirective, GenerateFullTitle } from "../utilities/generators";
 
 export default function MainScreen() {
 
@@ -41,7 +41,7 @@ export default function MainScreen() {
 
     const [pull, setPull] = useState([]);
 
-    const absence_types = require("@/dictionaries/absence_types.json");
+    const absence_types = require("../dictionaries/absence_types.json");
 
     let reasonLabel = '';
     switch (record.absence_type) {
