@@ -1,7 +1,7 @@
 "use client";
 
-import ServantSelection from "@/components/servant_selection";
-import PullViewer from "@/components/PullViewer";
+import ServantSelection from "../components/servant_selection";
+import PullViewer from "../components/PullViewer";
 import { useState } from 'react';
 import Grid from '@mui/material/Grid2';
 import {
@@ -13,7 +13,7 @@ import {
     RadioGroup,
     TextField
 } from "@mui/material";
-import { GenerateFullTitle } from "@/utilities/generators";
+import { GenerateFullTitle } from "../utilities/generators";
 
 export default function MainScreen() {
 
@@ -39,7 +39,7 @@ export default function MainScreen() {
 
     const [pull, setPull] = useState([]);
 
-    const absence_types = require("@/dictionaries/absence_types.json");
+    const absence_types = require("../dictionaries/absence_types.json");
 
     const handleChange = event => setRecord({...record, [event.target.name]: event.target.value })
 
@@ -70,10 +70,10 @@ export default function MainScreen() {
             </Grid>
             <Grid container>
                 <Grid size={6}>
-                    <ServantSelection
-                        value={record.servant}
-                        handleChange={ handleChange }
-                    />
+                    {/*<ServantSelection*/}
+                    {/*    value={record.servant}*/}
+                    {/*    handleChange={ handleChange }*/}
+                    {/*/>*/}
                 </Grid>
                 <Grid size={6}>
                     <FormControl fullWidth>
@@ -160,7 +160,7 @@ export default function MainScreen() {
                 </Button>
             </Grid>
             <Grid container>
-                <PullViewer pull={ pull }/>
+                {/*<PullViewer pull={ pull }/>*/}
             </Grid>
         </Grid>
     )
