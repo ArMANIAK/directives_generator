@@ -1,10 +1,10 @@
 "use client";
 
-import { GenerateName, GenerateRankName, GetGeneralDepartmentName } from "@/utilities/generators";
+import { GenerateName, GenerateRankName, GetGeneralDepartmentName } from "../utilities/Generators";
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 
-export default function ServantSelection({ handleChange }) {
+export default function ServantSelector({ handleChange }) {
     const servants = require("../dictionaries/servants.json");
     const servantsList = servants.map(el => {
         return {

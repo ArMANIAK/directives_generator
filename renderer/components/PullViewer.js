@@ -1,7 +1,7 @@
 import { Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell } from "@mui/material";
-import {GenerateName} from "@/utilities/generators";
+import { GenerateName } from "../utilities/Generators";
 
-const absence_type = require('@/dictionaries/absence_types.json');
+const absence_type = require('../dictionaries/absence_types.json');
 export default function PullViewer({ pull }) {
     const rows = pull.map(el => {
         const activity = el.activity === "arrive" ? "прибуття" : (el.activity === 'depart' ? 'вибуття' : 'інші пункти');
