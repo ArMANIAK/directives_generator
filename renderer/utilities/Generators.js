@@ -3,7 +3,7 @@ const departments = require("../dictionaries/departments.json");
 const titles = require("../dictionaries/titles.json");
 const ranks = require("../dictionaries/ranks.json");
 const certificates = require("../dictionaries/certificates.json");
-import { FormatDate } from "../utilities/DateFormatters";
+import { FormatDate } from "./DateFormatters";
 
 export function GenerateName(id, servantCase = "accusative", form = "short") {
     const servant = servants.find(el => el.id === id);
