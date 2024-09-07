@@ -1,10 +1,11 @@
-"use server"
-
-import MainScreen from "../../components/MainScreen";
+import MainScreen from "../components/MainScreen";
 const Home = () => {
 
   return (
-      <MainScreen />
+    <div>
+      <h1>Hello Electron!</h1>
+        <MainScreen />
+    </div>
   );
 };
 
