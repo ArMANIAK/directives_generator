@@ -1,25 +1,9 @@
-# Electron application example
+# Quick Directives generator
 
-This example shows how you can use Next.js inside an Electron application to avoid a lot of configuration. It uses the Next.js router as view and server-render to speed up the initial render of the application.
+This application allows to quickly generate clauses of directives which are connected with movements of personnel such as sick leaves, business trips, etc.
 
-For development it's going to run an HTTP server and let Next.js handle routing. In production it uses `output: 'export'` to pre-generate HTML static files and uses them in your app instead of running an HTTP server.
+Although it demands a whole lot of work to fill the dictionaries at the beginning later on it gives a benefit in time spent on typing those clauses on daily basis.
 
-**For detailed documentation about how to build Electron apps with Next.js, see [this blog post](https://leo.im/2017/electron-next)!**
-
-## How to use
-
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
-
-```bash
-npx create-next-app --example with-electron with-electron-app
-```
-
-```bash
-yarn create next-app --example with-electron with-electron-app
-```
-
-```bash
-pnpm create next-app --example with-electron with-electron-app
-```
+After pressin "Generate directive" clauses will be copied to a clipboard
 
 You can create the production app using `npm run dist`.
