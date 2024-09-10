@@ -59,7 +59,7 @@ function GenerateAddToRation(servant_id) {
 
 function GenerateJustification(record) {
     let justification = '';
-    justification += `Підстава: ${certificates[record.absence_type]} ${record.certificate} від ${FormatDate(new Date(record.certificate_issue_date))}`;
+    justification += `Підстава: № ${certificates[record.absence_type]} ${record.certificate} від ${FormatDate(new Date(record.certificate_issue_date))}`;
     if (record.with_ration_certificate) justification += `, продовольчий атестат від ${FormatDate(new Date(record.ration_certificate_issue_date))} № ${record.ration_certificate}`;
     justification += '.\n\n';
     return justification;
@@ -129,7 +129,7 @@ export function GenerateDirective(pull) {
             let family_circumstances = arrive['family_circumstances'];
             directive += `${generalCount}.${middleCount}. З відпустки за сімейними обставинами:\n\n`;
             for (let i = 0, n = family_circumstances.length; i < n; i++) {
-                directive += `${generalCount}.${middleCount}.${i+1}. ${FormatDate(new Date(family_circumstances[i].date_start), false)}:\n\n`;
+                directive += `${FormatDate(new Date(family_circumstances[i].date_start), false)}:\n\n`;
                 let servant = GenerateFullTitle(family_circumstances[i].servant);
                 directive += `${generalCount}.${middleCount}.${i+1}. ${servant[0].toLocaleUpperCase() + servant.slice(1)}.\n\n`;
                 directive += `${GenerateAddToRation(family_circumstances[i].servant)}\n\n`;
