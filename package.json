@@ -2,7 +2,8 @@
   "name": "directive_generator",
   "version": "0.0.1",
   "private": true,
-  "productName": "ElectronNext",
+  "productName": "DirectiveGenerator",
+  "author": "Mykhailo Aloshyn",
   "main": "main/index.js",
   "scripts": {
     "clean": "rimraf dist renderer/.next renderer/out",
