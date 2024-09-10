@@ -65,6 +65,35 @@ export default function MainScreen() {
 
     const handleChange = event => setRecord({...record, [event.target.name]: event.target.value })
 
+    const handleCheckBoxChange = event => {
+        const { target: { name, checked } } = event;
+        console.log(name, checked)
+        const changedRecord = {
+            ... record,
+            [name]: checked,
+        }
+        switch (name) {
+            case "single_day":
+                if (checked) {
+                    changedRecord.day_count = 1;
+                    changedRecord.date_end = changedRecord.date_start;
+                    changedRecord.until_order = false;
+                }
+                setRecord(changedRecord)
+                break;
+            case "until_order":
+                setRecord({
+                    ...changedRecord,
+                    day_count: 0,
+                    date_end: "",
+                    single_day: false
+                })
+                break;
+            default:
+                setRecord(changedRecord)
+        }
+    }
+
     const dateMath = (dateString, modifier, mode = 'add') => {
         switch (mode) {
             case 'add' :
@@ -144,7 +173,8 @@ export default function MainScreen() {
                         <FormControlLabel
                             control={ <Checkbox name="with_ration_certificate" /> }
                             label="з продовольчим атестатом"
-                            onChange={ handleChange }
+                            value={record.with_ration_certificate ? 'on' : 'off'}
+                            onChange={ handleCheckBoxChange }
                         />
                     }
                 </Grid>
@@ -189,7 +219,8 @@ export default function MainScreen() {
                             type='number'
                             label="На діб"
                             name="day_count"
-                            value={record.day_count}
+                            disabled={ record.single_day || record.until_order }
+                            value={ record.day_count }
                             onChange={ handleDateChange }
                             slotProps={ { inputLabel: { shrink: true } } }
                         />
@@ -200,6 +231,7 @@ export default function MainScreen() {
                             type="date"
                             label="ПО"
                             name="date_end"
+                            disabled={record.single_day || record.until_order}
                             value={record.date_end}
                             onChange={ handleDateChange }
                             slotProps={ { inputLabel: { shrink: true } } }
@@ -209,10 +241,24 @@ export default function MainScreen() {
                 { record.activity === 'depart' && record.absence_type === "mission" &&
                 <>
                     <Grid size={2}>
-                        <FormControlLabel control={ <Checkbox name="single_day" /> } label="На одну добу" />
+                        <FormControlLabel
+                            control={ <Checkbox
+                                name="single_day"
+                                checked={record.single_day}
+                            /> }
+                            label="На одну добу"
+                            onChange={ handleCheckBoxChange }
+                        />
                     </Grid>
                     <Grid size={2}>
-                        <FormControlLabel control={ <Checkbox name="until_order" /> } label="До окремого розпорядження" />
+                        <FormControlLabel
+                            control={ <Checkbox
+                                name="until_order"
+                                checked={record.until_order}
+                            /> }
+                            label="До окремого розпорядження"
+                            onChange={ handleCheckBoxChange }
+                        />
                     </Grid>
                 </>}
             </Grid>
