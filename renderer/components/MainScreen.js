@@ -15,6 +15,7 @@ import {
     TextField
 } from "@mui/material";
 import { GenerateDirective, GenerateFullTitle } from "../utilities/Generators";
+import { DateToDatepickerString } from "../utilities/DateFormatters";
 
 export default function MainScreen() {
 
@@ -22,8 +23,8 @@ export default function MainScreen() {
         "activity": "arrive",
         "servant": "",
         "absence_type": "",
-        "date_start": "",
-        "date_end": "",
+        "date_start": "2024-09-13",
+        "date_end": new Date(),
         "day_count": 0,
         "single_day": false,
         "until_order": false,
@@ -63,6 +64,52 @@ export default function MainScreen() {
     }
 
     const handleChange = event => setRecord({...record, [event.target.name]: event.target.value })
+
+    const dateMath = (dateString, modifier, mode = 'add') => {
+        switch (mode) {
+            case 'add' :
+                return new Date((new Date(dateString)).getTime() + modifier * 24 * 60 * 60 * 1000);
+            case 'subtract':
+                return new Date((new Date(dateString)).getTime() - modifier * 24 * 60 * 60 * 1000);
+            default:
+                return new Date(dateString)
+        }
+    }
+    const handleDateChange = event => {
+        const { name, value } = event.target;
+        console.log({name, value})
+        let { date_start, day_count, date_end } = record;
+        switch (name) {
+            case "date_start": {
+                date_start = value;
+                if (day_count) {
+                    let dateEnd = dateMath(date_start, day_count);
+                    date_end = DateToDatepickerString(dateEnd);
+                }
+                break;
+            }
+            case "day_count": {
+                day_count = value;
+                if (date_start !== "") {
+                    let dateEnd = dateMath(date_start, day_count);
+                    date_end = DateToDatepickerString(dateEnd);
+                }
+                break;
+            }
+            case "date_end": {
+                date_end = value;
+                if (day_count) {
+                    let dateStart = dateMath(date_end, day_count, "subtract");
+                    date_start = DateToDatepickerString(dateStart);
+                }
+                break;
+            }
+            default:
+                break;
+        }
+        console.log({date_end, day_count, date_start})
+        setRecord({ ...record, date_end, day_count, date_start })
+    }
 
     const onSubmit = () => {
         setPull([ ...pull, record ]);
@@ -132,7 +179,7 @@ export default function MainScreen() {
                         label="З"
                         name="date_start"
                         value={record.date_start}
-                        onChange={ handleChange }
+                        onChange={ handleDateChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
                 </Grid>
@@ -143,7 +190,7 @@ export default function MainScreen() {
                             label="На діб"
                             name="day_count"
                             value={record.day_count}
-                            onChange={ handleChange }
+                            onChange={ handleDateChange }
                             slotProps={ { inputLabel: { shrink: true } } }
                         />
                     </Grid>
@@ -154,7 +201,7 @@ export default function MainScreen() {
                             label="ПО"
                             name="date_end"
                             value={record.date_end}
-                            onChange={ handleChange }
+                            onChange={ handleDateChange }
                             slotProps={ { inputLabel: { shrink: true } } }
                         />
                     </Grid>
