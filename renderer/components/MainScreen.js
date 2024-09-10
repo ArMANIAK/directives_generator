@@ -171,9 +171,11 @@ export default function MainScreen() {
                 <Grid size={5}>
                     { record.activity !== 'other_points' && ["mission", "medical_care"].includes(record.absence_type) &&
                         <FormControlLabel
-                            control={ <Checkbox name="with_ration_certificate" /> }
+                            control={ <Checkbox
+                                name="with_ration_certificate"
+                                checked={record.with_ration_certificate}
+                            /> }
                             label="з продовольчим атестатом"
-                            value={record.with_ration_certificate ? 'on' : 'off'}
                             onChange={ handleCheckBoxChange }
                         />
                     }
