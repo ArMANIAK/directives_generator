@@ -59,7 +59,7 @@ function GenerateAddToRation(servant_id) {
 
 function GenerateJustification(record) {
     let justification = '';
-    justification += `Підстава: № ${certificates[record.absence_type]} ${record.certificate} від ${FormatDate(new Date(record.certificate_issue_date))}`;
+    justification += `Підстава: ${certificates[record.absence_type]} № ${record.certificate} від ${FormatDate(new Date(record.certificate_issue_date))}`;
     if (record.with_ration_certificate) justification += `, продовольчий атестат від ${FormatDate(new Date(record.ration_certificate_issue_date))} № ${record.ration_certificate}`;
     justification += '.\n\n';
     return justification;

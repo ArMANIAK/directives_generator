@@ -8,7 +8,7 @@ export default function ServantSelector({ handleChange }) {
     const servants = require("../dictionaries/servants.json");
     const servantsList = servants.map(el => {
         return {
-            'label' : `${GenerateRankName(el.rank, 'nominative')} ${GenerateName(el.id, 'nominative')} - ${GetGeneralDepartmentName(el.department)}`,
+            'label' : `${GenerateName(el.id, 'nominative')} - ${GetGeneralDepartmentName(el.department)}`,
             'id' : el.id
         }
     })

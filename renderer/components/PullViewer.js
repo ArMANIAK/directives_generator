@@ -1,4 +1,4 @@
-import { Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell } from "@mui/material";
+import { Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Button } from "@mui/material";
 import { GenerateName } from "../utilities/Generators";
 
 const absence_type = require('../dictionaries/absence_types.json');
@@ -18,10 +18,11 @@ export default function PullViewer({ pull }) {
                 <TableHead>
                     <TableRow>
                         <TableCell>Пункти, що стосуються</TableCell>
-                        <TableCell align="right">Військовослужбовець/працівник ЗСУ</TableCell>
-                        <TableCell align="right">Тип відсутності</TableCell>
-                        <TableCell align="right">Куди</TableCell>
-                        <TableCell align="right">з</TableCell>
+                        <TableCell>Військовослужбовець/працівник ЗСУ</TableCell>
+                        <TableCell>Тип відсутності</TableCell>
+                        <TableCell>Куди</TableCell>
+                        <TableCell>з</TableCell>
+                        <TableCell>Дії</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -33,10 +34,14 @@ export default function PullViewer({ pull }) {
                             <TableCell component="th" scope="row">
                                 {row.activity}
                             </TableCell>
-                            <TableCell align="right">{row.servant}</TableCell>
-                            <TableCell align="right">{row.absence}</TableCell>
-                            <TableCell align="right">{row.destination}</TableCell>
-                            <TableCell align="right">{row.date_start}</TableCell>
+                            <TableCell>{row.servant}</TableCell>
+                            <TableCell>{row.absence}</TableCell>
+                            <TableCell>{row.destination}</TableCell>
+                            <TableCell>{row.date_start}</TableCell>
+                            <TableCell>
+                                <Button>Edit</Button>
+                                <Button>Delete</Button>
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
