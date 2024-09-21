@@ -1,24 +1,35 @@
-// Native
 const { join } = require("path");
 const { format } = require("url");
 
-// Packages
 const { BrowserWindow, app, ipcMain } = require("electron");
 const isDev = require("electron-is-dev");
 const prepareNext = require("electron-next");
 
-// Prepare the renderer once the app is ready
-app.on("ready", async () => {
+const chokidar = require('chokidar');
+const { loadDictionaries } = require('../renderer/utilities/excelActions');
+
+const dictionaryFilePath = join(__dirname, '../renderer/dictionaries/dictionaries.xlsx'); // Your XLSX file path
+
+app.whenReady().then( async () => {
   await prepareNext("./renderer");
 
-  const mainWindow = new BrowserWindow({
-    width: 1024,
-    height: 768,
-    webPreferences: {
-      nodeIntegration: false,
-      preload: join(__dirname, "preload.js"),
-    },
-  });
+    const mainWindow = new BrowserWindow({
+        width: 1024,
+        height: 768,
+        webPreferences: {
+            preload: join(__dirname, 'preload.js'),
+        },
+    });
+
+    // Watch for changes in the XLSX file
+    const watcher = chokidar.watch(dictionaryFilePath);
+    watcher.on('change', () => {
+        let dictionaries = loadDictionaries(dictionaryFilePath);
+        console.log('Dictionary updated:', dictionaries);
+
+        // Notify the renderer process
+        mainWindow.webContents.send('dictionary-updated', dictionaries);
+    });
 
   const url = isDev
     ? "http://localhost:8000"
@@ -29,12 +40,17 @@ app.on("ready", async () => {
       });
 
   mainWindow.loadURL(url);
+    mainWindow.webContents.openDevTools();
+
 });
 
-// Quit the app once all windows are closed
-app.on("window-all-closed", app.quit);
+app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
+});
 
-// listen the channel `message` and resend the received message to the renderer process
-ipcMain.on("message", (event, message) => {
-  event.sender.send("message", message);
+// Handle requests from the renderer to get the dictionary
+ipcMain.handle('get-dict', () => {
+    return loadDictionaries(dictionaryFilePath);
 });

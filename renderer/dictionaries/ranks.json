@@ -1,5 +1,11 @@
 [
   {
+    "id": 0,
+    "name_nominative": "працівник Збройних Сил України",
+    "name_accusative": "працівника Збройних Сил України",
+    "name_dative": "працівнику Збройних Сил України"
+  },
+  {
     "id": 1,
     "name_nominative": "солдат",
     "name_accusative": "солдата",
@@ -25,9 +31,9 @@
   },
   {
     "id": 5,
-    "name_nominative": "працівник ЗСУ",
-    "name_accusative": "працівника ЗСУ",
-    "name_dative": "працівнику ЗСУ"
+    "name_nominative": "майор медичної служби",
+    "name_accusative": "майора медичної служби",
+    "name_dative": "майору медичної служби"
   },
   {
     "id": 6,

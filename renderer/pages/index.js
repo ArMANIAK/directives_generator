@@ -1,10 +1,13 @@
 import MainScreen from "../components/MainScreen";
+import { Provider } from "react-redux"
+
+import { store } from "../store/store"
 const Home = () => {
 
     return (
-        <div>
+        <Provider store={store}>
             <MainScreen />
-        </div>
+        </Provider>
     );
 };
 

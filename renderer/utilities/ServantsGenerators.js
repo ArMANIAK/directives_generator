@@ -1,12 +1,14 @@
-const servants = require("../dictionaries/servants.json");
-const departments = require("../dictionaries/departments.json");
-const titles = require("../dictionaries/titles.json");
+import { store } from "../store/store";
 const ranks = require("../dictionaries/ranks.json");
 const certificates = require("../dictionaries/certificates.json");
+const getServants = () => store.getState().dictionaries?.servants;
+const getTitles = () => store.getState().dictionaries?.titles;
+const getDepartments = () => store.getState().dictionaries?.departments;
+
 import { FormatDate } from "./DateFormatters";
 
 export function GenerateName(id, servantCase = "accusative", form = "short") {
-    const servant = servants.find(el => el.id === id);
+    const servant = getServants().find(el => el.id === id);
     const rank = GenerateRankName(servant.rank, servantCase);
     return rank + ' ' + servant['last_name_' + servantCase] + ' ' + (form === 'short' ? servant.first_name_short : servant['first_name_' + servantCase])
 }
@@ -17,15 +19,16 @@ export function GenerateRankName(id, rankCase = "accusative") {
 }
 
 export function GenerateFullTitle(id, servantCase = "accusative", form = "short") {
-    const servant = servants.find(el => el.id === id);
+    const servant = getServants().find(el => el.id === id);
     const fullName = GenerateName(id, servantCase, form);
-    const title = titles.find(el => el.id === servant.title);
+    const title = getTitles().find(el => el.id === servant.primary_title);
     const titleName = title["name_" + servantCase];
-    const departmentName = GenerateFullDepartment(servant.department);
+    const departmentName = GenerateFullDepartment(servant.primary_department);
     return `${fullName}, ${titleName} ${departmentName}`;
 }
 
 export function GenerateFullDepartment(id, departmentCase = 'genitive') {
+    let departments = getDepartments();
     const department = departments.find(el => el.id === id);
     let departmentName = department['name_' + departmentCase];
     let parentId = department.parent_id;
@@ -39,6 +42,7 @@ export function GenerateFullDepartment(id, departmentCase = 'genitive') {
 }
 
 export function GetGeneralDepartmentName(id) {
+    let departments = getDepartments();
     const department = departments.find(el => el.id === id);
     let departmentName = department.name_nominative;
     let parentId = department.parent_id;
@@ -54,7 +58,7 @@ export function GetGeneralDepartmentName(id) {
 function GenerateAddToRation(servant_id) {
     const tomorrow = new Date((new Date()).getTime() + 24 * 60 * 60 * 1000);
     const formattedTomorrow = FormatDate(tomorrow, false)
-    return `Зарахувати ${GenerateName(servant_id)} на котлове забезпечення військової частини А0000 за каталогом продуктів - зі сніданку ${formattedTomorrow}.`
+    return `Зарахувати ${GenerateName(servant_id)} на котлове забезпечення при військової частини А0000 за каталогом продуктів - зі сніданку ${formattedTomorrow}.`
 }
 
 function GenerateJustification(record) {
@@ -76,7 +80,7 @@ export function GenerateDirective(pull) {
         acc[el.activity][el.absence_type] = [...acc[el.activity][el.absence_type], el];
         return acc;
     }, {})
-    console.log(groupedPull)
+
     // return groupedPull
     let generalCount = 1;
     let directive = '';

@@ -1,5 +1,5 @@
 import { Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Button } from "@mui/material";
-import { GenerateName } from "../utilities/Generators";
+import { GenerateName } from "../utilities/ServantsGenerators";
 
 const absence_type = require('../dictionaries/absence_types.json');
 export default function PullViewer({ pull }) {

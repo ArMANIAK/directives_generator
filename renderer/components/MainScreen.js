@@ -2,7 +2,8 @@
 
 import ServantSelector from "../components/ServantSelector";
 import PullViewer from "../components/PullViewer";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useDispatch } from "react-redux";
 import Grid from '@mui/material/Grid2';
 import {
     Button,
@@ -14,10 +15,30 @@ import {
     RadioGroup,
     TextField
 } from "@mui/material";
-import { GenerateDirective, GenerateFullTitle } from "../utilities/Generators";
+import { GenerateDirective, GenerateFullTitle } from "../utilities/ServantsGenerators";
 import { DateToDatepickerString } from "../utilities/DateFormatters";
+import { setTitles, setDepartments, setServants } from "../store/dictionarySlice"
+
 
 export default function MainScreen() {
+
+    const dispatch = useDispatch();
+    const [servants, setServantsState ] = useState([])
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.electron) {
+            const ipcRenderer = window.electron.ipcRenderer;
+
+            ipcRenderer.invoke('get-dict').then((result) => {
+                dispatch(setTitles(result.titles))
+                dispatch(setDepartments(result.departments))
+                dispatch(setServants(result.servants))
+                setServantsState(result.servants)
+            }).catch((err) => {
+                console.error('Error fetching dictionary:', err);
+            });
+        }
+    }, []);
 
     const defaultRecord = {
         "activity": "arrive",
@@ -146,8 +167,6 @@ export default function MainScreen() {
     const generateDirective = () => {
         console.dir(GenerateDirective(pull))
     }
-
-    console.log("RENDER ", {record, pull})
 
     return (
         <Grid direction={'column'} container spacing={2}>
