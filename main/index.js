@@ -1,16 +1,17 @@
 const { join } = require("path");
 const { format } = require("url");
 
-const { BrowserWindow, app, ipcMain } = require("electron");
+const { BrowserWindow, app, ipcMain, clipboard } = require("electron");
 const isDev = require("electron-is-dev");
 const prepareNext = require("electron-next");
 
 const chokidar = require('chokidar');
-const { loadDictionaries } = require('../renderer/utilities/excelActions');
+
+const { loadDictionaries } = require(join(__dirname, '../renderer/utilities/excelActions'));
 
 const dictionaryFilePath = app.isPackaged
-  ? path.join(app.getAppPath(), 'dictionaries', 'dictionaries.xlsx')
-  : path.join(__dirname, '../renderer/dictionaries/dictionaries.xlsx');
+  ? join(process.resourcesPath, 'dictionaries', 'dictionaries.xlsx')
+  : join(__dirname, '../renderer/dictionaries/dictionaries.xlsx');
 
 app.whenReady().then( async () => {
   await prepareNext("./renderer");
@@ -19,6 +20,8 @@ app.whenReady().then( async () => {
         width: 1024,
         height: 768,
         webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true,
             preload: join(__dirname, 'preload.js'),
         },
     });
@@ -50,6 +53,10 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit();
     }
+});
+
+ipcMain.on('clipboard-write', (event, text) => {
+    clipboard.writeText(text);
 });
 
 // Handle requests from the renderer to get the dictionary

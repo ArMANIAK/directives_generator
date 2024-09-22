@@ -17,12 +17,13 @@
     "asar": true,
     "files": [
       "main",
-      "renderer/out"
+      "renderer/out",
+      "renderer/utilities/excelActions.js"
     ],
     "extraFiles": [
       {
         "from": "renderer/dictionaries/dictionaries.xlsx",
-        "to": "dictionaries/dictionaries.xlsx"
+        "to": "Resources/dictionaries/dictionaries.xlsx"
       }
     ]
   },

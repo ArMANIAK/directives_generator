@@ -155,5 +155,5 @@ export function GenerateDirective(pull) {
         }
     }
     console.log(directive)
-    return navigator.clipboard.writeText(directive)
+    return directive
 }

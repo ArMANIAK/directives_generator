@@ -165,7 +165,9 @@ export default function MainScreen() {
     }
 
     const generateDirective = () => {
-        console.dir(GenerateDirective(pull))
+        let text = GenerateDirective(pull);
+        console.dir(text)
+        window.electron.sendToClipboard(text);
     }
 
     return (
