@@ -18,6 +18,12 @@
     "files": [
       "main",
       "renderer/out"
+    ],
+    "extraFiles": [
+      {
+        "from": "renderer/dictionaries/dictionaries.xlsx",
+        "to": "dictionaries/dictionaries.xlsx"
+      }
     ]
   },
   "devDependencies": {

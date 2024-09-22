@@ -8,7 +8,9 @@ const prepareNext = require("electron-next");
 const chokidar = require('chokidar');
 const { loadDictionaries } = require('../renderer/utilities/excelActions');
 
-const dictionaryFilePath = join(__dirname, '../renderer/dictionaries/dictionaries.xlsx'); // Your XLSX file path
+const dictionaryFilePath = app.isPackaged
+  ? path.join(app.getAppPath(), 'dictionaries', 'dictionaries.xlsx')
+  : path.join(__dirname, '../renderer/dictionaries/dictionaries.xlsx');
 
 app.whenReady().then( async () => {
   await prepareNext("./renderer");
