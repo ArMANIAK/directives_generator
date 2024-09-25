@@ -4,6 +4,7 @@
   "private": true,
   "productName": "DirectiveGenerator",
   "author": "Mykhailo Aloshyn",
+  "description": "Application for easy directives generation, keeping track of servants absence, etc.",
   "main": "main/index.js",
   "scripts": {
     "clean": "rimraf dist renderer/.next renderer/out",
