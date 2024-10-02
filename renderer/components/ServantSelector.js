@@ -3,25 +3,31 @@
 import { GenerateName, GetGeneralDepartmentName } from "../utilities/ServantsGenerators";
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import { store } from "../store/store"
+import { getServants } from "../services/ServantsService"
 
-export default function ServantSelector({ handleChange }) {
-    const servants = store.getState().dictionaries.servants;
+export default function ServantSelector({ value, handleChange }) {
+    const servants = getServants();
 
+    let chosenServant = { label: "", id: "" };
     const servantsList = servants ? servants.map(el => {
-        return {
+        const servant = {
             'label' : `${GenerateName(el.id, 'nominative')} - ${GetGeneralDepartmentName(el.primary_department)}`,
             'id' : el.id
-        }
-    }) : [{ label: "", id: "" }]
+        };
+        if (el.id === value) chosenServant = servant;
+        return servant;
+    }) : [chosenServant];
+
     const autocompleteChangeHandler = (event, value)  => {
-        handleChange({...event, target: { name: "servant", value: value.id }})
+        let id = value ? value.id : undefined;
+        handleChange({ ...event, target: { name: "servants", value: id } })
     }
 
     return (
         <Autocomplete
             onChange={autocompleteChangeHandler}
             disablePortal
+            value={chosenServant}
             renderInput={(params) => <TextField {...params} label="Військовослужбовець/працівник ЗСУ" />}
             options={servantsList}
         />

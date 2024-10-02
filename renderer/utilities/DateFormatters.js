@@ -31,3 +31,14 @@ export function DateToDatepickerString(date) {
     let year = date.getFullYear();
     return `${year}-${month}-${day}`;
 }
+
+export function dateMath(dateString, modifier, mode = 'add') {
+    switch (mode) {
+        case 'add' :
+            return new Date((new Date(dateString)).getTime() + modifier * 24 * 60 * 60 * 1000);
+        case 'subtract':
+            return new Date((new Date(dateString)).getTime() - modifier * 24 * 60 * 60 * 1000);
+        default:
+            return new Date(dateString)
+    }
+}

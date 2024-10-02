@@ -7,7 +7,7 @@ const prepareNext = require("electron-next");
 
 const chokidar = require('chokidar');
 
-const { loadDictionaries } = require(join(__dirname, '../renderer/utilities/excelActions'));
+const { loadDictionaries } = require(join(__dirname, '../renderer/services/ExcelActions'));
 
 const dictionaryFilePath = app.isPackaged
   ? join(process.resourcesPath, 'dictionaries', 'dictionaries.xlsx')

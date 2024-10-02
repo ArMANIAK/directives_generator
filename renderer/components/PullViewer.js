@@ -5,11 +5,11 @@ const absence_type = require('../dictionaries/absence_types.json');
 export default function PullViewer({ pull }) {
     const rows = pull.map(el => {
         const activity = el.activity === "arrive" ? "прибуття" : (el.activity === 'depart' ? 'вибуття' : 'інші пункти');
-        const servant = GenerateName(el.servant, 'nominative');
+        const servants = GenerateName(el.servants, 'nominative');
         const destination = el.destination === '' ? 'Не релевантно' : el.destination;
         const absence = absence_type.find(item => item.value === el.absence_type).label ?? 'Не релевантно';
         const date_start = el.date_start;
-        return { activity, servant, destination, absence, date_start }
+        return { activity, servants, destination, absence, date_start }
     })
 
     return (
@@ -34,7 +34,7 @@ export default function PullViewer({ pull }) {
                             <TableCell component="th" scope="row">
                                 {row.activity}
                             </TableCell>
-                            <TableCell>{row.servant}</TableCell>
+                            <TableCell>{row.servants}</TableCell>
                             <TableCell>{row.absence}</TableCell>
                             <TableCell>{row.destination}</TableCell>
                             <TableCell>{row.date_start}</TableCell>
