@@ -96,10 +96,11 @@ const withDestionation = [
 ];
 
 const withoutDestination = [
-    "sick_leave",
     "vacation",
     "family_circumstances",
-    "health_circumstances"
+    "health_circumstances",
+    "sick_leave",
+    "sick_employee"
 ]
 
 function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
@@ -119,16 +120,56 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                         directive += `${FormatDate(new Date(date), false)}:\n\n`;
                         for (let servant of arrivePullSection[absence_type][destination][date]) {
                             directive += `${GenerateFullTitle(servant.servants)}.\n\n`;
-                            directive += GenerateAddToRation(servant.servants);
+                            if (!isEmployee(servant.servants))
+                                directive += GenerateAddToRation(servant.servants);
                         }
                         directive += `${GenerateJustification(arrivePullSection[absence_type][destination][date])}\n\n`;
                     }
                 }
             }
+            middleCount++;
+        }
+    }
+    for (let absence_type of withoutDestination) {
+        if (arrivePullSection.hasOwnProperty(absence_type)) {
+            let innerCount = 1;
+            let header = "";
+            switch (absence_type) {
+                case "sick_leave":
+                    header = "Які були звільнені від виконання службових обов'язків у зв'язку з хворобою";
+                    break;
+                case "sick_employee":
+                    header = "Працівників Збройних Сил України вважати такими, що перебували на амбулаторному лікуванні";
+                    break;
+                case "vacation":
+                    header = "З щорічної відпустки";
+                    break;
+                case "family_circumstances":
+                    header = "З відпустки за сімейними обставинами"
+                    break;
+                case "health_circumstances":
+                    header = "З відпустки за станом здоров'я"
+                    break;
+            }
+            directive += `${starting_index}.${middleCount}.${innerCount++}. ${header}`;
+
+            // If there are more than one returning date from one destination point will generate separate dates within the clause
+            // У випадку якщо з одного місця поверталися в різні дати, створює окремі підпункти під кожну дату
+            directive += Object.keys(arrivePullSection[absence_type]).length === 1 ? " " : ":\n\n";
+            for (let date in arrivePullSection[absence_type]) {
+                if (arrivePullSection[absence_type][date].length > 0) {
+                    directive += `${FormatDate(new Date(date), false)}:\n\n`;
+                    for (let servant of arrivePullSection[absence_type][date]) {
+                        directive += `${GenerateFullTitle(servant.servants)}.\n\n`;
+                        if (!isEmployee(servant.servants))
+                            directive += GenerateAddToRation(servant.servants);
+                    }
+                    directive += `${GenerateJustification(arrivePullSection[absence_type][date])}\n\n`;
+                }
+            }
         }
         middleCount++;
     }
-
         console.log(directive)
         // if (arrivePullSection['medical_care'] && arrivePullSection['medical_care'].length > 0) {
         //     let medical_care = arrivePullSection['medical_care'];
