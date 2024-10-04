@@ -170,63 +170,7 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
         }
         middleCount++;
     }
-        console.log(directive)
-        // if (arrivePullSection['medical_care'] && arrivePullSection['medical_care'].length > 0) {
-        //     let medical_care = arrivePullSection['medical_care'];
-        //     for (let i = 0, n = medical_care.length; i < n; i++) {
-        //         directive += `${starting_index}.${middleCount}. З ${medical_care[i].destination} ${FormatDate(new Date(medical_care[i].date_start), false)}:\n\n`;
-        //         directive += `${GenerateFullTitle(medical_care[i].servants)}.\n\n`;
-        //         directive += `${GenerateAddToRation(medical_care[i].servants)}\n\n`;
-        //         directive += `${GenerateJustification(medical_care[i])}\n\n`;
-        //         middleCount++;
-        //     }
-        // }
-        // if (arrivePullSection['medical_board'] && arrivePullSection['medical_board'].length > 0) {
-        //     let medical_board = arrivePullSection['medical_board'];
-        //     for (let i = 0, n = medical_board.length; i < n; i++) {
-        //         directive += `${starting_index}.${middleCount}. З ${medical_board[i].destination} ${FormatDate(new Date(medical_board[i].date_start), false)}:\n\n`;
-        //         directive += `${GenerateFullTitle(medical_board[i].servants)}.\n\n`;
-        //         directive += `${GenerateAddToRation(medical_board[i].servants)}\n\n`;
-        //         directive += `${GenerateJustification(medical_board[i])}\n\n`;
-        //         middleCount++;
-        //     }
-        // }
-        // if (arrivePullSection['vacation'] && arrivePullSection['vacation'].length > 0) {
-        //     directive += `${starting_index}.${middleCount}. З щорічної основної відпустки:\n\n`;
-        //     let vacation = arrivePullSection['vacation'];
-        //     for (let i = 0, n = vacation.length; i < n; i++) {
-        //         directive += `${FormatDate(new Date(vacation[i].date_start), false)}:\n\n`;
-        //         let servants = GenerateFullTitle(vacation[i].servants);
-        //         directive += `${starting_index}.${middleCount}.${i+1}. ${servants[0].toLocaleUpperCase() + servants.slice(1)}.\n\n`;
-        //         directive += `${GenerateAddToRation(vacation[i].servants)}\n\n`;
-        //         directive += `${GenerateJustification(vacation[i])}\n\n`;
-        //     }
-        //     middleCount++;
-        // }
-        // if (arrivePullSection['family_circumstances'] && arrivePullSection['family_circumstances'].length > 0) {
-        //     let family_circumstances = arrivePullSection['family_circumstances'];
-        //     directive += `${starting_index}.${middleCount}. З відпустки за сімейними обставинами:\n\n`;
-        //     for (let i = 0, n = family_circumstances.length; i < n; i++) {
-        //         directive += `${FormatDate(new Date(family_circumstances[i].date_start), false)}:\n\n`;
-        //         let servants = GenerateFullTitle(family_circumstances[i].servants);
-        //         directive += `${starting_index}.${middleCount}.${i+1}. ${servants[0].toLocaleUpperCase() + servants.slice(1)}.\n\n`;
-        //         directive += `${GenerateAddToRation(family_circumstances[i].servants)}\n\n`;
-        //         directive += `${GenerateJustification(family_circumstances[i])}\n\n`;
-        //     }
-        //     middleCount++;
-        // }
-        // if (arrivePullSection['health_circumstances'] && arrivePullSection['health_circumstances'].length > 0) {
-        //     let health_circumstances = arrivePullSection['health_circumstances'];
-        //     directive += `${starting_index}.${middleCount}. З відпустки за станом здоров'я:\n\n`;
-        //     for (let i = 0, n = health_circumstances.length; i < n; i++) {
-        //         directive += `${starting_index}.${middleCount}.${i+1}. ${FormatDate(new Date(health_circumstances[i].date_start), false)}:\n\n`;
-        //         let servants = GenerateFullTitle(health_circumstances[i].servants);
-        //         directive += `${starting_index}.${middleCount}.${i+1}. ${servants[0].toLocaleUpperCase() + servants.slice(1)}.\n\n`;
-        //         directive += `${GenerateAddToRation(health_circumstances[i].servants)}\n\n`;
-        //         directive += `${GenerateJustification(health_circumstances[i])}\n\n`;
-        //     }
-        //     middleCount++;
-        // }
+
     console.log(directive);
     return directive;
 }
