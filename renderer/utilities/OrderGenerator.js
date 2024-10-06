@@ -43,7 +43,7 @@ console.dir(groupedPull);
     let arrive = groupedPull['arrive'];
     let depart = groupedPull['depart'];
     let other = groupedPull['other_points'];
-    if (arrive) directive += GenerateArriveClauses(arrive, starting_index++);return "";
+    if (arrive) directive += GenerateArriveClauses(arrive, starting_index++);
     if (depart) directive += GenerateDepartureClauses(depart, starting_index++);
     if (other) directive += GenerateOtherClauses(other, starting_index++);
 
@@ -54,39 +54,58 @@ function GroupPull(pull) {
     return pull.reduce((acc, el) => {
         if (!acc[el.orderSection])
             acc[el.orderSection] = {}
-        if (el.orderSection !== 'other_points' && !acc[el.orderSection][el.absence_type])
-            acc[el.orderSection][el.absence_type] = {};
+        if (el.orderSection === 'other_points') return addOtherPointsClause(acc, el);
+        if (el.orderSection === 'arrive') return addArriveClause(acc,el);
+        if (el.orderSection === 'depart') return addDepartureClause(acc,el);
 
-        switch (el.absence_type) {
-            case "mission":
-            case "medical_care":
-            case "medical_board":
-                if (!acc[el.orderSection][el.absence_type][el.destination])
-                    acc[el.orderSection][el.absence_type][el.destination] = {};
-                if (!acc[el.orderSection][el.absence_type][el.destination][el.date_start])
-                    acc[el.orderSection][el.absence_type][el.destination][el.date_start] = [];
-                acc[el.orderSection][el.absence_type][el.destination][el.date_start].push(el)
-                break;
-            case "sick_leave":
-                if (isEmployee(el.servants)) {
-                    if (!acc[el.orderSection]['sick_employee'][el.date_start])
-                        acc[el.orderSection]['sick_employee'][el.date_start] = [];
-                    acc[el.orderSection]['sick_employee'][el.date_start].push(el);
-                    break;
-                }
-            case "vacation":
-            case "family_circumstances":
-            case "health_circumstances":
-                if (!acc[el.orderSection][el.absence_type][el.date_start])
-                    acc[el.orderSection][el.absence_type][el.date_start] = [];
-                acc[el.orderSection][el.absence_type][el.date_start].push(el);
-                break;
-            default:
-                acc[el.orderSection].push(el);
-                break;
-        }
-        return acc;
     }, {})
+}
+
+const addOtherPointsClause = (groupedPull, record) => {
+    groupedPull.push(record);
+    return groupedPull;
+}
+const addArriveClause = (groupedPull, record) => {
+    if (!groupedPull.arrive[record.absence_type])
+        groupedPull.arrive[record.absence_type] = {};
+
+    switch (record.absence_type) {
+        case "mission":
+        case "medical_care":
+        case "medical_board":
+            if (!groupedPull.arrive[record.absence_type][record.destination])
+                groupedPull.arrive[record.absence_type][record.destination] = {};
+            if (!groupedPull.arrive[record.absence_type][record.destination][record.date_start])
+                groupedPull.arrive[record.absence_type][record.destination][record.date_start] = [];
+            groupedPull.arrive[record.absence_type][record.destination][record.date_start].push(record)
+            break;
+        case "sick_leave":
+            if (isEmployee(record.servants)) {
+                if (!groupedPull.arrive['sick_employee'])
+                    groupedPull.arrive['sick_employee'] = {}
+                if (!groupedPull.arrive['sick_employee'][record.date_start])
+                    groupedPull.arrive['sick_employee'][record.date_start] = [];
+                groupedPull.arrive['sick_employee'][record.date_start].push(record);
+                break;
+            }
+        case "vacation":
+        case "family_circumstances":
+        case "health_circumstances":
+            if (!groupedPull.arrive[record.absence_type][record.date_start])
+                groupedPull.arrive[record.absence_type][record.date_start] = [];
+            groupedPull.arrive[record.absence_type][record.date_start].push(record);
+            break;
+        default:
+            groupedPull.arrive.push(record);
+            break;
+    }
+    return groupedPull;
+}
+
+const addDepartureClause = (groupedPull, record) => {
+    if (!groupedPull.depart[record.absence_type])
+        groupedPull.depart[record.absence_type] = {};
+
 }
 
 const withDestionation = [
@@ -108,6 +127,7 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
     let middleCount = 1;
     for (let absence_type of withDestionation) {
         if (arrivePullSection.hasOwnProperty(absence_type)) {
+            console.log(arrivePullSection[absence_type], middleCount)
             let innerCount = 1;
             for (let destination in arrivePullSection[absence_type]) {
                 directive += `${starting_index}.${middleCount}.${innerCount++}. З ${destination}`;
@@ -167,8 +187,8 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                     directive += `${GenerateJustification(arrivePullSection[absence_type][date])}\n\n`;
                 }
             }
+            middleCount++;
         }
-        middleCount++;
     }
 
     console.log(directive);
