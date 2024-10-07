@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import {  GenerateFullTitle } from "../utilities/ServantsGenerators";
 import { GenerateOrder } from "../utilities/OrderGenerator";
-import { DateToDatepickerString, dateMath } from "../utilities/DateFormatters";
+import { DateToDatepickerString, DateMath } from "../utilities/DateUtilities";
 import { setTitles, setDepartments, setServants } from "../store/dictionarySlice"
 import ArrivalPage from "./ArrivalPage";
 import DeparturePage from "./DeparturePage";
@@ -40,13 +40,13 @@ export default function MainScreen() {
 
     const [ order_no, setOrderNo ] = useState();
 
-    const [ order_date, setOrderDate ] = useState()
+    const [ order_date, setOrderDate ] = useState(DateToDatepickerString(new Date()))
 
     const defaultRecord = {
         "orderSection": "arrive",
         "servants": [""],
         "absence_type": "mission",
-        "date_start": "",
+        "date_start": DateToDatepickerString(new Date()),
         "date_end": "",
         "day_count": 0,
         "single_day": false,
@@ -103,23 +103,21 @@ export default function MainScreen() {
             case "date_start": {
                 date_start = value;
                 if (day_count) {
-                    let dateEnd = dateMath(date_start, day_count);
+                    let dateEnd = DateMath(date_start, day_count);
                     date_end = DateToDatepickerString(dateEnd);
                 }
                 break;
             }
             case "day_count": {
                 day_count = value;
-                if (date_start !== "") {
-                    let dateEnd = dateMath(date_start, day_count);
-                    date_end = DateToDatepickerString(dateEnd);
-                }
+                let dateEnd = DateMath(date_start, day_count);
+                date_end = DateToDatepickerString(dateEnd);
                 break;
             }
             case "date_end": {
                 date_end = value;
                 if (day_count) {
-                    let dateStart = dateMath(date_end, day_count, "subtract");
+                    let dateStart = DateMath(date_end, day_count, "subtract");
                     date_start = DateToDatepickerString(dateStart);
                 }
                 break;
@@ -226,13 +224,17 @@ export default function MainScreen() {
                 handleCheckBoxChange={handleCheckBoxChange}
                 handleMultipleValueChange={handleMultipleValueChange}
                 handleDateChange={handleDateChange}
-                /> }
+                addServant={addServant}
+                deleteServant={deleteServant}
+            /> }
             { record.orderSection === "depart" && <DeparturePage
                 record={record}
                 handleChange={handleChange}
                 handleCheckBoxChange={handleCheckBoxChange}
                 handleMultipleValueChange={handleMultipleValueChange}
                 handleDateChange={handleDateChange}
+                addServant={addServant}
+                deleteServant={deleteServant}
             /> }
             <Grid container>
                 <Button onClick={ onSubmit }>

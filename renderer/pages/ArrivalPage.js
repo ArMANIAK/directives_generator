@@ -8,7 +8,6 @@ export default function ArrivalPage({
                                         record,
                                         handleChange,
                                         handleCheckBoxChange,
-                                        handleDateChange,
                                         handleMultipleValueChange,
                                         addServant,
                                         deleteServant
@@ -89,7 +88,7 @@ export default function ArrivalPage({
                         label="З"
                         name="date_start"
                         value={record.date_start}
-                        onChange={ handleDateChange }
+                        onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
                 </Grid>

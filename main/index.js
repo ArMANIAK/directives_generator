@@ -44,7 +44,7 @@ app.whenReady().then( async () => {
         slashes: true,
       });
 
-  mainWindow.loadURL(url);
+  await mainWindow.loadURL(url);
     mainWindow.webContents.openDevTools();
 
 });

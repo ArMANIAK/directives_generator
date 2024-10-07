@@ -1,7 +1,7 @@
 import { getServantById, isEmployee } from "../services/ServantsService";
 const certificate = require("../dictionaries/certificates.json");
 
-import { FormatDate, dateMath } from "./DateFormatters";
+import { FormatDate, DateMath } from "./DateUtilities";
 import { GenerateName, GenerateFullTitle } from "./ServantsGenerators";
 
 function GenerateAddToRation(servant_id) {
@@ -9,7 +9,7 @@ function GenerateAddToRation(servant_id) {
     // If supplier is not set up or a servant is an employee no add to ration is added
     // Якщо для військовослужбовця не встановлено частину забезпечення котловим або він працівник ЗСУ, зарахування на котлове не відбувається
     if (!servant?.supplied_by || !servant?.rank) return "";
-    const tomorrow = dateMath(new Date(), 1);
+    const tomorrow = DateMath(new Date(), 1);
     const formattedTomorrow = FormatDate(tomorrow, false);
     return `Зарахувати ${GenerateName(servant_id)} на котлове забезпечення при ${servant.supplied_by} за каталогом продуктів - зі сніданку ${formattedTomorrow}.\n\n`
 }
