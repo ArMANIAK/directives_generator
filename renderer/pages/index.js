@@ -1,4 +1,4 @@
-import MainScreen from "../components/MainScreen";
+import MainScreen from "./MainScreen";
 import { Provider } from "react-redux"
 
 import { store } from "../store/store"
