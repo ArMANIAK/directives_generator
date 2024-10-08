@@ -111,8 +111,8 @@ export default function ArrivalPage({
                             </Grid>
                             <Grid size={1}>
                                 <IoIosTrash
-                                    color={ record.servants.length > 1 ? "black" : "lightgray" }
                                     size={30}
+                                    color={ record.servants.length > 1 ? "black" : "lightgray" }
                                     onClick={record.servants.length > 1 ? deleteServant(ind) : null}
                                 />
                             </Grid>

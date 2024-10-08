@@ -34,6 +34,16 @@ export default function DeparturePage({
             break;
     }
 
+    const handleAbsenceTypeChange = event => {
+        if (["medical_care", "health_circumstances", "medical_board"].includes(event.target.value)) {
+            const day_count = { target: { name: "day_count", value: "" }}
+            const date_end = { target: { name: "date_end", value: "" }}
+            handleChange(day_count)
+            handleChange(date_end)
+        }
+        handleChange(event)
+    }
+
     return (
         <Grid direction={'column'} container spacing={2}>
 
@@ -45,7 +55,7 @@ export default function DeparturePage({
                             label="Тип відсутності"
                             name="absence_type"
                             value={ record.absence_type }
-                            onChange={handleChange}
+                            onChange={ handleAbsenceTypeChange }
                             slotProps={ { inputLabel: { shrink: true } } }
                         >
                             { absence_types.map(el => <MenuItem key={el.value} value={el.value}>{el.label}</MenuItem>) }
@@ -173,8 +183,8 @@ export default function DeparturePage({
                             </Grid>
                             <Grid size={1}>
                                 <IoIosTrash
-                                    color={ record.servants.length > 1 ? "black" : "lightgray" }
                                     size={30}
+                                    color={ record.servants.length > 1 ? "black" : "lightgray" }
                                     onClick={record.servants.length > 1 ? deleteServant(ind) : null}
                                 />
                             </Grid>

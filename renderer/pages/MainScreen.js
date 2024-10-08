@@ -65,11 +65,10 @@ export default function MainScreen() {
 
     const [pull, setPull] = useState([]);
 
-    const handleChange = event => setRecord({...record, [event.target.name]: event.target.value })
+    const handleChange = event => setRecord(record =>  ({ ...record, [event.target.name]: event.target.value }))
 
     const handleCheckBoxChange = event => {
         const { target: { name, checked } } = event;
-        console.log(name, checked)
         const changedRecord = {
             ... record,
             [name]: checked,

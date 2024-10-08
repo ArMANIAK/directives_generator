@@ -71,8 +71,9 @@ export function DateMath(dateString, modifier, mode = 'add') {
     }
 }
 
-export function DateStartToEndFormat(startDate, endDate) {
+export function DateStartToEndFormat(startDate, endDate = undefined) {
     let startDateObject = new Date(startDate);
+    if (!endDate) return `з ${FormatDate(startDateObject, false)}`
     let endDateObject = new Date(endDate);
     let difference = Math.ceil((endDateObject - startDateObject) / 1000 / 60 / 60 / 24) + 1
     if (difference < 10) difference = "0" + difference;
