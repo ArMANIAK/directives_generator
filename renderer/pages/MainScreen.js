@@ -102,21 +102,21 @@ export default function MainScreen() {
             case "date_start": {
                 date_start = value;
                 if (day_count) {
-                    let dateEnd = DateMath(date_start, day_count);
+                    let dateEnd = DateMath(date_start, day_count - 1);
                     date_end = DateToDatepickerString(dateEnd);
                 }
                 break;
             }
             case "day_count": {
                 day_count = value;
-                let dateEnd = DateMath(date_start, day_count);
+                let dateEnd = DateMath(date_start, day_count - 1);
                 date_end = DateToDatepickerString(dateEnd);
                 break;
             }
             case "date_end": {
                 date_end = value;
                 if (day_count) {
-                    let dateStart = DateMath(date_end, day_count, "subtract");
+                    let dateStart = DateMath(date_end, day_count - 1, "subtract");
                     date_start = DateToDatepickerString(dateStart);
                 }
                 break;
