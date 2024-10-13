@@ -13,24 +13,28 @@ export default function DeparturePage({
                                         addServant,
                                         deleteServant
                                     }) {
-
+    let certificateLabel = '';
     let reasonLabel = '';
 
     switch (record.absence_type) {
         case 'mission':
-            reasonLabel = "Посвідчення про відрядження №";
+            certificateLabel = "Посвідчення про відрядження №";
+            reasonLabel = "Підстава для відрядження"
             break;
         case 'sick_leave':
         case 'health_circumstances':
-            reasonLabel = "Довідка №";
+            certificateLabel = "Довідка №";
+            reasonLabel = "Вхідний номер та дата рапорта/заяви"
             break;
         case 'medical_care':
         case 'medical_board':
-            reasonLabel = "Направлення №";
+            certificateLabel = "Направлення №";
+            reasonLabel = "Вхідний номер та дата рапорта/заяви"
             break;
         case 'vacation':
         case 'family_circumstances':
-            reasonLabel = "Відпускний квиток №";
+            certificateLabel = "Відпускний квиток №";
+            reasonLabel = "Вхідний номер та дата рапорта/заяви"
             break;
     }
 
@@ -123,7 +127,7 @@ export default function DeparturePage({
                             label="На діб"
                             name="day_count"
                             disabled={ record.single_day || record.until_order }
-                            value={ record.day_count }
+                            value={ record.day_count || ""}
                             onChange={ handleDateChange }
                             slotProps={ { inputLabel: { shrink: true } } }
                         />
@@ -193,7 +197,7 @@ export default function DeparturePage({
                             <Grid size={5}>
                                 <TextField
                                     fullWidth
-                                    label={ reasonLabel }
+                                    label={ certificateLabel }
                                     name="certificate"
                                     value={record.certificate[ind]}
                                     onChange={ handleMultipleValueChange(ind) }
@@ -216,48 +220,21 @@ export default function DeparturePage({
                 )
             })}
             <Grid container>
-                { record.absence_type === "mission" &&
-                    <Grid size={5}>
-                        <TextField
-                            fullWidth
-                            multiline
-                            rows={2}
-                            label="Підстава"
-                            name="reason"
-                            value={record.reason}
-                            onChange={ handleChange }
-                            slotProps={ { inputLabel: { shrink: true } } }
-                        />
-                    </Grid>
-                }
-
-            </Grid>
-            <Grid container>
-                { record.with_ration_certificate &&
-                    <>
-                        <Grid size={5}>
-                            <TextField
-                                fullWidth
-                                label="Продовольчий атестат"
-                                name="ration_certificate"
-                                value={record.ration_certificate}
-                                onChange={ handleChange }
-                                slotProps={ { inputLabel: { shrink: true } } }
-                            />
-                        </Grid>
-                        <Grid size={3}>
-                            <TextField
-                                fullWidth
-                                type="date"
-                                label="від"
-                                name="ration_certificate_issue_date"
-                                value={record.ration_certificate_issue_date}
-                                onChange={ handleChange }
-                                slotProps={ { inputLabel: { shrink: true } } }
-                            />
-                        </Grid>
-                    </>
-                }
+                <Grid size={5}>
+                    <TextField
+                        fullWidth
+                        multiline
+                        rows={2}
+                        label={ reasonLabel }
+                        placeholder={record.absence_type === "mission"
+                            ? "розпорядження НГШ № ххх від 01.01.2025"
+                            : "12-12342 від 01.01.2025" }
+                        name="reason"
+                        value={record.reason}
+                        onChange={ handleChange }
+                        slotProps={ { inputLabel: { shrink: true } } }
+                    />
+                </Grid>
             </Grid>
         </Grid>
         )

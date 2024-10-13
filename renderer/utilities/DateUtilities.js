@@ -77,8 +77,9 @@ export function DateStartToEndFormat(startDate, endDate = undefined) {
     let endDateObject = new Date(endDate);
     let difference = Math.ceil((endDateObject - startDateObject) / 1000 / 60 / 60 / 24) + 1
     if (difference < 10) difference = "0" + difference;
-    let from = startDateObject.getDate() < 10 ? "0" + startDateObject.getDate() : startDateObject.getDate();
     let till = FormatDate(endDateObject, false);
+    if (difference === "01") return `на ${difference} ${dayEnding(difference)} ${till}`;
+    let from = startDateObject.getDate() < 10 ? "0" + startDateObject.getDate() : startDateObject.getDate();
     if (startDateObject.getFullYear() !== endDateObject.getFullYear())
         from = FormatDate(startDateObject, false);
     else if (startDateObject.getMonth() !== endDateObject.getMonth())

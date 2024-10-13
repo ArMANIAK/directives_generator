@@ -18,16 +18,24 @@ export function GenerateFullTitle(id, servantCase = "accusative", form = "short"
     const servant = getServantById(id);
     if (!servant) return "";
     const fullName = GenerateName(id, servantCase, form);
-    const title = getTitles().find(el => el.id === servant.primary_title);
-    const titleName = title["name_" + servantCase];
-    const departmentName = GenerateFullDepartment(servant.primary_department);
-    return `${fullName}, ${titleName} ${departmentName}`;
+    const primaryTitle = getTitles().find(el => el.id === servant.primary_title);
+    const primaryTitleName = primaryTitle["name_" + servantCase];
+    let fullTitle = `${fullName}, ${primaryTitleName}`;
+    if (servant.secondary_title) {
+        fullTitle += ` ${GenerateFullDepartment(servant.primary_department, "genitive", true)} – `;
+        const secondaryTitle = getTitles().find(el => el.id === servant.primary_title);
+        fullTitle += `${secondaryTitle["name_" + servantCase]} ${GenerateFullDepartment(servant.secondary_department)}`;
+    } else {
+        fullTitle += ` ${GenerateFullDepartment(servant.primary_department)}`
+    }
+    return fullTitle;
 }
 
-export function GenerateFullDepartment(id, departmentCase = 'genitive') {
+export function GenerateFullDepartment(id, departmentCase = 'genitive', firstLevel = false) {
     let departments = getDepartments();
     const department = departments.find(el => el.id === id);
     let departmentName = department['name_' + departmentCase];
+    if (firstLevel) return departmentName;
     let parentId = department.parent_id;
     let parent = null;
     while(parentId) {

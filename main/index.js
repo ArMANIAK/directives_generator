@@ -26,6 +26,8 @@ app.whenReady().then( async () => {
         },
     });
 
+    mainWindow.setFullScreen(true)
+
     // Watch for changes in the XLSX file
     const watcher = chokidar.watch(dictionaryFilePath);
     watcher.on('change', () => {
