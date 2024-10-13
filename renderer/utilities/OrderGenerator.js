@@ -369,14 +369,14 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                 }
                 let fullServantTitle = GenerateFullTitle(servant.servants);
                 let block = withSubClauses ? fullServantTitle[0].toLocaleUpperCase() + fullServantTitle.slice(1) : fullServantTitle;
-                let groupedDates = DateStartToEndFormat(servant.date_start, servant.date_end);
+                let groupedDates = DateStartToEndFormat(servant.date_start, servant.date_end, isEmployee(servant.servants));
                 switch (absence_type) {
                     case "vacation":
                         block += " у частину щорічної відпустки за " + servant.date_start.substr(0,4) +
-                            " рік до " + servant.destination + " на " + groupedDates + ".\n\n";
+                            " рік до " + servant.destination + groupedDates + ".\n\n";
                         break;
                     case "family_circumstances":
-                        block += " у " + servant.destination + " терміном на " + groupedDates + ".\n\n";
+                        block += " у " + servant.destination + " терміном " + groupedDates + ".\n\n";
                         break;
                 }
 

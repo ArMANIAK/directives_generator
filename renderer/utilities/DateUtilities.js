@@ -1,3 +1,5 @@
+import {isEmployee} from "../services/ServantsService";
+
 const monthsList = [
     'січня',
     'лютого',
@@ -13,29 +15,29 @@ const monthsList = [
     'грудня'
 ]
 
-const dayEnding = (daysQuantity) => {
+const dayEnding = (daysQuantity, isEmployee = false) => {
     let twoDigit = daysQuantity % 100;
     if (twoDigit < 20) {
         switch (twoDigit) {
             case 1:
-                return "добу";
+                return isEmployee ? "календарний день" : "добу";
             case 2:
             case 3:
             case 4:
-                return "доби";
+                return isEmployee ? "календарних дні" : "доби";
             default:
-                return "діб";
+                return isEmployee ? "календарних днів" : "діб";
         }
     } else {
         switch (twoDigit % 10) {
             case 1:
-                return "добу";
+                return isEmployee ? "календарних дні" : "добу";
             case 2:
             case 3:
             case 4:
-                return "доби";
+                return isEmployee ? "календарний день" : "доби";
             default:
-                return "діб";
+                return isEmployee ? "календарних днів" : "діб";
         }
     }
 }
@@ -71,18 +73,18 @@ export function DateMath(dateString, modifier, mode = 'add') {
     }
 }
 
-export function DateStartToEndFormat(startDate, endDate = undefined) {
+export function DateStartToEndFormat(startDate, endDate = undefined, isEmployee = false) {
     let startDateObject = new Date(startDate);
     if (!endDate) return `з ${FormatDate(startDateObject, false)}`
     let endDateObject = new Date(endDate);
     let difference = Math.ceil((endDateObject - startDateObject) / 1000 / 60 / 60 / 24) + 1
     if (difference < 10) difference = "0" + difference;
     let till = FormatDate(endDateObject, false);
-    if (difference === "01") return `на ${difference} ${dayEnding(difference)} ${till}`;
+    if (difference === "01") return `на ${difference} ${dayEnding(difference, isEmployee)} ${till}`;
     let from = startDateObject.getDate() < 10 ? "0" + startDateObject.getDate() : startDateObject.getDate();
     if (startDateObject.getFullYear() !== endDateObject.getFullYear())
         from = FormatDate(startDateObject, false);
     else if (startDateObject.getMonth() !== endDateObject.getMonth())
         from += ` ${monthsList[startDateObject.getMonth()]}`
-    return `на ${difference} ${dayEnding(difference)} з ${from} по ${till}`;
+    return `на ${difference} ${dayEnding(difference, isEmployee)} з ${from} по ${till}`;
 }
