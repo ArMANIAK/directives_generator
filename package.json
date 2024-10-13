@@ -2,7 +2,6 @@
   "name": "directive_generator",
   "version": "0.0.1",
   "private": true,
-  "productName": "DirectiveGenerator",
   "author": "Mykhailo Aloshyn",
   "description": "Application for easy directives generation, keeping track of servants absence, etc.",
   "main": "main/index.js",
@@ -15,10 +14,12 @@
     "dist": "npm run build && electron-builder"
   },
   "build": {
+    "productName": "DirectiveGenerator",
     "asar": true,
     "files": [
       "main",
       "renderer/out",
+      "renderer/dictionaries",
       "renderer/services/ExcelActions.js"
     ],
     "extraFiles": [

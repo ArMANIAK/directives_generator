@@ -47,7 +47,7 @@ app.whenReady().then( async () => {
       });
 
   await mainWindow.loadURL(url);
-    mainWindow.webContents.openDevTools();
+    if (isDev) mainWindow.webContents.openDevTools();
 
 });
 
