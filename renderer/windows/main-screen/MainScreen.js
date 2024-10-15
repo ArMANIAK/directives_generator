@@ -1,6 +1,6 @@
 "use client";
 
-import PullViewer from "../components/PullViewer";
+import PullViewer from "../../components/PullViewer";
 import { useState, useEffect } from 'react';
 import { useDispatch } from "react-redux";
 import Grid from '@mui/material/Grid2';
@@ -11,12 +11,12 @@ import {
     Radio,
     RadioGroup, TextField
 } from "@mui/material";
-import {  GenerateFullTitle } from "../utilities/ServantsGenerators";
-import { GenerateOrder } from "../utilities/OrderGenerator";
-import { DateToDatepickerString, DateMath } from "../utilities/DateUtilities";
-import { setTitles, setDepartments, setServants } from "../store/dictionarySlice"
-import ArrivalPage from "./ArrivalPage";
-import DeparturePage from "./DeparturePage";
+import {  GenerateFullTitle } from "../../utilities/ServantsGenerators";
+import { GenerateOrder } from "../../utilities/OrderGenerator";
+import { DateToDatepickerString, DateMath } from "../../utilities/DateUtilities";
+import { setTitles, setDepartments, setServants } from "../../store"
+import ArrivalPage from "./pages/ArrivalPage";
+import DeparturePage from "./pages/DeparturePage";
 
 export default function MainScreen() {
 

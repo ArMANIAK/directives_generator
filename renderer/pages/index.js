@@ -1,7 +1,7 @@
-import MainScreen from "../windows/MainScreen";
+import MainScreen from "../windows/main-screen/MainScreen";
 import { Provider } from "react-redux"
 
-import { store } from "../store/store"
+import { store } from "../store"
 const Home = () => {
 
     return (
