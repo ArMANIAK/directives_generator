@@ -3,6 +3,7 @@ import { GenerateName } from "../utilities/ServantsGenerators";
 
 const absence_type = require('../dictionaries/absence_types.json');
 export default function PullViewer({ pull }) {
+    console.log(" PULL VIEWER", pull)
     const rows = pull.map(el => {
         const activity = el.orderSection === "arrive" ? "прибуття" : (el.orderSection === 'depart' ? 'вибуття' : 'інші пункти');
         const servants = GenerateName(el.servants, 'nominative');

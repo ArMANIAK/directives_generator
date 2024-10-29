@@ -2,7 +2,7 @@
 
 import PullViewer from "../../components/PullViewer";
 import { useState, useEffect } from 'react';
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Grid from '@mui/material/Grid2';
 import {
     Button,
@@ -14,13 +14,23 @@ import {
 import {  GenerateFullTitle } from "../../utilities/ServantsGenerators";
 import { GenerateOrder } from "../../utilities/OrderGenerator";
 import { DateToDatepickerString, DateMath } from "../../utilities/DateUtilities";
-import { setTitles, setDepartments, setServants } from "../../store"
+import {
+    setTitles,
+    setDepartments,
+    setServants,
+    setRecord,
+    resetRecord,
+    setRecordArray,
+    addServantRecord,
+    deleteServantRecord
+} from "../../store"
 import ArrivalPage from "./pages/ArrivalPage";
 import DeparturePage from "./pages/DeparturePage";
 
 export default function MainScreen() {
 
     const dispatch = useDispatch();
+    const record = useSelector(state => state.record)
     const [servants, setServantsState ] = useState([])
 
     useEffect(() => {
@@ -38,60 +48,33 @@ export default function MainScreen() {
         }
     }, []);
 
-    const [ order_no, setOrderNo ] = useState();
-
-    const [ order_date, setOrderDate ] = useState(DateToDatepickerString(new Date()))
-
-    const defaultRecord = {
-        "orderSection": "arrive",
-        "servants": [""],
-        "absence_type": "mission",
-        "date_start": DateToDatepickerString(new Date()),
-        "date_end": "",
-        "day_count": 0,
-        "single_day": false,
-        "until_order": false,
-        "destination": "",
-        "purpose": "",
-        "reason": "",
-        "certificate": [""],
-        "certificate_issue_date": [""],
-        "with_ration_certificate": false,
-        "ration_certificate": "",
-        "ration_certificate_issue_date": ""
-    };
-
-    const [ record, setRecord ] = useState(defaultRecord);
-
     const [pull, setPull] = useState([]);
 
-    const handleChange = event => setRecord(record =>  ({ ...record, [event.target.name]: event.target.value }))
+    const handleChange = event => dispatch(setRecord({ [event.target.name]: event.target.value }))
 
     const handleCheckBoxChange = event => {
         const { target: { name, checked } } = event;
-        const changedRecord = {
-            ... record,
+        const changedValues = {
             [name]: checked,
         }
         switch (name) {
             case "single_day":
                 if (checked) {
-                    changedRecord.day_count = 1;
-                    changedRecord.date_end = changedRecord.date_start;
-                    changedRecord.until_order = false;
+                    changedValues.day_count = 1;
+                    changedValues.date_end = changedValues.date_start;
+                    changedValues.until_order = false;
                 }
-                setRecord(changedRecord)
+                dispatch(setRecord(changedValues))
                 break;
             case "until_order":
-                setRecord({
-                    ...changedRecord,
+                dispatch(setRecord({
                     day_count: 0,
                     date_end: "",
                     single_day: false
-                })
+                }))
                 break;
             default:
-                setRecord(changedRecord)
+                dispatch(setRecord(changedValues))
         }
     }
 
@@ -124,31 +107,25 @@ export default function MainScreen() {
             default:
                 break;
         }
-        setRecord({ ...record, date_end, day_count, date_start })
+        dispatch(setRecord({ date_end, day_count, date_start }))
     }
 
     const handleMultipleValueChange = ind => event => {
-        const newRecord = { ...record }
-        newRecord[event.target.name][ind] = event.target.value;
-        setRecord(newRecord)
+        // const newRecord = { ...record }
+        // newRecord[event.target.name][ind] = event.target.value;
+        dispatch(setRecordArray({
+            field: event.target.name,
+            index: ind,
+            value: event.target.value
+        }))
     }
 
     const addServant = () => {
-        setRecord({
-            ...record,
-            servants:               [ ...record.servants, "" ],
-            certificate:            [ ...record.certificate, "" ],
-            certificate_issue_date: [ ...record.certificate_issue_date, "" ],
-        })
+        dispatch(addServantRecord())
     }
 
     const deleteServant = index => () => {
-        setRecord({
-            ...record,
-            servants:                   [ ...record.servants.splice(index, 1) ],
-            certificate:                [ ...record.certificate.splice(index, 1) ],
-            certificate_issue_date:     [ ...record.certificate_issue_date.splice(index, 1) ],
-        });
+        dispatch(deleteServantRecord(index));
     }
 
     const onSubmit = () => {
@@ -161,7 +138,7 @@ export default function MainScreen() {
             }
         })
         setPull([ ...pull, ...records]);
-        setRecord(defaultRecord)
+        dispatch(resetRecord())
     }
 
     const generateDirective = () => {
@@ -181,8 +158,8 @@ export default function MainScreen() {
                         fullWidth
                         label="Номер наказу"
                         name="order_no"
-                        value={order_no}
-                        onChange={ event => setOrderNo(event.target.value) }
+                        value={ record.order_no }
+                        onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
                 </Grid>
@@ -192,8 +169,8 @@ export default function MainScreen() {
                         type="date"
                         label="Наказ від"
                         name="order_date"
-                        value={order_date}
-                        onChange={ event => setOrderDate(event.target.value) }
+                        value={ record.order_date }
+                        onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
                 </Grid>
