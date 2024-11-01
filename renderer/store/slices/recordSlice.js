@@ -27,10 +27,8 @@ export const recordSlice = createSlice({
     initialState,
     reducers: {
         setRecord: (state, action) => {
-            console.log({state, payload: action.payload})
             for (let prop in action.payload)
                 state[prop] = action.payload[prop]
-            // return { ...state, ...action.payload }
         },
         resetRecord: () => {
             return initialState;

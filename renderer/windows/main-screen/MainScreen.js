@@ -22,7 +22,8 @@ import {
     resetRecord,
     setRecordArray,
     addServantRecord,
-    deleteServantRecord
+    deleteServantRecord,
+    addRow
 } from "../../store"
 import ArrivalPage from "./pages/ArrivalPage";
 import DeparturePage from "./pages/DeparturePage";
@@ -31,6 +32,7 @@ export default function MainScreen() {
 
     const dispatch = useDispatch();
     const record = useSelector(state => state.record)
+    const pull = useSelector(state => state.pull)
     const [servants, setServantsState ] = useState([])
 
     useEffect(() => {
@@ -47,8 +49,6 @@ export default function MainScreen() {
             });
         }
     }, []);
-
-    const [pull, setPull] = useState([]);
 
     const handleChange = event => dispatch(setRecord({ [event.target.name]: event.target.value }))
 
@@ -137,7 +137,7 @@ export default function MainScreen() {
                 certificate_issue_date:     record.certificate_issue_date[ind]
             }
         })
-        setPull([ ...pull, ...records]);
+        dispatch(addRow(records));
         dispatch(resetRecord())
     }
 
@@ -221,7 +221,7 @@ export default function MainScreen() {
                 </Button>
             </Grid>
             <Grid container>
-                <PullViewer pull={ pull }/>
+                <PullViewer />
             </Grid>
         </Grid>
     )

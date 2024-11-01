@@ -1,8 +1,27 @@
 import { Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Button } from "@mui/material";
 import { GenerateName } from "../utilities/ServantsGenerators";
+import { useDispatch, useSelector } from "react-redux";
+import { removeRow, setRecord } from "../store";
 
 const absence_type = require('../dictionaries/absence_types.json');
-export default function PullViewer({ pull }) {
+export default function PullViewer() {
+    const dispatch = useDispatch();
+    const pull = useSelector(state => state.pull)
+    const record = useSelector(state => state.record)
+
+    const removeFromPull = id => () => {
+        dispatch(removeRow(id));
+    }
+
+    const editRow = id => () => {
+        const record = { ...pull[id] };
+        record.servants = [ record.servants ];
+        record.certificate = [ record.certificate ];
+        record.certificate_issue_date = [ record.certificate_issue_date ];
+        dispatch(setRecord(record));
+        dispatch(removeRow(id));
+    }
+
     console.log(" PULL VIEWER", pull)
     const rows = pull.map(el => {
         const activity = el.orderSection === "arrive" ? "прибуття" : (el.orderSection === 'depart' ? 'вибуття' : 'інші пункти');
@@ -40,8 +59,8 @@ export default function PullViewer({ pull }) {
                             <TableCell>{row.destination}</TableCell>
                             <TableCell>{row.date_start}</TableCell>
                             <TableCell>
-                                <Button>Edit</Button>
-                                <Button>Delete</Button>
+                                <Button onClick={editRow(ind)}>Edit</Button>
+                                <Button onClick={removeFromPull(ind)}>Delete</Button>
                             </TableCell>
                         </TableRow>
                     ))}
