@@ -41,9 +41,9 @@ export default function DeparturePage({
     const handleAbsenceTypeChange = event => {
         if (["medical_care", "health_circumstances", "medical_board"].includes(event.target.value)) {
             const day_count = { target: { name: "day_count", value: "" }}
-            const date_end = { target: { name: "date_end", value: "" }}
+            const planned_date_end = { target: { name: "planned_date_end", value: "" }}
             handleChange(day_count)
-            handleChange(date_end)
+            handleChange(planned_date_end)
         }
         handleChange(event)
     }
@@ -137,9 +137,9 @@ export default function DeparturePage({
                             fullWidth
                             type="date"
                             label="ПО"
-                            name="date_end"
+                            name="planned_date_end"
                             disabled={record.single_day || record.until_order}
-                            value={record.date_end}
+                            value={record.planned_date_end}
                             onChange={ handleDateChange }
                             slotProps={ { inputLabel: { shrink: true } } }
                         />

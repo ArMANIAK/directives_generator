@@ -20,12 +20,17 @@
       "main",
       "renderer/out",
       "renderer/dictionaries",
+      "renderer/res",
       "renderer/services/ExcelActions.js"
     ],
     "extraFiles": [
       {
         "from": "renderer/dictionaries/dictionaries.xlsx",
         "to": "Resources/dictionaries/dictionaries.xlsx"
+      },
+      {
+        "from": "renderer/res/Книга тимчасової відсутності.xlsx",
+        "to": "Resources/Книга тимчасової відсутності.xlsx"
       }
     ]
   },

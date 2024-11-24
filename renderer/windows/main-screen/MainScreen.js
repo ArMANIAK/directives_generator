@@ -13,7 +13,14 @@ import {
 } from "@mui/material";
 import {  GenerateFullTitle } from "../../utilities/ServantsGenerators";
 import { GenerateOrder } from "../../utilities/OrderGenerator";
-import { DateToDatepickerString, DateMath } from "../../utilities/DateUtilities";
+import {
+    dateToDatepickerString,
+    dateMath,
+    dateStringCompare,
+    datePickerToDateString,
+    getDateDifference
+} from "../../utilities/DateUtilities";
+import {convertPullToTempBook, convertTempBookToPull} from "../../utilities/PullToTempBookConverter"
 import {
     setTitles,
     setDepartments,
@@ -23,7 +30,8 @@ import {
     setRecordArray,
     addServantRecord,
     deleteServantRecord,
-    addRow
+    addRow,
+    clearTempBookRecords
 } from "../../store"
 import ArrivalPage from "./pages/ArrivalPage";
 import DeparturePage from "./pages/DeparturePage";
@@ -34,6 +42,7 @@ export default function MainScreen() {
     const record = useSelector(state => state.record)
     const pull = useSelector(state => state.pull)
     const [servants, setServantsState ] = useState([])
+    const [ tempBook, setTempBook ] = useState([]);
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.electron) {
@@ -47,8 +56,49 @@ export default function MainScreen() {
             }).catch((err) => {
                 console.error('Error fetching dictionary:', err);
             });
+
+
+            ipcRenderer.invoke('get-temp-book').then((result) => {
+                console.log("ТИМЧАСОВКА", result)
+                setTempBook(result)
+            }).catch((err) => {
+                console.error('Error fetching temporal book:', err);
+            });
         }
     }, []);
+
+    useEffect(() => {
+        dispatch(clearTempBookRecords())
+        console.log(tempBook)
+        generateAutoPull()
+    }, [ record.order_no, record.order_date ])
+
+    const generateAutoPull = () => {
+        let autoPull = tempBook.reduce((acc, el, index) => {
+            if (el.depart_order_no == record.order_no
+                || el.arrive_order_no == record.order_no
+                || !el.arrive_order_no && dateStringCompare(datePickerToDateString(el.planned_date_end), record.order_date) === -1) {
+                let row = convertTempBookToPull(el);
+                console.log(row)
+                row.id = index;
+                row.order_no = record.order_no;
+                row.order_date = record.order_date;
+                row.orderSection = el.depart_order_no == record.order_no ? "depart" : "arrive";
+                console.log("DATES",row.order_date, row.planned_date_end, row.fact_date_end)
+                if (row.orderSection && !row.fact_date_end) {
+                    if (dateStringCompare(row.planned_date_end, record.order_date))
+                        row.fact_date_end = row.planned_date_end
+                    else row.fact_date_end = row.order_date
+                    console.log(row.fact_date_end)
+                }
+                acc.push(row);
+            }
+            return acc;
+        }, [])
+        if (autoPull.length > 0)
+            dispatch(addRow(autoPull))
+        console.log(autoPull, pull)
+    }
 
     const handleChange = event => dispatch(setRecord({ [event.target.name]: event.target.value }))
 
@@ -61,7 +111,7 @@ export default function MainScreen() {
             case "single_day":
                 if (checked) {
                     changedValues.day_count = 1;
-                    changedValues.date_end = changedValues.date_start;
+                    changedValues.planned_date_end = changedValues.date_start;
                     changedValues.until_order = false;
                 }
                 dispatch(setRecord(changedValues))
@@ -69,7 +119,7 @@ export default function MainScreen() {
             case "until_order":
                 dispatch(setRecord({
                     day_count: 0,
-                    date_end: "",
+                    planned_date_end: "",
                     single_day: false
                 }))
                 break;
@@ -80,39 +130,40 @@ export default function MainScreen() {
 
     const handleDateChange = event => {
         const { name, value } = event.target;
-        let { date_start, day_count, date_end } = record;
+        let { date_start, day_count, planned_date_end } = record;
         switch (name) {
             case "date_start": {
                 date_start = value;
                 if (day_count) {
-                    let dateEnd = DateMath(date_start, day_count - 1);
-                    date_end = DateToDatepickerString(dateEnd);
+                    let dateEnd = dateMath(date_start, day_count - 1);
+                    planned_date_end = dateToDatepickerString(dateEnd);
                 }
                 break;
             }
             case "day_count": {
                 day_count = value;
-                let dateEnd = DateMath(date_start, day_count - 1);
-                date_end = DateToDatepickerString(dateEnd);
+                let dateEnd = dateMath(date_start, day_count - 1);
+                planned_date_end = dateToDatepickerString(dateEnd);
                 break;
             }
-            case "date_end": {
-                date_end = value;
-                if (day_count) {
-                    let dateStart = DateMath(date_end, day_count - 1, "subtract");
-                    date_start = DateToDatepickerString(dateStart);
+            case "planned_date_end": {
+                planned_date_end = value;
+                if (date_start) {
+                    day_count = getDateDifference(new Date(date_start), new Date(planned_date_end))
+                }
+                else if (day_count) {
+                    let dateStart = dateMath(planned_date_end, day_count - 1, "subtract");
+                    date_start = dateToDatepickerString(dateStart);
                 }
                 break;
             }
             default:
                 break;
         }
-        dispatch(setRecord({ date_end, day_count, date_start }))
+        dispatch(setRecord({ planned_date_end, day_count, date_start }))
     }
 
     const handleMultipleValueChange = ind => event => {
-        // const newRecord = { ...record }
-        // newRecord[event.target.name][ind] = event.target.value;
         dispatch(setRecordArray({
             field: event.target.name,
             index: ind,
@@ -132,13 +183,30 @@ export default function MainScreen() {
         let records = record.servants.map((el, ind) => {
             return {
                 ...record,
-                servants:                   el,
+                servant_id:                   el,
                 certificate:                record.certificate[ind],
                 certificate_issue_date:     record.certificate_issue_date[ind]
             }
         })
         dispatch(addRow(records));
         dispatch(resetRecord())
+    }
+
+    const SaveClauses = () => {
+        const updatedTempBook = [ ...tempBook ];
+        pull.forEach(el => {
+            const tempBookRecordUpdates = convertPullToTempBook(el)
+            if (el.id || el.id === 0)
+                updatedTempBook[el.id] = { ...tempBook[el.id], ...tempBookRecordUpdates }
+            else updatedTempBook.push(tempBookRecordUpdates)
+        })
+        setTempBook(updatedTempBook);
+        const ipcRenderer = window.electron.ipcRenderer;
+        ipcRenderer.invoke('save-temp-book', updatedTempBook).then((result) => {
+            setTempBook(result)
+        }).catch((err) => {
+            console.error('Error saving temporal book:', err);
+        });
     }
 
     const generateDirective = () => {
@@ -160,6 +228,8 @@ export default function MainScreen() {
                         name="order_no"
                         value={ record.order_no }
                         onChange={ handleChange }
+                        onInput={()=> console.log("ON INPUT")}
+                        onBlur={()=> console.log("ON BLUR")}
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
                 </Grid>
@@ -215,6 +285,9 @@ export default function MainScreen() {
             <Grid container>
                 <Button onClick={ onSubmit }>
                     Додати пункт
+                </Button>
+                <Button onClick={ SaveClauses }>
+                    Зберегти пункти
                 </Button>
                 <Button onClick={ generateDirective }>
                     Згенерувати наказ

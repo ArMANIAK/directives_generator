@@ -7,12 +7,15 @@ const prepareNext = require("electron-next");
 
 const chokidar = require('chokidar');
 
-const { loadDictionaries } = require(join(__dirname, '../renderer/services/ExcelActions'));
+const { loadDictionaries, loadTemporalBook, saveTemporalBook } = require(join(__dirname, '../renderer/services/ExcelActions'));
 
 const dictionaryFilePath = app.isPackaged
   ? join(process.resourcesPath, 'dictionaries', 'dictionaries.xlsx')
   : join(__dirname, '../renderer/dictionaries/dictionaries.xlsx');
 
+const temporalBookFilePath = app.isPackaged
+    ? join(process.resourcesPath, 'res', 'Книга тимчасової відсутності.xlsx')
+    : join(__dirname, '../renderer/res/Книга тимчасової відсутності.xlsx');
 app.whenReady().then( async () => {
   await prepareNext("./renderer");
 
@@ -62,6 +65,14 @@ ipcMain.on('clipboard-write', (event, text) => {
 });
 
 // Handle requests from the renderer to get the dictionary
-ipcMain.handle('get-dict', () => {
-    return loadDictionaries(dictionaryFilePath);
+ipcMain.handle('get-dict', async () => {
+    return await loadDictionaries(dictionaryFilePath);
+});
+
+// Handle requests from the renderer to get the temporal absence book
+ipcMain.handle('get-temp-book', async () => {
+    return await loadTemporalBook(temporalBookFilePath);
+});
+ipcMain.handle('save-temp-book',  async (event, data) => {
+    return await saveTemporalBook(temporalBookFilePath, data);
 });

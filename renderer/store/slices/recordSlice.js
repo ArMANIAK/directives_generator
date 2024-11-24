@@ -1,14 +1,15 @@
 import {  createSlice } from '@reduxjs/toolkit'
-import { DateToDatepickerString } from "../../utilities/DateUtilities";
+import { dateToDatepickerString } from "../../utilities/DateUtilities";
 
 const initialState = {
     "order_no": "",
-    "order_date": DateToDatepickerString(new Date()),
+    "order_date": dateToDatepickerString(new Date()),
     "orderSection": "arrive",
     "servants": [""],
     "absence_type": "mission",
-    "date_start": DateToDatepickerString(new Date()),
-    "date_end": "",
+    "date_start": dateToDatepickerString(new Date()),
+    "planned_date_end": "",
+    "fact_date_end": "",
     "day_count": 0,
     "single_day": false,
     "until_order": false,
@@ -30,14 +31,14 @@ export const recordSlice = createSlice({
             for (let prop in action.payload)
                 state[prop] = action.payload[prop]
         },
-        resetRecord: () => {
-            return initialState;
+        resetRecord: (state) => {
+            return { ...initialState, order_no: state.order_no, order_date: state.order_date };
         },
         setRecordArray: (state, action) => {
             const { field, index, value } = action.payload;
             state[field][index] = value
         },
-        addServantRecord: (state, action) => {
+        addServantRecord: (state) => {
             state.servants.push("");
             state.certificate.push("");
             state.certificate_issue_date.push("");

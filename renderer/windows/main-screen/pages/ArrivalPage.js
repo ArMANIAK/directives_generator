@@ -85,9 +85,9 @@ export default function ArrivalPage({
                     <TextField
                         fullWidth
                         type="date"
-                        label="З"
-                        name="date_start"
-                        value={record.date_start}
+                        label="Повернувся(-лася)"
+                        name="fact_date_end"
+                        value={record.fact_date_end}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />

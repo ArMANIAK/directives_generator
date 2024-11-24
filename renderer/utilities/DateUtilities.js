@@ -1,5 +1,3 @@
-import {isEmployee} from "../services/ServantsService";
-
 const monthsList = [
     'січня',
     'лютого',
@@ -42,7 +40,7 @@ const dayEnding = (daysQuantity, isEmployee = false) => {
     }
 }
 
-export function FormatDate(date, isShort = true) {
+export function formatDate(date, isShort = true) {
     let day = date.getDate();
     if (day < 10) day = '0' + day;
     let month = date.getMonth();
@@ -53,7 +51,14 @@ export function FormatDate(date, isShort = true) {
 
 }
 
-export function DateToDatepickerString(date) {
+export function datePickerToDateString(date) {
+    console.log(date)
+    if (!date) return date;
+    const [ day, month, year ] = date.split(".");
+    return `${year}-${month}-${day}`;
+}
+
+export function dateToDatepickerString(date) {
     let day = date.getDate();
     if (day < 10) day = '0' + day;
     let month = date.getMonth() + 1;
@@ -62,7 +67,7 @@ export function DateToDatepickerString(date) {
     return `${year}-${month}-${day}`;
 }
 
-export function DateMath(dateString, modifier, mode = 'add') {
+export function dateMath(dateString, modifier, mode = 'add') {
     switch (mode) {
         case 'add' :
             return new Date((new Date(dateString)).getTime() + modifier * 24 * 60 * 60 * 1000);
@@ -73,18 +78,34 @@ export function DateMath(dateString, modifier, mode = 'add') {
     }
 }
 
-export function DateStartToEndFormat(startDate, endDate = undefined, isEmployee = false) {
+export function getDateDifference(startDateObj, endDateObj) {
+    return Math.ceil((endDateObj - startDateObj) / 1000 / 60 / 60 / 24) + 1
+}
+
+export function dateStartToEndFormat(startDate, endDate = undefined, isEmployee = false) {
     let startDateObject = new Date(startDate);
-    if (!endDate) return `з ${FormatDate(startDateObject, false)}`
+    if (!endDate) return `з ${formatDate(startDateObject, false)}`
     let endDateObject = new Date(endDate);
-    let difference = Math.ceil((endDateObject - startDateObject) / 1000 / 60 / 60 / 24) + 1
+    let difference = getDateDifference(startDateObject, endDateObject);
     if (difference < 10) difference = "0" + difference;
-    let till = FormatDate(endDateObject, false);
+    let till = formatDate(endDateObject, false);
     if (difference === "01") return `на ${difference} ${dayEnding(difference, isEmployee)} ${till}`;
     let from = startDateObject.getDate() < 10 ? "0" + startDateObject.getDate() : startDateObject.getDate();
     if (startDateObject.getFullYear() !== endDateObject.getFullYear())
-        from = FormatDate(startDateObject, false);
+        from = formatDate(startDateObject, false);
     else if (startDateObject.getMonth() !== endDateObject.getMonth())
         from += ` ${monthsList[startDateObject.getMonth()]}`
     return `на ${difference} ${dayEnding(difference, isEmployee)} з ${from} по ${till}`;
+}
+
+export function dateStringCompare(date_1, date_2) {
+    const [ day1, month1, year1 ] = date_1.split("-");
+    const [ day2, month2, year2 ] = date_2.split("-");
+    if (year1 < year2) return -1;
+    if (year1 > year2) return 1;
+    if (month1 < month2) return -1;
+    if (month1 > month2) return 1;
+    if (day1 < day2) return -1;
+    if (day1 > day2) return 1;
+    return 0;
 }

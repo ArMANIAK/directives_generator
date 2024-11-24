@@ -2,11 +2,10 @@ import { getServantById, getTitles, getDepartments } from "../services/ServantsS
 const ranks = require("../dictionaries/ranks.json");
 
 
-export function GenerateName(id, servantCase = "accusative", form = "short") {
+export function GenerateRankAndName(id, servantCase = "accusative", form = "short") {
     const servant = getServantById(id);
     if (!servant) return ""
-    const rank = GenerateRankName(servant.rank, servantCase);
-    return rank + ' ' + servant['last_name_' + servantCase] + ' ' + (form === 'short' ? servant.first_name_short : servant['first_name_' + servantCase])
+    return GenerateRankName(servant.rank, servantCase) + " " + GenerateName(id, servantCase, form)
 }
 
 export function GenerateRankName(id, rankCase = "accusative") {
@@ -14,10 +13,22 @@ export function GenerateRankName(id, rankCase = "accusative") {
     return rank["name_" + rankCase];
 }
 
+export function GenerateRankNameByServantId(id, rankCase = "accusative") {
+    const servant = getServantById(id);
+    if (!servant) return ""
+    return GenerateRankName(servant.rank, rankCase);
+}
+
+
+export function GenerateName(id, nameCase = "accusative", form = "short") {
+    const servant = getServantById(id);
+    return servant['last_name_' + nameCase] + ' ' + (form === 'short' ? servant.first_name_short : servant['first_name_' + nameCase]);
+}
+
 export function GenerateFullTitle(id, servantCase = "accusative", form = "short") {
     const servant = getServantById(id);
     if (!servant) return "";
-    const fullName = GenerateName(id, servantCase, form);
+    const fullName = GenerateRankAndName(id, servantCase, form);
     const primaryTitle = getTitles().find(el => el.id === servant.primary_title);
     const primaryTitleName = primaryTitle["name_" + servantCase];
     let fullTitle = `${fullName}, ${primaryTitleName}`;

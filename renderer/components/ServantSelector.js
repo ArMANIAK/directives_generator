@@ -1,6 +1,6 @@
 "use client";
 
-import { GenerateName, GetGeneralDepartmentName } from "../utilities/ServantsGenerators";
+import { GenerateRankAndName, GetGeneralDepartmentName } from "../utilities/ServantsGenerators";
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { getServants } from "../services/ServantsService"
@@ -11,7 +11,7 @@ export default function ServantSelector({ value, handleChange }) {
     let chosenServant = { label: "", id: "" };
     const servantsList = servants ? servants.map(el => {
         const servant = {
-            'label' : `${GenerateName(el.id, 'nominative')} - ${GetGeneralDepartmentName(el.primary_department)}`,
+            'label' : `${GenerateRankAndName(el.id, 'nominative')} - ${GetGeneralDepartmentName(el.primary_department)}`,
             'id' : el.id
         };
         if (el.id === value) chosenServant = servant;

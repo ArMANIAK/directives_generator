@@ -4,7 +4,7 @@ import recordSlice from "./slices/recordSlice";
 import pullReducer from './slices/pullSlice';
 import { setTitles, setDepartments, setServants } from "./slices/dictionarySlice";
 import { setRecord, resetRecord, setRecordArray, addServantRecord, deleteServantRecord } from "./slices/recordSlice";
-import { addRow, removeRow, resetPull } from "./slices/pullSlice";
+import { addRow, removeRow, resetPull, clearTempBookRecords } from "./slices/pullSlice";
 
 const store = configureStore({
     reducer: {
@@ -26,5 +26,6 @@ export {
     deleteServantRecord,
     addRow,
     removeRow,
-    resetPull
+    resetPull,
+    clearTempBookRecords
 }

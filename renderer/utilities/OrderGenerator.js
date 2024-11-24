@@ -1,17 +1,17 @@
 import { getServantById, isEmployee } from "../services/ServantsService";
 const certificate = require("../dictionaries/certificates.json");
 
-import { FormatDate, DateMath, DateStartToEndFormat } from "./DateUtilities";
-import { GenerateName, GenerateFullTitle } from "./ServantsGenerators";
+import { formatDate, dateMath, dateStartToEndFormat } from "./DateUtilities";
+import { GenerateRankAndName, GenerateFullTitle } from "./ServantsGenerators";
 
 function GenerateAddToRation(servant_id) {
     const servant = getServantById(servant_id);
     // If supplier is not set up or a servant is an employee no add to ration is added
     // Якщо для військовослужбовця не встановлено частину забезпечення котловим або він працівник ЗСУ, зарахування на котлове не відбувається
     if (!servant?.supplied_by || !servant?.rank) return "";
-    const tomorrow = DateMath(new Date(), 1);
-    const formattedTomorrow = FormatDate(tomorrow, false);
-    return `Зарахувати ${GenerateName(servant_id)} на котлове забезпечення при ${servant.supplied_by} за каталогом продуктів - зі сніданку ${formattedTomorrow}.\n\n`
+    const tomorrow = dateMath(new Date(), 1);
+    const formattedTomorrow = formatDate(tomorrow, false);
+    return `Зарахувати ${GenerateRankAndName(servant_id)} на котлове забезпечення при ${servant.supplied_by} за каталогом продуктів - зі сніданку ${formattedTomorrow}.\n\n`
 }
 
 function GenerateRemoveFromRation(servant_id, with_ration_certificate = false) {
@@ -19,9 +19,9 @@ function GenerateRemoveFromRation(servant_id, with_ration_certificate = false) {
     // If supplier is not set up or a servant is an employee no add to ration is added
     // Якщо для військовослужбовця не встановлено частину забезпечення котловим або він працівник ЗСУ, зняття з котлового не відбувається
     if (!servant?.supplied_by || !servant?.rank) return "";
-    const tomorrow = DateMath(new Date(), 1);
-    const formattedTomorrow = FormatDate(tomorrow, false);
-    let paragraph = `Зняти ${GenerateName(servant_id)} з котлового забезпечення при ${servant.supplied_by} за каталогом продуктів - зі сніданку ${formattedTomorrow}`;
+    const tomorrow = dateMath(new Date(), 1);
+    const formattedTomorrow = formatDate(tomorrow, false);
+    let paragraph = `Зняти ${GenerateRankAndName(servant_id)} з котлового забезпечення при ${servant.supplied_by} за каталогом продуктів - зі сніданку ${formattedTomorrow}`;
     if (with_ration_certificate) paragraph += " та видати продовольчий атестат";
     paragraph += ".\n\n";
     return paragraph;
@@ -33,6 +33,7 @@ function GenerateServantBlock(
     with_ration_certificate = false,
     isCapitalised = false
 ) {
+    console.log("GENERATE SERVANT BLOCK", servant_id)
     let servant = `${GenerateFullTitle(servant_id)}.\n\n`;
     let block = isCapitalised ? servant[0].toLocaleUpperCase() + servant.slice(1) : servant;
     if (!isEmployee(servant_id) && addOrRemove === "add")
@@ -51,7 +52,7 @@ function GenerateJustification(records) {
 
     for (let i = 0, n = records.length; i < n; i++) {
         let record = records[i];
-        certificates += `${certificate[record.absence_type]} № ${record.certificate} від ${FormatDate(new Date(record.certificate_issue_date))}`;
+        certificates += `${certificate[record.absence_type]} № ${record.certificate} від ${formatDate(new Date(record.certificate_issue_date))}`;
         if (n !== 1 && i + 1 !== n) {
             certificates += ", ";
             if (record.with_ration_certificate)
@@ -60,7 +61,7 @@ function GenerateJustification(records) {
     }
     justification += `${certificates}`;
     if (records[0].ration_certificate_issue_date) {
-        justification += `, продовольчий атестат від ${FormatDate(new Date(records[0].ration_certificate_issue_date))} № ${records[0].ration_certificate}`;
+        justification += `, продовольчий атестат від ${formatDate(new Date(records[0].ration_certificate_issue_date))} № ${records[0].ration_certificate}`;
     }
     justification += '.\n\n';
     return justification;
@@ -106,25 +107,25 @@ const addArriveClauseToPull = (groupedPull, record) => {
         case "medical_board":
             if (!groupedPull.arrive[record.absence_type][record.destination])
                 groupedPull.arrive[record.absence_type][record.destination] = {};
-            if (!groupedPull.arrive[record.absence_type][record.destination][record.date_start])
-                groupedPull.arrive[record.absence_type][record.destination][record.date_start] = [];
-            groupedPull.arrive[record.absence_type][record.destination][record.date_start].push(record)
+            if (!groupedPull.arrive[record.absence_type][record.destination][record.fact_date_end])
+                groupedPull.arrive[record.absence_type][record.destination][record.fact_date_end] = [];
+            groupedPull.arrive[record.absence_type][record.destination][record.fact_date_end].push(record)
             break;
         case "sick_leave":
-            if (isEmployee(record.servants)) {
+            if (isEmployee(record.servant_id)) {
                 if (!groupedPull.arrive['sick_employee'])
                     groupedPull.arrive['sick_employee'] = {}
-                if (!groupedPull.arrive['sick_employee'][record.date_start])
-                    groupedPull.arrive['sick_employee'][record.date_start] = [];
-                groupedPull.arrive['sick_employee'][record.date_start].push(record);
+                if (!groupedPull.arrive['sick_employee'][record.fact_date_end])
+                    groupedPull.arrive['sick_employee'][record.fact_date_end] = [];
+                groupedPull.arrive['sick_employee'][record.fact_date_end].push(record);
                 break;
             }
         case "vacation":
         case "family_circumstances":
         case "health_circumstances":
-            if (!groupedPull.arrive[record.absence_type][record.date_start])
-                groupedPull.arrive[record.absence_type][record.date_start] = [];
-            groupedPull.arrive[record.absence_type][record.date_start].push(record);
+            if (!groupedPull.arrive[record.absence_type][record.fact_date_end])
+                groupedPull.arrive[record.absence_type][record.fact_date_end] = [];
+            groupedPull.arrive[record.absence_type][record.fact_date_end].push(record);
             break;
         default:
             groupedPull.arrive.push(record);
@@ -136,7 +137,7 @@ const addArriveClauseToPull = (groupedPull, record) => {
 const addDepartureClauseToPull = (groupedPull, record) => {
     let groupDate = record.date_start;
     if (record.absence_type === "mission" || record.absence_type === "sick_leave")
-        groupDate = DateStartToEndFormat(record.date_start, record.date_end)
+        groupDate = dateStartToEndFormat(record.date_start, record.planned_date_end)
     switch (record.absence_type) {
         case "mission":
             if (!groupedPull.depart[record.absence_type])
@@ -151,6 +152,7 @@ const addDepartureClauseToPull = (groupedPull, record) => {
             break;
         case "medical_care":
         case "medical_board":
+            if (isEmployee(record.servant_id)) break;
             if (!groupedPull.depart[record.absence_type])
                 groupedPull.depart[record.absence_type] = {};
             if (!groupedPull.depart[record.absence_type][record.destination])
@@ -160,7 +162,7 @@ const addDepartureClauseToPull = (groupedPull, record) => {
             groupedPull.depart[record.absence_type][record.destination][groupDate].push(record)
             break;
         case "sick_leave":
-            if (isEmployee(record.servants)) break;
+            if (isEmployee(record.servant_id)) break;
         case "health_circumstances":
             if (!groupedPull.depart[record.absence_type])
                 groupedPull.depart[record.absence_type] = {};
@@ -209,11 +211,11 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
             directive += Object.keys(arrivePullSection.mission[destination]).length === 1 ? " " : ":\n\n";
             for (let date in arrivePullSection.mission[destination]) {
                 if (arrivePullSection.mission[destination][date].length > 0) {
-                    directive += `${FormatDate(new Date(date), false)}:\n\n`;
+                    directive += `${formatDate(new Date(date), false)}:\n\n`;
                     for (let servant of arrivePullSection.mission[destination][date]) {
-                        directive += GenerateServantBlock(servant.servants);
+                        directive += GenerateServantBlock(servant.servant_id);
                     }
-                    directive += `${GenerateJustification(arrivePullSection.mission[destination][date])}\n\n`;
+                    directive += `${GenerateJustification(arrivePullSection.mission[destination][date])}`;
                 }
             }
         }
@@ -230,16 +232,16 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                 directive += Object.keys(arrivePullSection[absence_type][destination]).length === 1 ? " " : ":\n\n";
                 for (let date in arrivePullSection[absence_type][destination]) {
                     if (arrivePullSection[absence_type][destination][date].length > 0) {
-                        directive += `${FormatDate(new Date(date), false)}:\n\n`;
+                        directive += `${formatDate(new Date(date), false)}:\n\n`;
                         for (let servant of arrivePullSection[absence_type][destination][date]) {
                             let withSubClauses = false
                             if (arrivePullSection[absence_type][destination][date].length > 1) {
                                 withSubClauses = true;
                                 directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                             }
-                            directive += GenerateServantBlock(servant.servants, "add", withSubClauses);
+                            directive += GenerateServantBlock(servant.servant_id, "add", withSubClauses);
                         }
-                        directive += `${GenerateJustification(arrivePullSection[absence_type][destination][date])}\n\n`;
+                        directive += `${GenerateJustification(arrivePullSection[absence_type][destination][date])}`;
                     }
                 }
             }
@@ -281,16 +283,15 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                             withSubClauses = true;
                             directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                         }
-                        directive += GenerateServantBlock(servant.servants, "add", withSubClauses);
+                        directive += GenerateServantBlock(servant.servant_id, "add", withSubClauses);
                     }
-                    directive += `${GenerateJustification(arrivePullSection[absence_type][date])}\n\n`;
+                    directive += `${GenerateJustification(arrivePullSection[absence_type][date])}`;
                 }
             }
             middleCount++;
         }
     }
 
-    console.log(directive);
     return directive;
 }
 
@@ -311,7 +312,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                 for (let purpose in departurePullSection.mission[destination][date]) {
                     directive += `${purpose}:\n\n`;
                     for (let servant of departurePullSection.mission[destination][date][purpose]) {
-                        directive += GenerateServantBlock(servant.servants, "remove", servant.with_ration_certificate);
+                        directive += GenerateServantBlock(servant.servant_id, "remove", servant.with_ration_certificate);
                     }
                     directive += `${GenerateJustification(departurePullSection.mission[destination][date][purpose])}`;
                 }
@@ -331,14 +332,14 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                 directive += Object.keys(departurePullSection[absence_type][destination]).length === 1 ? " " : ":\n\n";
                 for (let date in departurePullSection[absence_type][destination]) {
                     if (departurePullSection[absence_type][destination][date].length > 0) {
-                        directive += `з ${FormatDate(new Date(date), false)}:\n\n`;
+                        directive += `з ${formatDate(new Date(date), false)}:\n\n`;
                         for (let servant of departurePullSection[absence_type][destination][date]) {
                             let withSubClauses = false
                             if (departurePullSection[absence_type][destination][date].length > 1) {
                                 withSubClauses = true;
                                 directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                             }
-                            directive += GenerateServantBlock(servant.servants, "remove", servant.with_ration_certificate, withSubClauses);
+                            directive += GenerateServantBlock(servant.servant_id, "remove", servant.with_ration_certificate, withSubClauses);
                         }
                         directive += `${GenerateJustification(departurePullSection[absence_type][destination][date])}`;
                     }
@@ -367,9 +368,9 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                     withSubClauses = true;
                     directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                 }
-                let fullServantTitle = GenerateFullTitle(servant.servants);
+                let fullServantTitle = GenerateFullTitle(servant.servant_id);
                 let block = withSubClauses ? fullServantTitle[0].toLocaleUpperCase() + fullServantTitle.slice(1) : fullServantTitle;
-                let groupedDates = DateStartToEndFormat(servant.date_start, servant.date_end, isEmployee(servant.servants));
+                let groupedDates = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id));
                 switch (absence_type) {
                     case "vacation":
                         block += " у частину щорічної відпустки за " + servant.date_start.substr(0,4) +
@@ -381,10 +382,10 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                 }
 
                 directive += block;
-                directive += GenerateRemoveFromRation(servant.servants, servant.with_ration_certificate);
-                directive += "Підстава: рапорт " + GenerateName(servant.servants, "genitive") +
+                directive += GenerateRemoveFromRation(servant.servant_id, servant.with_ration_certificate);
+                directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
                     "(вх. № " + servant.reason + "), " + certificate[servant.absence_type] + " № " + servant.certificate +
-                    " від " + FormatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
+                    " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
 
             }
             middleCount++;
@@ -414,16 +415,15 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                             withSubClauses = true;
                             directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                         }
-                        directive += GenerateServantBlock(servant.servants, "remove", servant.with_ration_certificate, withSubClauses);
+                        directive += GenerateServantBlock(servant.servant_id, "remove", servant.with_ration_certificate, withSubClauses);
                     }
-                    directive += `${GenerateJustification(departurePullSection[absence_type][date])}\n\n`;
+                    directive += `${GenerateJustification(departurePullSection[absence_type][date])}`;
                 }
             }
             middleCount++;
         }
     }
 
-    console.log(directive);
     return directive;
 }
 
