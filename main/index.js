@@ -10,11 +10,11 @@ const chokidar = require('chokidar');
 const { loadDictionaries, loadTemporalBook, saveTemporalBook } = require(join(__dirname, '../renderer/services/ExcelActions'));
 
 const dictionaryFilePath = app.isPackaged
-  ? join(process.resourcesPath, 'dictionaries', 'dictionaries.xlsx')
-  : join(__dirname, '../renderer/dictionaries/dictionaries.xlsx');
+  ? join(process.resourcesPath, 'dictionaries', 'Словники.xlsx')
+  : join(__dirname, '../renderer/dictionaries/Словники.xlsx');
 
 const temporalBookFilePath = app.isPackaged
-    ? join(process.resourcesPath, 'res', 'Книга тимчасової відсутності.xlsx')
+    ? join(process.resourcesPath, 'Книга тимчасової відсутності.xlsx')
     : join(__dirname, '../renderer/res/Книга тимчасової відсутності.xlsx');
 app.whenReady().then( async () => {
   await prepareNext("./renderer");

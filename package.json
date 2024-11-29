@@ -25,8 +25,8 @@
     ],
     "extraFiles": [
       {
-        "from": "renderer/dictionaries/dictionaries.xlsx",
-        "to": "Resources/dictionaries/dictionaries.xlsx"
+        "from": "renderer/dictionaries/Словники.xlsx",
+        "to": "Resources/dictionaries/Словники.xlsx"
       },
       {
         "from": "renderer/res/Книга тимчасової відсутності.xlsx",
