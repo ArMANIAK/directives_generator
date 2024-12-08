@@ -79,17 +79,14 @@ export default function MainScreen() {
                 || el.arrive_order_no == record.order_no
                 || !el.arrive_order_no && dateStringCompare(datePickerToDateString(el.planned_date_end), record.order_date) === -1) {
                 let row = convertTempBookToPull(el);
-                console.log(row)
                 row.id = index;
                 row.order_no = record.order_no;
                 row.order_date = record.order_date;
                 row.orderSection = el.depart_order_no == record.order_no ? "depart" : "arrive";
-                console.log("DATES",row.order_date, row.planned_date_end, row.fact_date_end)
                 if (row.orderSection && !row.fact_date_end) {
-                    if (dateStringCompare(row.planned_date_end, record.order_date))
+                    if (dateStringCompare(row.planned_date_end, record.order_date) < 0)
                         row.fact_date_end = row.planned_date_end
                     else row.fact_date_end = row.order_date
-                    console.log(row.fact_date_end)
                 }
                 acc.push(row);
             }
@@ -97,7 +94,6 @@ export default function MainScreen() {
         }, [])
         if (autoPull.length > 0)
             dispatch(addRow(autoPull))
-        console.log(autoPull, pull)
     }
 
     const handleChange = event => dispatch(setRecord({ [event.target.name]: event.target.value }))
@@ -228,8 +224,6 @@ export default function MainScreen() {
                         name="order_no"
                         value={ record.order_no }
                         onChange={ handleChange }
-                        onInput={()=> console.log("ON INPUT")}
-                        onBlur={()=> console.log("ON BLUR")}
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
                 </Grid>

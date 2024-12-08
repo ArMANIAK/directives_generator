@@ -18,6 +18,7 @@ const convertPullToTempBook = row => {
     }
     if (row.orderSection === "arrive") {
         result.arrive_order_no = row.order_no;
+        result.fact_date_end = row.fact_date_end ? formatDate(new Date(row.fact_date_end)) : "";
     }
     else if (row.orderSection === "depart") result.depart_order_no = row.order_no;
     return result;
@@ -30,7 +31,7 @@ const convertTempBookToPull = record => {
     if (record.planned_date_end)
         end = datePickerToDateString(record.planned_date_end)
     if (record.date_start && record.planned_date_end)
-        date_count = getDateDifference(start, end);
+        date_count = getDateDifference(new Date(start), new Date(end));
     return {
         "servant_id": record.servant_id,
         "absence_type": absence_type.find(el => el.label.toLowerCase() === record.absence_type.toLowerCase())?.value ?? "",
