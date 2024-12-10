@@ -11,7 +11,8 @@ export default function DeparturePage({
                                         handleDateChange,
                                         handleMultipleValueChange,
                                         addServant,
-                                        deleteServant
+                                        deleteServant,
+                                        absentServants
                                     }) {
     let certificateLabel = '';
     let reasonLabel = '';
@@ -177,6 +178,7 @@ export default function DeparturePage({
                                 <ServantSelector
                                     value={el}
                                     handleChange={ handleMultipleValueChange(ind) }
+                                    absentServants={absentServants}
                                 />
                             </Grid>
                             <Grid size={1}>

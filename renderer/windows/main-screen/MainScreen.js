@@ -275,6 +275,7 @@ export default function MainScreen() {
                 handleDateChange={handleDateChange}
                 addServant={addServant}
                 deleteServant={deleteServant}
+                absentServants={tempBook.filter(el => !el.arrive_order_no || el.arrive_order_no == record.order_no)}
             /> }
             <Grid container>
                 <Button onClick={ onSubmit }>
