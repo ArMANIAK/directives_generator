@@ -33,9 +33,12 @@ export default function ArrivalPage({
             break;
     }
 
+    const handleServantSelectorChange = id => event => {
+        handleMultipleValueChange(id)(event)
+    }
+
     return (
         <Grid direction={'column'} container spacing={2}>
-
             <Grid container>
                 <Grid size={6}>
                     <FormControl fullWidth>
@@ -100,7 +103,7 @@ export default function ArrivalPage({
                             <Grid size={6}>
                                 <ServantSelector
                                     value={el}
-                                    handleChange={ handleMultipleValueChange(ind) }
+                                    handleChange={ handleServantSelectorChange(ind) }
                                 />
                             </Grid>
                             <Grid size={1}>

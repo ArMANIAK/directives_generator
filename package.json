@@ -1,6 +1,6 @@
 {
   "name": "directive_generator",
-  "version": "0.0.1",
+  "version": "0.2.1",
   "private": true,
   "author": "Mykhailo Aloshyn",
   "description": "Application for easy directives generation, keeping track of servants absence, etc.",

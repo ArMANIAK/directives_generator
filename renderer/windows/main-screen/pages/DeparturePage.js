@@ -1,8 +1,20 @@
 import Grid from "@mui/material/Grid2";
-import { Checkbox, FormControl, FormControlLabel, MenuItem, TextField } from "@mui/material";
+import Modal from '@mui/material/Modal';
+import { Checkbox, FormControl, FormControlLabel, MenuItem, TextField, Box } from "@mui/material";
 import absence_types from "../../../dictionaries/absence_types.json";
 import ServantSelector from "../../../components/ServantSelector";
 import { IoIosAddCircleOutline, IoIosTrash } from "react-icons/io";
+import { useState } from "react";
+import { GenerateRankAndName } from "../../../utilities/ServantsGenerators";
+
+const modalStyle = {
+    width: "30%",
+    position: "absolute",
+    top: "30%",
+    left: "35%",
+    backgroundColor: "white",
+    padding: "50px",
+}
 
 export default function DeparturePage({
                                         record,
@@ -14,6 +26,14 @@ export default function DeparturePage({
                                         deleteServant,
                                         absentServants
                                     }) {
+
+    const [ isDepartAbsentWarningOpen, setDepartWarningState ] = useState(false);
+    const [ currentServantState, setCurrentServantState]  = useState("");
+    const handleCloseWarning = event => {
+        setDepartWarningState(false);
+        setCurrentServantState("");
+    }
+
     let certificateLabel = '';
     let reasonLabel = '';
 
@@ -47,6 +67,21 @@ export default function DeparturePage({
             handleChange(planned_date_end)
         }
         handleChange(event)
+    }
+
+    const handleServantSelectorChange = id => event => {
+        handleMultipleValueChange(id)(event)
+        let currentDuties = absentServants.filter(el => el.servant_id === id);
+        if (currentDuties.length > 0) {
+            setDepartWarningState(true)
+            let message = currentDuties.reduce((text, el) => {
+                text += `${GenerateRankAndName(el.servant_id, "nominative")} тимчасово відсутній.\nТип зайнятості: ${el.absence_type}\n`;
+                if (el.destination) text += `Вибув до ${el.destination}\n`;
+                text += `Запланована дата повернення ${el.planned_date_end}\n`
+                return text;
+            }, "");
+            setCurrentServantState(message)
+        }
     }
 
     return (
@@ -177,8 +212,8 @@ export default function DeparturePage({
                             <Grid size={6}>
                                 <ServantSelector
                                     value={el}
-                                    handleChange={ handleMultipleValueChange(ind) }
-                                    absentServants={absentServants}
+                                    handleChange={ handleServantSelectorChange(ind) }
+                                    absentServants={ absentServants }
                                 />
                             </Grid>
                             <Grid size={1}>
@@ -238,6 +273,15 @@ export default function DeparturePage({
                     />
                 </Grid>
             </Grid>
+
+            <Modal
+                open={ isDepartAbsentWarningOpen }
+                onClose={ handleCloseWarning }
+            >
+                <Box style={modalStyle}>
+                    { currentServantState }
+                </Box>
+            </Modal>
         </Grid>
         )
 }

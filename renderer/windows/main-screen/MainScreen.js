@@ -43,6 +43,7 @@ export default function MainScreen() {
     const pull = useSelector(state => state.pull)
     const [servants, setServantsState ] = useState([])
     const [ tempBook, setTempBook ] = useState([]);
+    const [ absentServants, setAbsentServants ] = useState([]);
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.electron) {
@@ -57,10 +58,17 @@ export default function MainScreen() {
                 console.error('Error fetching dictionary:', err);
             });
 
-
             ipcRenderer.invoke('get-temp-book').then((result) => {
-                console.log("ТИМЧАСОВКА", result)
-                setTempBook(result)
+                console.log("ТИМЧАСОВКА", result);
+                setTempBook(result);
+                setAbsentServants(result
+                    .reduce((acc, el, ind)  => {
+                        if (el.arrive_order_no && el.arrive_order_no != record.order_no) return acc;
+                        let rec = convertTempBookToPull(el)
+                        rec.id = ind;
+                        acc.push(rec);
+                        return acc;
+                    }, []))
             }).catch((err) => {
                 console.error('Error fetching temporal book:', err);
             });
@@ -74,10 +82,11 @@ export default function MainScreen() {
     }, [ record.order_no, record.order_date ])
 
     const generateAutoPull = () => {
+        console.log(tempBook)
         let autoPull = tempBook.reduce((acc, el, index) => {
             if (el.depart_order_no == record.order_no
                 || el.arrive_order_no == record.order_no
-                || !el.arrive_order_no && dateStringCompare(datePickerToDateString(el.planned_date_end), record.order_date) === -1) {
+                || !el.arrive_order_no && el.planned_date_end && dateStringCompare(datePickerToDateString(el.planned_date_end), record.order_date) === -1) {
                 let row = convertTempBookToPull(el);
                 row.id = index;
                 row.order_no = record.order_no;
@@ -175,14 +184,31 @@ export default function MainScreen() {
         dispatch(deleteServantRecord(index));
     }
 
+    const getSimilarActivities = (absentServants, record, certificate) => {
+        if (record.orderSection === "depart") return [];
+        return absentServants.filter(absentServant => {
+            return (
+            absentServant.absence_type === record.absence_type
+            && (record.destination && absentServant.destination === record.destination
+                || certificate && absentServant.certificate == certificate)
+        )})
+    }
+
     const onSubmit = () => {
         let records = record.servants.map((el, ind) => {
-            return {
-                ...record,
-                servant_id:                   el,
-                certificate:                record.certificate[ind],
-                certificate_issue_date:     record.certificate_issue_date[ind]
-            }
+            let similarActivities = getSimilarActivities(absentServants, record, record.certificate[ind]);
+            let result = (similarActivities.length > 0)
+                ? {
+                    ...similarActivities[0],
+                    fact_date_end: record.fact_date_end,
+                    orderSection: record.orderSection,
+                    order_no: record.order_no,
+                    order_date: record.order_date,
+                } : { ...record };
+            result.servant_id = el;
+            result.certificate = record.certificate[ind];
+            result.certificate_issue_date = record.certificate_issue_date[ind];
+            return result;
         })
         dispatch(addRow(records));
         dispatch(resetRecord())
@@ -259,23 +285,23 @@ export default function MainScreen() {
                 {!record.servant ? "" : GenerateFullTitle(record.servant.id, "nominative")}
             </Grid>
             { record.orderSection === "arrive" && <ArrivalPage
-                record={record}
-                handleChange={handleChange}
-                handleCheckBoxChange={handleCheckBoxChange}
-                handleMultipleValueChange={handleMultipleValueChange}
-                handleDateChange={handleDateChange}
-                addServant={addServant}
-                deleteServant={deleteServant}
+                record={ record }
+                handleChange={ handleChange }
+                handleCheckBoxChange={ handleCheckBoxChange }
+                handleMultipleValueChange={ handleMultipleValueChange }
+                handleDateChange={ handleDateChange }
+                addServant={ addServant }
+                deleteServant={ deleteServant }
             /> }
             { record.orderSection === "depart" && <DeparturePage
-                record={record}
-                handleChange={handleChange}
-                handleCheckBoxChange={handleCheckBoxChange}
-                handleMultipleValueChange={handleMultipleValueChange}
-                handleDateChange={handleDateChange}
-                addServant={addServant}
-                deleteServant={deleteServant}
-                absentServants={tempBook.filter(el => !el.arrive_order_no || el.arrive_order_no == record.order_no)}
+                record={ record }
+                handleChange={ handleChange }
+                handleCheckBoxChange={ handleCheckBoxChange }
+                handleMultipleValueChange={ handleMultipleValueChange }
+                handleDateChange={ handleDateChange }
+                addServant={ addServant }
+                deleteServant={ deleteServant }
+                absentServants={ absentServants }
             /> }
             <Grid container>
                 <Button onClick={ onSubmit }>
