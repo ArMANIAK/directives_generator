@@ -11,7 +11,7 @@ export default function ServantSelector({ value, handleChange }) {
     let chosenServant = { label: "", id: "" };
     const servantsList = servants ? servants.map(el => {
         const servant = {
-            'label' : `${GenerateRankAndName(el.id, 'nominative')} - ${GetGeneralDepartmentName(el.primary_department)}`,
+            'label' : `${GenerateRankAndName(el.id, 'nominative')} - ${GetGeneralDepartmentName(el.primary_department || el.secondary_department)}`,
             'id' : el.id
         };
         if (el.id === value) chosenServant = servant;
