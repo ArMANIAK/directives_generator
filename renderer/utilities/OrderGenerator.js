@@ -374,7 +374,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                 switch (absence_type) {
                     case "vacation":
                         block += " у частину щорічної відпустки за " + servant.date_start.substr(0,4) +
-                            " рік до " + servant.destination + groupedDates + ".\n\n";
+                            " рік до " + servant.destination + " " + groupedDates + ".\n\n";
                         break;
                     case "family_circumstances":
                         block += " у " + servant.destination + " терміном " + groupedDates + ".\n\n";
