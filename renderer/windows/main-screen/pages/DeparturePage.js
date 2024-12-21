@@ -29,6 +29,7 @@ export default function DeparturePage({
 
     const [ isDepartAbsentWarningOpen, setDepartWarningState ] = useState(false);
     const [ currentServantState, setCurrentServantState]  = useState("");
+
     const handleCloseWarning = event => {
         setDepartWarningState(false);
         setCurrentServantState("");

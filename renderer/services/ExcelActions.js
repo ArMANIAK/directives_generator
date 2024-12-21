@@ -55,35 +55,41 @@ const titlesRawMapToHeaders = {
 }
 
 const tempBookRawMapToHeaders = {
-    "Тип відсутності": "absence_type",
-    "Ідентифікатор військовослужбовця (відповідно до ідентифікатора в словнику)": "servant_id",
-    "Військове звання (для наочності)": "rank",
-    "Прізвище та ініціали (для наочності)": "servant_name",
-    "Місце тимчасового перебування": "destination",
-    "Дата вибуття": "date_start",
-    "Очікувана дата повернення": "planned_date_end",
     "Номер документу (посвідчення, довідка, направлення, тощо)": "certificate",
     "Дата реєстрації документа": "certificate_issue_date",
-    "З продовольчим атестатом (так/ні)": "with_ration_certificate",
+    "Військове звання (для наочності)": "rank",
+    "Прізвище та ініціали (для наочності)": "servant_name",
+    "Ідентифікатор військовослужбовця (відповідно до ідентифікатора в словнику)": "servant_id",
+    "Тип відсутності": "absence_type",
+    "Місце тимчасового перебування": "destination",
+    "Дата вибуття": "date_start",
+    "Дата наказу, яким вибув": "depart_order_date",
     "Номер наказу, яким вибув": "depart_order_no",
-    "Номер наказу, яким прибув": "arrive_order_no",
+    "Термін відсутності": "day_count",
+    "Очікувана дата повернення": "planned_date_end",
     "Реальна дата повернення": "fact_date_end",
+    "Дата наказу, яким прибув": "arrive_order_date",
+    "Номер наказу, яким прибув": "arrive_order_no",
+    "З продовольчим атестатом (так/ні)": "with_ration_certificate"
 }
 
 const tempBookHeadersMapToRaw = {
-    "absence_type": "Тип відсутності",
-    "servant_id": "Ідентифікатор військовослужбовця (відповідно до ідентифікатора в словнику)",
-    "rank": "Військове звання (для наочності)",
-    "servant_name": "Прізвище та ініціали (для наочності)",
-    "destination": "Місце тимчасового перебування",
-    "date_start": "Дата вибуття",
-    "planned_date_end": "Очікувана дата повернення",
     "certificate": "Номер документу (посвідчення, довідка, направлення, тощо)",
     "certificate_issue_date": "Дата реєстрації документа",
-    "with_ration_certificate": "З продовольчим атестатом (так/ні)",
+    "rank": "Військове звання (для наочності)",
+    "servant_name": "Прізвище та ініціали (для наочності)",
+    "servant_id": "Ідентифікатор військовослужбовця (відповідно до ідентифікатора в словнику)",
+    "absence_type": "Тип відсутності",
+    "destination": "Місце тимчасового перебування",
+    "date_start": "Дата вибуття",
+    "depart_order_date": "Дата наказу, яким вибув",
     "depart_order_no": "Номер наказу, яким вибув",
+    "day_count": "Термін відсутності",
+    "planned_date_end": "Очікувана дата повернення",
+    "fact_date_end": "Реальна дата повернення",
+    "arrive_order_date": "Дата наказу, яким прибув",
     "arrive_order_no": "Номер наказу, яким прибув",
-    "fact_date_end": "Реальна дата повернення"
+    "with_ration_certificate": "З продовольчим атестатом (так/ні)"
 }
 
 const convertHeaders = (data, headerDictionary) => {
@@ -117,6 +123,7 @@ const saveTemporalBook = (temporalBookFilePath, data) => {
         Object.fromEntries(Object.entries(row).map(key => [tempBookHeadersMapToRaw[key[0]], key[1]])))
     workbook.Sheets["temp_book"] = XLSX.utils.json_to_sheet(convertedData)
     XLSX.writeFile(workbook, temporalBookFilePath);
+    return data
 }
 
 module.exports = { loadDictionaries, loadTemporalBook, saveTemporalBook };

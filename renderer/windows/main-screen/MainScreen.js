@@ -222,10 +222,9 @@ export default function MainScreen() {
                 updatedTempBook[el.id] = { ...tempBook[el.id], ...tempBookRecordUpdates }
             else updatedTempBook.push(tempBookRecordUpdates)
         })
-        setTempBook(updatedTempBook);
         const ipcRenderer = window.electron.ipcRenderer;
-        ipcRenderer.invoke('save-temp-book', updatedTempBook).then((result) => {
-            setTempBook(result)
+        ipcRenderer.invoke('save-temp-book', updatedTempBook).then(() => {
+            setTempBook(updatedTempBook)
         }).catch((err) => {
             console.error('Error saving temporal book:', err);
         });
