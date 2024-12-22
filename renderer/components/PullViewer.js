@@ -59,8 +59,8 @@ export default function PullViewer() {
                             <TableCell>{ row.destination }</TableCell>
                             <TableCell>{ row.date_start || row.fact_date_end }</TableCell>
                             <TableCell>
-                                <Button onClick={editRow(ind)}>Edit</Button>
-                                <Button onClick={removeFromPull(ind)}>Delete</Button>
+                                <Button onClick={editRow(ind)}>Редагувати</Button>
+                                <Button onClick={removeFromPull(ind)}>Видалити</Button>
                             </TableCell>
                         </TableRow>
                     ))}
