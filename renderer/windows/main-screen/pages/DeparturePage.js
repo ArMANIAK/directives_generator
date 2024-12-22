@@ -182,6 +182,18 @@ export default function DeparturePage({
                         />
                     </Grid>
                 </> }
+                { ['health_circumstances', 'vacation', 'family_circumstances'].includes(record.absence_type) &&
+                    <Grid size={2}>
+                        <TextField
+                            type='number'
+                            label="Доби на дорогу"
+                            name="trip_days"
+                            value={ record.trip_days || ""}
+                            onChange={ handleChange }
+                            slotProps={ { inputLabel: { shrink: true } } }
+                        />
+                    </Grid>
+                }
                 { record.absence_type === "mission" &&
                     <>
                         <Grid size={2}>

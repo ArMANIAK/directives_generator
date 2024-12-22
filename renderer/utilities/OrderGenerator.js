@@ -67,6 +67,12 @@ function GenerateJustification(records) {
     return justification;
 }
 
+const GenerateTripDays = tripDays => {
+    if (!tripDays) return "";
+    if (parseInt(tripDays) === 1) return `Надати 01 добу для проїзду до місця проведення відпустки та у зворотному напрямку.\n\n`;
+    return `Надати 0${tripDays} доби для проїзду до місця проведення відпустки та у зворотному напрямку.\n\n`;
+}
+
 export function GenerateOrder(pull, starting_index = 1) {
     const groupedPull = GroupPull(pull)
 console.dir(groupedPull);
@@ -382,6 +388,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                 }
 
                 directive += block;
+                directive += GenerateTripDays(servant.trip_days);
                 directive += GenerateRemoveFromRation(servant.servant_id, servant.with_ration_certificate);
                 directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
                     "(вх. № " + servant.reason + "), " + certificate[servant.absence_type] + " № " + servant.certificate +
@@ -415,6 +422,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                             withSubClauses = true;
                             directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                         }
+                        directive += GenerateTripDays(servant.trip_days);
                         directive += GenerateServantBlock(servant.servant_id, "remove", servant.with_ration_certificate, withSubClauses);
                     }
                     directive += `${GenerateJustification(departurePullSection[absence_type][date])}`;

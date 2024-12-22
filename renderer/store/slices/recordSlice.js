@@ -11,6 +11,7 @@ const initialState = {
     "planned_date_end": "",
     "fact_date_end": "",
     "day_count": 0,
+    "trip_days": 0,
     "single_day": false,
     "until_order": false,
     "destination": "",
