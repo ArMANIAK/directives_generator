@@ -1,4 +1,12 @@
 const XLSX = require("xlsx");
+const {
+    TITLES_VAR,
+    TITLES_SHEET,
+    DEPARTMENTS_VAR,
+    DEPARTMENTS_SHEET,
+    SERVANTS_VAR,
+    SERVANTS_SHEET
+} = require("../dictionaries/constants")
 
 const servantsHeaderMapToRaw = {
     "id": "Ідентифікатор",
@@ -17,7 +25,8 @@ const servantsHeaderMapToRaw = {
     "primary_department": "Основний підрозділ (ідентифікатор з аркуша \"Підрозділи\")",
     "secondary_title": "Вторинна посада (через тире до основної посади, ідентифікатор з аркуша \"Посади\")",
     "secondary_department": "Вторинний підрозділ (ідентифікатор з аркуша \"Підрозділи\")",
-    "supplied_by": "На котловому забезпеченні при..."
+    "supplied_by": "На котловому забезпеченні при...",
+    "retired": "Звільнений/переведений"
 }
 
 const servantsRawMapToHeader = {
@@ -37,7 +46,9 @@ const servantsRawMapToHeader = {
     "Основний підрозділ (ідентифікатор з аркуша \"Підрозділи\")": "primary_department",
     "Вторинна посада (через тире до основної посади, ідентифікатор з аркуша \"Посади\")": "secondary_title",
     "Вторинний підрозділ (ідентифікатор з аркуша \"Підрозділи\")": "secondary_department",
-    "На котловому забезпеченні при...": "supplied_by"
+    "На котловому забезпеченні при...": "supplied_by",
+    "Звільнений/переведений": "retired"
+
 }
 
 const departmentsRawMapToHeaders = {
@@ -47,11 +58,25 @@ const departmentsRawMapToHeaders = {
     "Ідентифікатор керівного підрозділу": "parent_id"
 }
 
+const departmentsHeadersMapToRaw = {
+    "id": "Ідентифікатор",
+    "name_nominative": "Назва підрозділу в називному відмінку",
+    "name_genitive": "Назва підрозділу в родовому відмінку",
+    "parent_id": "Ідентифікатор керівного підрозділу"
+}
+
 const titlesRawMapToHeaders = {
     "Ідентифікатор": "id",
     "Назва посади в називному відмінку": "name_nominative",
     "Назва посади в давальному відмінку": "name_dative",
     "Назва посади в знахідному відмінку": "name_accusative"
+}
+
+const titlesHeadersMapToRaw = {
+    "id": "Ідентифікатор",
+    "name_nominative": "Назва посади в називному відмінку",
+    "name_dative": "Назва посади в давальному відмінку",
+    "name_accusative": "Назва посади в знахідному відмінку"
 }
 
 const tempBookRawMapToHeaders = {
@@ -100,9 +125,9 @@ const convertHeaders = (data, headerDictionary) => {
 
 const loadDictionaries = dictionaryFilePath => {
     const workbook = XLSX.readFile(dictionaryFilePath);
-    let titles = XLSX.utils.sheet_to_json(workbook.Sheets["Посади"], { header: 1, defval: "" });
+    let titles = XLSX.utils.sheet_to_json(workbook.Sheets[TITLES_SHEET], { header: 1, defval: "" });
     let departments = XLSX.utils.sheet_to_json(workbook.Sheets["Підрозділи"], { header: 1, defval: "" });
-    let servants = XLSX.utils.sheet_to_json(workbook.Sheets["Військовослужбовці"], { header: 1, defval: "" });
+    let servants = XLSX.utils.sheet_to_json(workbook.Sheets["Персонал"], { header: 1, defval: "" });
     return {
         titles: convertHeaders(titles, titlesRawMapToHeaders),
         departments: convertHeaders(departments, departmentsRawMapToHeaders),
@@ -117,13 +142,39 @@ const loadTemporalBook = temporalBookFilePath => {
 }
 
 const saveTemporalBook = (temporalBookFilePath, data) => {
-    console.log("SAVE TEMP BOOK", data)
+    console.log("SAVE TEMP BOOK", data);
     const workbook = XLSX.readFile(temporalBookFilePath);
     const convertedData = data.map(row =>
-        Object.fromEntries(Object.entries(row).map(key => [tempBookHeadersMapToRaw[key[0]], key[1]])))
-    workbook.Sheets["temp_book"] = XLSX.utils.json_to_sheet(convertedData)
+        Object.fromEntries(Object.entries(row).map(key => [tempBookHeadersMapToRaw[key[0]], key[1]])));
+    workbook.Sheets["temp_book"] = XLSX.utils.json_to_sheet(convertedData);
     XLSX.writeFile(workbook, temporalBookFilePath);
-    return data
 }
 
-module.exports = { loadDictionaries, loadTemporalBook, saveTemporalBook };
+const saveDictionary = (dictionaryFilePath, dictionaryType, data) => {
+    console.log("SAVE DICTIONARY", dictionaryType, data);
+    let sheet, converter;
+    switch (dictionaryType) {
+        case TITLES_VAR: {
+            sheet = TITLES_SHEET;
+            converter = titlesHeadersMapToRaw;
+            break;
+        }
+        case DEPARTMENTS_VAR: {
+            sheet = DEPARTMENTS_SHEET;
+            converter = departmentsHeadersMapToRaw;
+            break;
+        }
+        case SERVANTS_VAR: {
+            sheet = SERVANTS_SHEET;
+            converter = servantsHeaderMapToRaw;
+            break;
+        }
+    }
+    const workbook = XLSX.readFile(dictionaryFilePath);
+    const convertedData = data.map(row =>
+        Object.fromEntries(Object.entries(row).map(key => [converter[key[0]], key[1]])));
+    workbook.Sheets[sheet] = XLSX.utils.json_to_sheet(convertedData);
+    XLSX.writeFile(workbook, dictionaryFilePath);
+}
+
+module.exports = { loadDictionaries, loadTemporalBook, saveTemporalBook, saveDictionary };

@@ -52,7 +52,7 @@ export default function MainScreen() {
             ipcRenderer.invoke('get-dict').then((result) => {
                 dispatch(setTitles(result.titles))
                 dispatch(setDepartments(result.departments))
-                dispatch(setServants(result.servants))
+                dispatch(setServants(result.servants.filter(el => !el.retired)))
                 setServantsState(result.servants)
             }).catch((err) => {
                 console.error('Error fetching dictionary:', err);
@@ -240,7 +240,7 @@ export default function MainScreen() {
     console.log(record)
 
     return (
-        <Grid direction={'column'} container spacing={2}>
+        <Grid padding="30px" direction={'column'} container spacing={2}>
             <Grid container>
                 <Grid size={5}>
                     <TextField
@@ -303,13 +303,19 @@ export default function MainScreen() {
                 absentServants={ absentServants }
             /> }
             <Grid container>
-                <Button onClick={ onSubmit }>
+                <Button
+                    variant="contained"
+                    onClick={ onSubmit }>
                     Додати пункт
                 </Button>
-                <Button onClick={ SaveClauses }>
+                <Button
+                    variant="contained"
+                    onClick={ SaveClauses }>
                     Зберегти пункти
                 </Button>
-                <Button onClick={ generateDirective }>
+                <Button
+                    variant="contained"
+                    onClick={ generateDirective }>
                     Згенерувати наказ
                 </Button>
             </Grid>

@@ -7,7 +7,7 @@ const prepareNext = require("electron-next");
 
 const chokidar = require('chokidar');
 
-const { loadDictionaries, loadTemporalBook, saveTemporalBook } = require(join(__dirname, '../renderer/services/ExcelActions'));
+const { loadDictionaries, loadTemporalBook, saveTemporalBook, saveDictionary } = require(join(__dirname, '../renderer/services/ExcelActions'));
 
 const dictionaryFilePath = app.isPackaged
   ? join(process.resourcesPath, '../dictionaries', 'Словники.xlsx')
@@ -73,6 +73,11 @@ ipcMain.handle('get-dict', async () => {
 ipcMain.handle('get-temp-book', async () => {
     return await loadTemporalBook(temporalBookFilePath);
 });
+
 ipcMain.handle('save-temp-book',  async (event, data) => {
-    return await saveTemporalBook(temporalBookFilePath, data);
+    await saveTemporalBook(temporalBookFilePath, data);
+});
+
+ipcMain.handle('save-dict',  async (event, data) => {
+    await saveDictionary(dictionaryFilePath, data.dictionaryType, data.dictionary);
 });
