@@ -5,18 +5,20 @@ const ranks = require("../dictionaries/ranks.json");
 export function GenerateRankAndName(id, servantCase = "accusative", form = "short") {
     const servant = getServantById(id);
     if (!servant) return ""
-    return GenerateRankName(servant.rank, servantCase) + " " + GenerateName(id, servantCase, form)
+    return GenerateRankName(servant.rank, servant.speciality, servantCase) + " " + GenerateName(id, servantCase, form)
 }
 
-export function GenerateRankName(id, rankCase = "accusative") {
+export function GenerateRankName(id, speciality = "", rankCase = "accusative") {
     const rank = ranks.find(el => el.id === id);
-    return rank["name_" + rankCase];
+    let result = !!rank ? rank["name_" + rankCase] : "";
+    if (speciality) result += ` ${speciality}`;
+    return result;
 }
 
 export function GenerateRankNameByServantId(id, rankCase = "accusative") {
     const servant = getServantById(id);
     if (!servant) return ""
-    return GenerateRankName(servant.rank, rankCase);
+    return GenerateRankName(servant.rank, servant.speciality, rankCase);
 }
 
 export function GenerateName(id, nameCase = "accusative", form = "short") {
@@ -58,6 +60,7 @@ export function GenerateFullDepartment(id, departmentCase = 'genitive', firstLev
 export function GetGeneralDepartmentName(id) {
     let departments = getDepartments();
     const department = departments.find(el => el.id === id);
+    if (!department) return "";
     let departmentName = department.name_nominative;
     let parentId = department.parent_id;
     let parent = null;
