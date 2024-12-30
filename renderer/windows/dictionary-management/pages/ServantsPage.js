@@ -303,7 +303,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                 <Button
                     variant="contained"
                     onClick={ handleSubmit }>
-                    Зберегти підрозділ
+                    Зберегти військовослужбовця / працівника ЗСУ
                 </Button>
             </Grid>
             <DictionaryViewer
