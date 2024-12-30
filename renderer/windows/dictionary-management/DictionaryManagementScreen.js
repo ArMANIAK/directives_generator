@@ -10,34 +10,41 @@ import {
 } from "@mui/material";
 import {  GenerateFullTitle } from "../../utilities/ServantsGenerators";
 import { TITLES_VAR, TITLES_SHEET, DEPARTMENTS_VAR, DEPARTMENTS_SHEET, SERVANTS_VAR, SERVANTS_SHEET } from "../../dictionaries/constants";
-import TitlesPage from "./pages/TitlesPage";
 import { setDepartments, setServants, setTitles } from "../../store";
 import { useDispatch } from "react-redux";
+import TitlesPage from "./pages/TitlesPage";
+import DepartmentsPage from "./pages/DepartmentsPage";
+import ServantsPage from "./pages/ServantsPage";
 
 export default function DictionaryManagementScreen() {
 
     const dispatch = useDispatch();
-    const [ dictionaryType, setDictionaryType ] = useState(TITLES_VAR);
+    const [ dictionaryType, setDictionaryType ] = useState();
     const [ dictionaries, setDictionaries ] = useState({});
 
     useEffect(() => {
+        getDictionaries();
+    }, []);
+
+    const getDictionaries = () => {
         if (typeof window !== 'undefined' && window.electron) {
             const ipcRenderer = window.electron.ipcRenderer;
-
             ipcRenderer.invoke('get-dict').then((result) => {
                 dispatch(setTitles(result.titles));
                 dispatch(setDepartments(result.departments));
                 dispatch(setServants(result.servants));
-                setDictionaryType(TITLES_VAR);
                 setDictionaries(result);
             }).catch((err) => {
                 console.error('Error fetching dictionary:', err);
             });
         }
-    }, [dictionaries]);
+    }
+
+    useEffect(() => {
+        setDictionaryType(TITLES_VAR);
+    }, [])
 
     const dispatcher = dictionary => {
-        console.log("SAVING DICT", dictionary)
         const ipcRenderer = window.electron.ipcRenderer;
         ipcRenderer.invoke("save-dict", { dictionaryType, dictionary })
             .then(() => {
@@ -63,6 +70,7 @@ export default function DictionaryManagementScreen() {
             }
         }
         dispatcher(dictionary);
+        getDictionaries();
     }
 
     const removeRecord = id => () => {
@@ -76,7 +84,7 @@ export default function DictionaryManagementScreen() {
                     <RadioGroup
                         row
                         name="dictionaryType"
-                        value={ dictionaryType }
+                        value={ dictionaryType || TITLES_VAR }
                         onChange={ event => setDictionaryType(event.target.value) }
                     >
                         <FormControlLabel
@@ -99,6 +107,18 @@ export default function DictionaryManagementScreen() {
             </Grid>
             {dictionaryType === TITLES_VAR &&
                 <TitlesPage
+                    saveRecord={ saveRecord }
+                    removeRecord={ removeRecord }
+                />
+            }
+            {dictionaryType === DEPARTMENTS_VAR &&
+                <DepartmentsPage
+                    saveRecord={ saveRecord }
+                    removeRecord={ removeRecord }
+                />
+            }
+            {dictionaryType === SERVANTS_VAR &&
+                <ServantsPage
                     saveRecord={ saveRecord }
                     removeRecord={ removeRecord }
                 />

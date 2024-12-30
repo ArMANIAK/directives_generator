@@ -45,6 +45,7 @@ export function GenerateFullTitle(id, servantCase = "accusative", form = "short"
 export function GenerateFullDepartment(id, departmentCase = 'genitive', firstLevel = false) {
     let departments = getDepartments();
     const department = departments.find(el => parseInt(el.id) === parseInt(id));
+    if (!department) return "";
     let departmentName = department['name_' + departmentCase];
     if (firstLevel) return departmentName;
     let parentId = department.parent_id;

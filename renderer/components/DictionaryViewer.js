@@ -20,7 +20,14 @@ export default function DictionaryViewer({ dictionaryType, headers, editRecord, 
                             key={ind}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
-                            { headers.map((header, ind) => (<TableCell key={ind}>{row[header.value]}</TableCell>)) }
+                            { headers.map((header, ind) => (
+                                <TableCell key={ind}>
+                                    {
+                                        header.eval
+                                        ? header.eval(row)
+                                        : row[header.value]
+                                    }
+                                </TableCell>)) }
                             <TableCell>
                                 <Button onClick={() => editRecord(row)}>Редагувати</Button>
                                 <Button onClick={ removeRecord(ind) }>Видалити</Button>

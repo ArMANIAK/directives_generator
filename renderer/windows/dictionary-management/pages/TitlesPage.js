@@ -1,6 +1,6 @@
 import Grid from "@mui/material/Grid2";
 import { TextField, Button } from "@mui/material";
-import {useState} from "react";
+import { useState } from "react";
 import DictionaryViewer from "../../../components/DictionaryViewer";
 import { TITLES_VAR } from "../../../dictionaries/constants";
 
@@ -8,9 +8,9 @@ export default function TitlesPage({ saveRecord, removeRecord }) {
 
     const initState = {
         id: undefined,
-        nameNominative: "",
-        nameDative: "",
-        nameAccusative: ""
+        name_nominative: "",
+        name_dative: "",
+        name_accusative: ""
     }
 
     const [ title, setTitle ] = useState(initState);
@@ -21,26 +21,21 @@ export default function TitlesPage({ saveRecord, removeRecord }) {
     }
 
     const handleSubmit = () => {
-        let updatedRecord = {
-            id: title.id,
-            name_nominative: title.nameNominative,
-            name_dative: title.nameDative,
-            name_accusative: title.nameAccusative
-        }
+        let updatedRecord = { ... title }
         saveRecord(updatedRecord)
         setTitle(initState)
     }
 
     const editRecord = record => {
-        setTitle({
-            id: record.id,
-            nameNominative: record.name_nominative,
-            nameDative: record.name_dative,
-            nameAccusative: record.name_accusative
-        })
+        setTitle({ ...record })
     }
 
-    const headers = [ { label: "Назва посади", value: "name_nominative" } ]
+    const headers = [
+        {
+            label: "Назва посади",
+            value: "name_nominative"
+        }
+    ]
 
     return (
         <Grid direction={'column'} container spacing={2}>
@@ -48,8 +43,8 @@ export default function TitlesPage({ saveRecord, removeRecord }) {
                 <TextField
                     fullWidth
                     label="Назва посади в називному відмінку"
-                    name="nameNominative"
-                    value={ title.nameNominative }
+                    name="name_nominative"
+                    value={ title.name_nominative }
                     onChange={ handleChange }
                     slotProps={ { inputLabel: { shrink: true } } }
                 />
@@ -58,8 +53,8 @@ export default function TitlesPage({ saveRecord, removeRecord }) {
                 <TextField
                     fullWidth
                     label="Назва посади в давальному відмінку"
-                    name="nameDative"
-                    value={ title.nameDative }
+                    name="name_dative"
+                    value={ title.name_dative }
                     onChange={ handleChange }
                     slotProps={ { inputLabel: { shrink: true } } }
                 />
@@ -68,8 +63,8 @@ export default function TitlesPage({ saveRecord, removeRecord }) {
                 <TextField
                     fullWidth
                     label="Назва посади в знахідному відмінку"
-                    name="nameAccusative"
-                    value={ title.nameAccusative }
+                    name="name_accusative"
+                    value={ title.name_accusative }
                     onChange={ handleChange }
                     slotProps={ { inputLabel: { shrink: true } } }
                 />
