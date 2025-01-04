@@ -1,10 +1,34 @@
 {
-  "mission": "посвідчення про відрядження",
-  "sick_leave": "довідка",
-  "sick_employee": "лікарняний лист",
-  "health_circumstances": "довідка ВЛК",
-  "medical_care": "направлення",
-  "medical_board": "направлення",
-  "vacation": "відпускний квиток",
-  "family_circumstances": "відпускний квиток"
+  "mission": {
+    "singular": "посвідчення про відрядження",
+    "plural": "посвідчення про відрядження"
+  },
+  "sick_leave": {
+    "singular": "довідка",
+    "plural": "довідки"
+  },
+  "sick_employee": {
+    "singular": "лікарняний лист",
+    "plural": "лікарняні листи"
+  },
+  "health_circumstances": {
+    "singular": "довідка ВЛК",
+    "plural": "довідки ВЛК"
+  },
+  "medical_care": {
+    "singular": "направлення",
+    "plural": "направлення"
+  },
+  "medical_board": {
+    "singular": "направлення",
+    "plural": "направлення"
+  },
+  "vacation": {
+    "singular": "відпускний квиток",
+    "plural": "відпускні квитки"
+  },
+  "family_circumstances": {
+    "singular": "відпускний квиток",
+    "plural": "відпускні квитки"
+  }
 }

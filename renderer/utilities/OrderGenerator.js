@@ -33,7 +33,6 @@ function GenerateServantBlock(
     with_ration_certificate = false,
     isCapitalised = false
 ) {
-    console.log("GENERATE SERVANT BLOCK", servant_id)
     let servant = `${GenerateFullTitle(servant_id)}.\n\n`;
     let block = isCapitalised ? servant[0].toLocaleUpperCase() + servant.slice(1) : servant;
     if (!isEmployee(servant_id) && addOrRemove === "add")
@@ -43,26 +42,34 @@ function GenerateServantBlock(
     return block
 }
 
+function GenerateCertificatesRange(records) {
+    if (records.length < 1) return "";
+    let groupedRecords = records.reduce((acc, el) => {
+        let date = formatDate(new Date(el.certificate_issue_date));
+        if (!acc[date]) acc[date] = [el.certificate];
+        else acc[date].push(el.certificate);
+        return acc;
+    }, {})
+    let result = records.length > 1 ? certificate[records[0]['absence_type']]['plural'] : certificate[records[0]['absence_type']]['singular'];
+    for (let date in groupedRecords) {
+        result += ` від ${date} ${groupedRecords[date].length > 1 ? '№№ ' : '№ '}`;
+        groupedRecords[date].sort();
+        for (let record of groupedRecords[date])
+            result += `${record}, `;
+    }
+    return result;
+}
+
 function GenerateJustification(records) {
     let justification = 'Підстава: ';
-    let certificates = '';
-    let ration_certificates = '';
     if (records[0].reason)
         justification += `${records[0].reason}, `;
 
-    for (let i = 0, n = records.length; i < n; i++) {
-        let record = records[i];
-        certificates += `${certificate[record.absence_type]} № ${record.certificate} від ${formatDate(new Date(record.certificate_issue_date))}`;
-        if (n !== 1 && i + 1 !== n) {
-            certificates += ", ";
-            if (record.with_ration_certificate)
-                ration_certificates += ", ";
-        }
-    }
-    justification += `${certificates}`;
+    justification += GenerateCertificatesRange(records) ;
     if (records[0].ration_certificate_issue_date) {
         justification += `, продовольчий атестат від ${formatDate(new Date(records[0].ration_certificate_issue_date))} № ${records[0].ration_certificate}`;
     }
+    else justification = justification.substring(0, justification.length - 2)
     justification += '.\n\n';
     return justification;
 }
@@ -144,6 +151,7 @@ const addDepartureClauseToPull = (groupedPull, record) => {
     let groupDate = record.date_start;
     if (record.absence_type === "mission" || record.absence_type === "sick_leave")
         groupDate = dateStartToEndFormat(record.date_start, record.planned_date_end)
+
     switch (record.absence_type) {
         case "mission":
             if (!groupedPull.depart[record.absence_type])
@@ -282,7 +290,7 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
             directive += Object.keys(arrivePullSection[absence_type]).length === 1 ? " " : ":\n\n";
             for (let date in arrivePullSection[absence_type]) {
                 if (arrivePullSection[absence_type][date].length > 0) {
-                    directive += `${date}:\n\n`;
+                    directive += `${formatDate(new Date(date), false)}:\n\n`;
                     for (let servant of arrivePullSection[absence_type][date]) {
                         let withSubClauses = false
                         if (arrivePullSection[absence_type][date].length > 1) {
@@ -391,7 +399,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                 directive += GenerateTripDays(servant.trip_days);
                 directive += GenerateRemoveFromRation(servant.servant_id, servant.with_ration_certificate);
                 directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
-                    "(вх. № " + servant.reason + "), " + certificate[servant.absence_type] + " № " + servant.certificate +
+                    "(вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
                     " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
 
             }
