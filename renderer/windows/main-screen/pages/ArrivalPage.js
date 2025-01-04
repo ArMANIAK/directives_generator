@@ -68,7 +68,7 @@ export default function ArrivalPage({
                 </Grid>
             </Grid>
             <Grid container>
-                { !["sick_leave", "health_circumstances"].includes(record.absence_type) &&
+                { !["sick_leave", "health_circumstances", "vacation", "family_circumstances"].includes(record.absence_type) &&
                     <Grid size={7}>
                         <TextField
                             fullWidth
