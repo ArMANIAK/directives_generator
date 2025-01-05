@@ -28,9 +28,9 @@ const convertPullToTempBook = row => {
         result.depart_order_no = row.order_no;
         result.depart_order_date = row.order_date ? formatDate(new Date(row.order_date)) : "";
     }
-    if (['health_circumstances', 'vacation', 'family_circumstances'].includes(row.absence_type) && row.trip_days) {
-        if (row.trip_days)
-        result.planned_date_end = formatDate(dateMath(row.planned_date_end, row.trip_days));
+    if (['health_circumstances', 'vacation', 'family_circumstances', 'sick_leave'].includes(row.absence_type)) {
+        let trip_days = row.trip_days ? parseInt(row.trip_days) : 0
+        result.planned_date_end = formatDate(dateMath(row.planned_date_end, trip_days + 1));
     }
     return result;
 }
@@ -39,8 +39,9 @@ const convertTempBookToPull = record => {
     let start, end;
     if (record.date_start)
         start = datePickerToDateString(record.date_start)
-    if (record.planned_date_end)
+    if (record.planned_date_end) {
         end = datePickerToDateString(record.planned_date_end)
+    }
     let result = {
         "servant_id": record.servant_id,
         "absence_type": absence_type.find(el => el.label.toLowerCase() === record.absence_type.toLowerCase())?.value ?? "",
@@ -61,7 +62,10 @@ const convertTempBookToPull = record => {
         result.day_count = record.day_count !== "?" ? record.day_count : "";
         result.trip_days = "";
     }
-    if (parseInt(result.trip_days)) result.planned_date_end = dateToDatepickerString(dateMath(result.planned_date_end, result.trip_days, "subtract"))
+    if (['health_circumstances', 'vacation', 'family_circumstances', 'sick_leave'].includes(record.absence_type)) {
+        let trip_days = parseInt(result.trip_days) || 0;
+        result.planned_date_end = dateToDatepickerString(dateMath(result.planned_date_end, trip_days + 1, "subtract"))
+    }
     return result;
 }
 

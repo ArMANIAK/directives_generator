@@ -70,15 +70,17 @@ export default function DeparturePage({
         handleChange(event)
     }
 
-    const handleServantSelectorChange = id => event => {
-        handleMultipleValueChange(id)(event)
+    const handleServantSelectorChange = ind => event => {
+        let id = event.target.value
+        handleMultipleValueChange(ind)(event)
         let currentDuties = absentServants.filter(el => el.servant_id === id);
         if (currentDuties.length > 0) {
             setDepartWarningState(true)
             let message = currentDuties.reduce((text, el) => {
-                text += `${GenerateRankAndName(el.servant_id, "nominative")} тимчасово відсутній.\nТип зайнятості: ${el.absence_type}\n`;
+                text += `${GenerateRankAndName(el.servant_id, "nominative")} тимчасово відсутній.` + "\n" +
+                    `Тип зайнятості: ${absence_types.find(absence => absence.value === el.absence_type)?.label}.` + "\n";
                 if (el.destination) text += `Вибув до ${el.destination}\n`;
-                text += `Запланована дата повернення ${el.planned_date_end}\n`
+                if (el.planned_date_end)text += `Запланована дата повернення ${el.planned_date_end}\n`
                 return text;
             }, "");
             setCurrentServantState(message)

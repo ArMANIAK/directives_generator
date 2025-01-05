@@ -33,6 +33,7 @@ import {
     addRow,
     clearTempBookRecords
 } from "../../store"
+import absence_types from "../../dictionaries/absence_types.json"
 import ArrivalPage from "./pages/ArrivalPage";
 import DeparturePage from "./pages/DeparturePage";
 
@@ -81,19 +82,26 @@ export default function MainScreen() {
         generateAutoPull()
     }, [ record.order_no, record.order_date ])
 
+    const shouldReturn = (tempBookRec, order_date) => {
+        if (tempBookRec.arrive_order_no || !tempBookRec.planned_date_end) return false;
+        let planned_end_date = datePickerToDateString(tempBookRec.planned_date_end);
+        let abs_type = absence_types.find(el => el.label === tempBookRec.absence_type)?.value
+        if (abs_type === "mission") return dateStringCompare(planned_end_date, order_date) === -1;
+        return dateStringCompare(planned_end_date, order_date) < 1;
+    }
     const generateAutoPull = () => {
         console.log(tempBook)
         let autoPull = tempBook.reduce((acc, el, index) => {
             if (el.depart_order_no == record.order_no
                 || el.arrive_order_no == record.order_no
-                || !el.arrive_order_no && el.planned_date_end && dateStringCompare(datePickerToDateString(el.planned_date_end), record.order_date) === -1) {
+                || shouldReturn(el, record.order_date)) {
                 let row = convertTempBookToPull(el);
                 row.id = index;
                 row.order_no = record.order_no;
                 row.order_date = record.order_date;
                 row.orderSection = el.depart_order_no == record.order_no ? "depart" : "arrive";
                 if (row.orderSection && !row.fact_date_end) {
-                    if (dateStringCompare(row.planned_date_end, record.order_date) < 0)
+                    if (dateStringCompare(row.planned_date_end, record.order_date) === -1)
                         row.fact_date_end = row.planned_date_end
                     else row.fact_date_end = row.order_date
                 }

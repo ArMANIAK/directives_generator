@@ -4,22 +4,22 @@ const certificate = require("../dictionaries/certificates.json");
 import { formatDate, dateMath, dateStartToEndFormat } from "./DateUtilities";
 import { GenerateRankAndName, GenerateFullTitle } from "./ServantsGenerators";
 
-function GenerateAddToRation(servant_id) {
+function GenerateAddToRation(servant_id, order_date = null) {
     const servant = getServantById(servant_id);
     // If supplier is not set up or a servant is an employee no add to ration is added
     // Якщо для військовослужбовця не встановлено частину забезпечення котловим або він працівник ЗСУ, зарахування на котлове не відбувається
     if (!servant?.supplied_by || !servant?.rank) return "";
-    const tomorrow = dateMath(new Date(), 1);
+    const tomorrow = dateMath(order_date ? new Date(order_date) : new Date(), 1);
     const formattedTomorrow = formatDate(tomorrow, false);
     return `Зарахувати ${GenerateRankAndName(servant_id)} на котлове забезпечення при ${servant.supplied_by} за каталогом продуктів - зі сніданку ${formattedTomorrow}.\n\n`
 }
 
-function GenerateRemoveFromRation(servant_id, with_ration_certificate = false) {
+function GenerateRemoveFromRation(servant_id, order_date, with_ration_certificate = false) {
     const servant = getServantById(servant_id);
     // If supplier is not set up or a servant is an employee no add to ration is added
     // Якщо для військовослужбовця не встановлено частину забезпечення котловим або він працівник ЗСУ, зняття з котлового не відбувається
     if (!servant?.supplied_by || !servant?.rank) return "";
-    const tomorrow = dateMath(new Date(), 1);
+    const tomorrow = dateMath(order_date ? new Date(order_date) : new Date(), 1);
     const formattedTomorrow = formatDate(tomorrow, false);
     let paragraph = `Зняти ${GenerateRankAndName(servant_id)} з котлового забезпечення при ${servant.supplied_by} за каталогом продуктів - зі сніданку ${formattedTomorrow}`;
     if (with_ration_certificate) paragraph += " та видати продовольчий атестат";
@@ -29,6 +29,7 @@ function GenerateRemoveFromRation(servant_id, with_ration_certificate = false) {
 
 function GenerateServantBlock(
     servant_id,
+    order_date,
     addOrRemove = "add",
     with_ration_certificate = false,
     isCapitalised = false
@@ -36,9 +37,9 @@ function GenerateServantBlock(
     let servant = `${GenerateFullTitle(servant_id)}.\n\n`;
     let block = isCapitalised ? servant[0].toLocaleUpperCase() + servant.slice(1) : servant;
     if (!isEmployee(servant_id) && addOrRemove === "add")
-        block += GenerateAddToRation(servant_id);
+        block += GenerateAddToRation(servant_id, order_date);
     if (!isEmployee(servant_id) && addOrRemove === "remove")
-        block += GenerateRemoveFromRation(servant_id, with_ration_certificate);
+        block += GenerateRemoveFromRation(servant_id, order_date, with_ration_certificate);
     return block
 }
 
@@ -227,7 +228,7 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                 if (arrivePullSection.mission[destination][date].length > 0) {
                     directive += `${formatDate(new Date(date), false)}:\n\n`;
                     for (let servant of arrivePullSection.mission[destination][date]) {
-                        directive += GenerateServantBlock(servant.servant_id);
+                        directive += GenerateServantBlock(servant.servant_id, servant.order_date);
                     }
                     directive += `${GenerateJustification(arrivePullSection.mission[destination][date])}`;
                 }
@@ -253,7 +254,7 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                                 withSubClauses = true;
                                 directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                             }
-                            directive += GenerateServantBlock(servant.servant_id, "add", withSubClauses);
+                            directive += GenerateServantBlock(servant.servant_id, servant.order_date, "add", withSubClauses);
                         }
                         directive += `${GenerateJustification(arrivePullSection[absence_type][destination][date])}`;
                     }
@@ -297,7 +298,7 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                             withSubClauses = true;
                             directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                         }
-                        directive += GenerateServantBlock(servant.servant_id, "add", withSubClauses);
+                        directive += GenerateServantBlock(servant.servant_id, servant.order_date, "add", withSubClauses);
                     }
                     directive += `${GenerateJustification(arrivePullSection[absence_type][date])}`;
                 }
@@ -326,7 +327,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                 for (let purpose in departurePullSection.mission[destination][date]) {
                     directive += `${purpose}:\n\n`;
                     for (let servant of departurePullSection.mission[destination][date][purpose]) {
-                        directive += GenerateServantBlock(servant.servant_id, "remove", servant.with_ration_certificate);
+                        directive += GenerateServantBlock(servant.servant_id, servant.order_date, "remove", servant.with_ration_certificate);
                     }
                     directive += `${GenerateJustification(departurePullSection.mission[destination][date][purpose])}`;
                 }
@@ -353,7 +354,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                                 withSubClauses = true;
                                 directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                             }
-                            directive += GenerateServantBlock(servant.servant_id, "remove", servant.with_ration_certificate, withSubClauses);
+                            directive += GenerateServantBlock(servant.servant_id, servant.order_date, "remove", servant.with_ration_certificate, withSubClauses);
                         }
                         directive += `${GenerateJustification(departurePullSection[absence_type][destination][date])}`;
                     }
@@ -397,7 +398,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
 
                 directive += block;
                 directive += GenerateTripDays(servant.trip_days);
-                directive += GenerateRemoveFromRation(servant.servant_id, servant.with_ration_certificate);
+                directive += GenerateRemoveFromRation(servant.servant_id, servant.order_date, servant.with_ration_certificate);
                 directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
                     "(вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
                     " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
@@ -431,7 +432,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                             directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                         }
                         directive += GenerateTripDays(servant.trip_days);
-                        directive += GenerateServantBlock(servant.servant_id, "remove", servant.with_ration_certificate, withSubClauses);
+                        directive += GenerateServantBlock(servant.servant_id, servant.order_date, "remove", servant.with_ration_certificate, withSubClauses);
                     }
                     directive += `${GenerateJustification(departurePullSection[absence_type][date])}`;
                 }

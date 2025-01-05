@@ -53,7 +53,6 @@ export function formatDate(date, isShort = true) {
 }
 
 export function datePickerToDateString(date) {
-    console.log(date)
     if (!date) return date;
     const [ day, month, year ] = date.split(".");
     return `${year}-${month}-${day}`;

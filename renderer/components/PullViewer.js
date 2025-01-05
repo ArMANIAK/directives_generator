@@ -27,7 +27,7 @@ export default function PullViewer() {
         const activity = el.orderSection === "arrive" ? "прибуття" : (el.orderSection === 'depart' ? 'вибуття' : 'інші пункти');
         const servant = GenerateRankAndName(el.servant_id, 'nominative');
         const destination = el.destination === '' ? 'Не релевантно' : el.destination;
-        const absence = absence_type.find(item => item.value.toLowerCase() === el.absence_type.toLowerCase()).label ?? 'Не релевантно';
+        const absence = absence_type.find(item => item.value.toLowerCase() === el.absence_type.toLowerCase())?.label ?? 'Не релевантно';
         const date_start = el.date_start;
         return { activity, servant, destination, absence, date_start }
     })
