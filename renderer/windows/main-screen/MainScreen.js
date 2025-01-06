@@ -53,7 +53,7 @@ export default function MainScreen() {
             ipcRenderer.invoke('get-dict').then((result) => {
                 dispatch(setTitles(result.titles))
                 dispatch(setDepartments(result.departments))
-                dispatch(setServants(result.servants.filter(el => !el.retired)))
+                dispatch(setServants(result.servants.filter(el => el.retired !== "так")))
                 setServantsState(result.servants)
             }).catch((err) => {
                 console.error('Error fetching dictionary:', err);
