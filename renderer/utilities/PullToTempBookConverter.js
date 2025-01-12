@@ -1,5 +1,5 @@
 import {dateMath, datePickerToDateString, dateToDatepickerString, formatDate, getDateDifference} from "./DateUtilities";
-import { GenerateName, GenerateRankNameByServantId } from "./ServantsGenerators";
+import { GenerateName, GenerateRankNameByServantId, GetTitleIndex } from "./ServantsGenerators";
 
 const absence_type = require('../dictionaries/absence_types.json');
 
@@ -9,11 +9,12 @@ const convertPullToTempBook = row => {
         "certificate_issue_date": row.certificate_issue_date ? formatDate(new Date(row.certificate_issue_date)) : "",
         "rank": row.servant_id ? GenerateRankNameByServantId(row.servant_id, "nominative") : "",
         "servant_name": row.servant_id ? GenerateName(row.servant_id, "nominative", "full") : "",
-        "servant_id": row.servant_id,
+        "title_index": row.servant_id ? GetTitleIndex(row.servant_id) : "",
         "absence_type": absence_type.find(el => el.value.toLowerCase() === row.absence_type.toLowerCase())?.label ?? "",
         "date_start": row.date_start ? formatDate(new Date(row.date_start)) : "",
         "destination": row.destination,
         "planned_date_end": row.planned_date_end ? formatDate(new Date(row.planned_date_end)) : "",
+        "servant_id": row.servant_id,
         "with_ration_certificate": row.with_ration_certificate ? "так" : "ні"
     }
     result.day_count = row.day_count

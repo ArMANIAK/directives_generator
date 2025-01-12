@@ -21,6 +21,12 @@ export function GenerateRankNameByServantId(id, rankCase = "accusative") {
     return GenerateRankName(servant.rank, servant.speciality, rankCase);
 }
 
+export function GetTitleIndex(servant_id) {
+    const servant = getServantById(servant_id);
+    if (!servant) return "";
+    return servant.title_index;
+}
+
 export function GenerateName(id, nameCase = "accusative", form = "short") {
     const servant = getServantById(id);
     return servant['last_name_' + nameCase] + ' ' + (form === 'short' ? servant.first_name_short : servant['first_name_' + nameCase]);

@@ -32,7 +32,8 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
         "secondary_title": "",
         "secondary_department": "",
         "supplied_by": "",
-        "retired": "ні",
+        "title_index": "",
+        "retired": "ні"
     };
 
     const [ servant, setServant ] = useState(initState);
@@ -293,6 +294,18 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         /> }
                         label="Звільнено / переведено"
                         onChange={ handleCheckBoxChange }
+                    />
+                </Grid>
+            </Grid>
+            <Grid container>
+                <Grid size={5}>
+                    <TextField
+                        fullWidth
+                        label="Індекс поточної посади"
+                        name="title_index"
+                        value={ servant.title_index }
+                        onChange={ handleChange }
+                        slotProps={ { inputLabel: { shrink: true } } }
                     />
                 </Grid>
             </Grid>
