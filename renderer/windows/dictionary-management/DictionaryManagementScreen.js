@@ -73,8 +73,9 @@ export default function DictionaryManagementScreen() {
         getDictionaries();
     }
 
-    const removeRecord = id => () => {
+    const removeRecord = id => {
         dispatcher(dictionaries[dictionaryType].filter((el, ind) => ind !== parseInt(id)))
+        getDictionaries()
     }
 
     return (
