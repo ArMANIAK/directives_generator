@@ -54,6 +54,8 @@ export function formatDate(date, isShort = true) {
 
 export function datePickerToDateString(date) {
     if (!date) return date;
+    if (typeof date === 'number')
+        date = formatDate(new Date((date - 25569) * 1000 * 3600 * 24));
     const [ day, month, year ] = date.split(".");
     return `${year}-${month}-${day}`;
 }
@@ -100,8 +102,8 @@ export function dateStartToEndFormat(startDate, endDate = undefined, isEmployee 
 }
 
 export function dateStringCompare(date_1, date_2) {
-    const [ day1, month1, year1 ] = date_1.split("-");
-    const [ day2, month2, year2 ] = date_2.split("-");
+    const [ year1, month1, day1 ] = date_1.split("-");
+    const [ year2, month2, day2 ] = date_2.split("-");
     if (year1 < year2) return -1;
     if (year1 > year2) return 1;
     if (month1 < month2) return -1;
