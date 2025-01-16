@@ -1,15 +1,23 @@
-import { Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Button, Box } from "@mui/material";
+import { Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Button, Typography, Box } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import Modal from "@mui/material/Modal";
 import Grid from "@mui/material/Grid2";
 
+const viewerStyle = {
+    height: "500px",
+    marginTop: "10px",
+    paddingTop: "10px",
+    borderTop: "gray solid 1px",
+    overflowY: "scroll"
+}
+
 const modalStyle = {
-    width: "30%",
+    width: "40%",
     height: "20%",
     position: "absolute",
     top: "30%",
-    left: "35%",
+    left: "30%",
     backgroundColor: "white",
     padding: "50px",
     justifyContent: "space-between",
@@ -41,7 +49,7 @@ export default function DictionaryViewer({ dictionaryType, headers, editRecord, 
     }
 
     return (
-        <>
+        <Grid style={viewerStyle}>
             <TableContainer component={ Paper }>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
@@ -79,10 +87,20 @@ export default function DictionaryViewer({ dictionaryType, headers, editRecord, 
             >
                     <Grid container style={modalStyle}>
                         <Grid>
-                            Ви точно хочете видалити запис?
+                            <Typography>
+                                Ви точно хочете видалити запис?
+                            </Typography>
                         </Grid>
-                        <Grid alignSelf="end">
+                        <Grid container flexDirection="row" justifyContent="space-around">
                             <Button
+                                variant="contained"
+                                onClick={ closeDeleteWarning }
+                            >
+                                Скасувати
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="error"
                                 onClick={ confirmDelete }
                             >
                                 Підтверджую видалення
@@ -90,6 +108,6 @@ export default function DictionaryViewer({ dictionaryType, headers, editRecord, 
                         </Grid>
                     </Grid>
             </Modal>
-        </>
+        </Grid>
     )
 }
