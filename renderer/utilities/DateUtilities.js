@@ -13,7 +13,7 @@ const monthsList = [
     'грудня'
 ]
 
-const dayEnding = (daysQuantity, isEmployee = false) => {
+export function dayEnding(daysQuantity, isEmployee = false) {
     let twoDigit = daysQuantity % 100;
     if (twoDigit < 20) {
         switch (twoDigit) {
@@ -85,7 +85,7 @@ export function getDateDifference(startDateObj, endDateObj) {
     return Math.ceil((endDateObj - startDateObj) / 1000 / 60 / 60 / 24) + 1
 }
 
-export function dateStartToEndFormat(startDate, endDate = undefined, isEmployee = false) {
+export function dateStartToEndFormat(startDate, endDate = undefined, isEmployee = false, withTerm = true) {
     let startDateObject = new Date(startDate);
     if (!endDate) return `з ${formatDate(startDateObject, false)}`
     let endDateObject = new Date(endDate);
@@ -98,6 +98,7 @@ export function dateStartToEndFormat(startDate, endDate = undefined, isEmployee 
         from = formatDate(startDateObject, false);
     else if (startDateObject.getMonth() !== endDateObject.getMonth())
         from += ` ${monthsList[startDateObject.getMonth()]}`
+    if (!withTerm) return `з ${from} по ${till}`;
     return `на ${difference} ${dayEnding(difference, isEmployee)} з ${from} по ${till}`;
 }
 

@@ -1,7 +1,7 @@
 import { getServantById, isEmployee } from "../services/ServantsService";
 const certificate = require("../dictionaries/certificates.json");
 
-import { formatDate, dateMath, dateStartToEndFormat } from "./DateUtilities";
+import {formatDate, dateMath, dateStartToEndFormat, dayEnding} from "./DateUtilities";
 import { GenerateRankAndName, GenerateFullTitle } from "./ServantsGenerators";
 
 function GenerateAddToRation(servant_id, order_date = null) {
@@ -393,14 +393,16 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                 }
                 let fullServantTitle = GenerateFullTitle(servant.servant_id);
                 let block = withSubClauses ? fullServantTitle[0].toLocaleUpperCase() + fullServantTitle.slice(1) : fullServantTitle;
-                let groupedDates = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id));
+                let vacationTerm = "";
                 switch (absence_type) {
                     case "vacation":
-                        block += " у частину щорічної відпустки за " + servant.date_start.substr(0,4) +
-                            " рік до " + servant.destination + " " + groupedDates + ".\n\n";
+                        vacationTerm = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id), false);
+                        block += " в " + servant.destination + " на " + servant.day_count + " " + dayEnding(servant.day_count) +
+                            " у частину щорічної відпустки " + vacationTerm + ".\n\n";
                         break;
                     case "family_circumstances":
-                        block += " у " + servant.destination + " терміном " + groupedDates + ".\n\n";
+                        vacationTerm = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id));
+                        block += " у " + servant.destination + " терміном " + vacationTerm + ".\n\n";
                         break;
                 }
 
