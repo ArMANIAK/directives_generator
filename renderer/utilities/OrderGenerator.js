@@ -58,16 +58,15 @@ function GenerateCertificatesRange(records) {
         return acc;
     }, {})
     let result = records.length > 1 ? certificate[records[0]['absence_type']]['plural'] : certificate[records[0]['absence_type']]['singular'];
+    result += " ";
     for (let date in groupedRecords) {
-        result += ` від ${date} ${groupedRecords[date].length > 1 ? '№№ ' : '№ '}`;
+        result += `від ${date} ${groupedRecords[date].length > 1 ? '№№ ' : '№ '}`;
         groupedRecords[date].sort();
         for (let i = 0, n = groupedRecords[date].length; i < n; i++) {
-            result += groupedRecords[date][i];
-            if (i < n - 1)
-                result += ", ";
+            result += groupedRecords[date][i] + ", ";
         }
     }
-    return result;
+    return result.substring(0, result.length - 2);
 }
 
 function GenerateJustification(records) {
@@ -77,7 +76,7 @@ function GenerateJustification(records) {
 
     justification += GenerateCertificatesRange(records) ;
     if (records[0].ration_certificate_issue_date) {
-        justification += `продовольчий атестат від ${formatDate(new Date(records[0].ration_certificate_issue_date))} № ${records[0].ration_certificate}`;
+        justification += `, продовольчий атестат від ${formatDate(new Date(records[0].ration_certificate_issue_date))} № ${records[0].ration_certificate}`;
     }
     justification += '.\n\n';
     return justification;
