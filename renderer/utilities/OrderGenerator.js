@@ -426,7 +426,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                     header = "Нижчепойменованих військовослужбовців звільнити від виконання службових обов'язків у зв'язку з хворобою";
                     break;
                 case "health_circumstances":
-                    header = "У відпустку за станом здоровʼя на підставі статті 73 графи VI Розкладу хвороб"
+                    header = "У відпустку для лікування у звʼязку з хворобою або для лікування після поранення (контузії, травми або каліцтва)"
                     break;
             }
             directive += `${starting_index}.${middleCount}. ${header}`;
