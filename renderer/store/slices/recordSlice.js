@@ -9,7 +9,7 @@ const initialState = {
     "absence_type": "mission",
     "date_start": dateToDatepickerString(new Date()),
     "planned_date_end": "",
-    "fact_date_end": "",
+    "fact_date_end": dateToDatepickerString(new Date()),
     "day_count": 0,
     "trip_days": 0,
     "single_day": false,
