@@ -35,14 +35,16 @@ export function GenerateName(id, nameCase = "accusative", form = "short") {
 export function GenerateFullTitle(id, servantCase = "accusative", form = "short") {
     const servant = getServantById(id);
     if (!servant) return "";
-    const fullName = GenerateRankAndName(id, servantCase, form);
+    let fullTitle = GenerateRankAndName(id, servantCase, form);
     const primaryTitle = getTitles().find(el => el.id === servant.primary_title);
-    const primaryTitleName = primaryTitle["name_" + servantCase];
-    let fullTitle = `${fullName}, ${primaryTitleName}`;
-    if (servant.primary_department) fullTitle += " " + GenerateFullDepartment(servant.primary_department, "genitive", !!servant.secondary_title)
+    const primaryTitleName = primaryTitle ? primaryTitle["name_" + servantCase] : "";
+    if (primaryTitleName) fullTitle += `, ${primaryTitleName}`;
+    if (servant.primary_department)
+        fullTitle += " " + GenerateFullDepartment(servant.primary_department, "genitive", !!servant.secondary_title)
     if (servant.secondary_title) {
         const secondaryTitle = getTitles().find(el => el.id === servant.secondary_title);
-        fullTitle += ` – ${secondaryTitle["name_" + servantCase]}`;
+        if (secondaryTitle)
+            fullTitle += ` – ${secondaryTitle["name_" + servantCase]}`;
     }
     if (servant.secondary_department) fullTitle += " " + GenerateFullDepartment(servant.secondary_department)
     return fullTitle;
