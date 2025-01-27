@@ -2,7 +2,6 @@ import { Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell
 import { GenerateRankAndName } from "../utilities/ServantsGenerators";
 import { useDispatch, useSelector } from "react-redux";
 import { removeRow, setRecord } from "../store";
-import {formatDate} from "../utilities/DateUtilities";
 
 const viewerStyle = {
     height: "500px",
