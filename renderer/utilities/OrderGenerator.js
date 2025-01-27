@@ -158,7 +158,9 @@ const addArriveClauseToPull = (groupedPull, record) => {
 const addDepartureClauseToPull = (groupedPull, record) => {
     let groupDate = record.date_start;
     if (record.absence_type === "mission" || record.absence_type === "sick_leave")
-        groupDate = dateStartToEndFormat(record.date_start, record.planned_date_end)
+        groupDate = dateStartToEndFormat(record.date_start, record.planned_date_end);
+    if (record.absence_type === "mission" && !record.planned_date_end)
+        groupDate += " до окремого розпорядження";
 
     switch (record.absence_type) {
         case "mission":
@@ -170,7 +172,7 @@ const addDepartureClauseToPull = (groupedPull, record) => {
                 groupedPull.depart[record.absence_type][record.destination][groupDate] = {};
             if (!groupedPull.depart[record.absence_type][record.destination][groupDate][record.purpose])
                 groupedPull.depart[record.absence_type][record.destination][groupDate][record.purpose] = [];
-            groupedPull.depart[record.absence_type][record.destination][groupDate][record.purpose].push(record)
+            groupedPull.depart[record.absence_type][record.destination][groupDate][record.purpose].push(record);
             break;
         case "medical_care":
         case "medical_board":
@@ -181,7 +183,7 @@ const addDepartureClauseToPull = (groupedPull, record) => {
                 groupedPull.depart[record.absence_type][record.destination] = {};
             if (!groupedPull.depart[record.absence_type][record.destination][groupDate])
                 groupedPull.depart[record.absence_type][record.destination][groupDate] = [];
-            groupedPull.depart[record.absence_type][record.destination][groupDate].push(record)
+            groupedPull.depart[record.absence_type][record.destination][groupDate].push(record);
             break;
         case "sick_leave":
             if (isEmployee(record.servant_id)) break;
@@ -407,7 +409,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
 
                 directive += block;
                 directive += GenerateTripDays(servant.trip_days);
-                directive += GenerateRemoveFromRation(servant.servant_id, servant.order_date);
+                directive += GenerateRemoveFromRation(servant.servant_id, formatDate(servant.order_date, false));
                 directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
                     " (вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
                     " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
@@ -442,8 +444,11 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                         }
                         directive += GenerateTripDays(servant.trip_days);
                         directive += GenerateServantBlock(servant.servant_id, servant.date_start, servant.order_date, "remove", servant.with_ration_certificate, withSubClauses);
+
+                        directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
+                            " (вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
+                            " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
                     }
-                    directive += `${GenerateJustification(departurePullSection[absence_type][date])}`;
                 }
             }
             middleCount++;
