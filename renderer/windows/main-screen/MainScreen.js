@@ -124,21 +124,17 @@ export default function MainScreen() {
             case "single_day":
                 if (checked) {
                     changedValues.day_count = 1;
-                    changedValues.planned_date_end = changedValues.date_start;
+                    changedValues.planned_date_end = record.date_start;
                     changedValues.until_order = false;
                 }
-                dispatch(setRecord(changedValues))
                 break;
             case "until_order":
-                dispatch(setRecord({
-                    day_count: 0,
-                    planned_date_end: "",
-                    single_day: false
-                }))
+                    changedValues.day_count = 0;
+                    changedValues.planned_date_end = "";
+                    changedValues.single_day = false;
                 break;
-            default:
-                dispatch(setRecord(changedValues))
         }
+        dispatch(setRecord(changedValues))
     }
 
     const handleDateChange = event => {

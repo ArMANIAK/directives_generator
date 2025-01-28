@@ -263,7 +263,8 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                                 withSubClauses = true;
                                 directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                             }
-                            directive += GenerateServantBlock(servant.servant_id, servant.date_start, servant.order_date, "add", withSubClauses);
+                            directive += GenerateServantBlock(servant.servant_id, servant.date_start, servant.order_date,
+                                "add", servant.with_ration_certificate, withSubClauses);
                         }
                         directive += `${GenerateJustification(arrivePullSection[absence_type][destination][date])}`;
                     }
@@ -307,7 +308,8 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                             withSubClauses = true;
                             directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                         }
-                        directive += GenerateServantBlock(servant.servant_id, servant.date_start, servant.order_date, "add", withSubClauses);
+                        directive += GenerateServantBlock(servant.servant_id, servant.date_start, servant.order_date,
+                            "add", servant.with_ration_certificate, withSubClauses);
                     }
                     directive += `${GenerateJustification(arrivePullSection[absence_type][date])}`;
                 }
@@ -363,9 +365,12 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                                 withSubClauses = true;
                                 directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                             }
-                            directive += GenerateServantBlock(servant.servant_id, servant.date_start, servant.order_date, "remove", servant.with_ration_certificate, withSubClauses);
+                            directive += GenerateServantBlock(servant.servant_id, servant.date_start, servant.order_date,
+                                "remove", servant.with_ration_certificate, withSubClauses);
+                            directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
+                                " (вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
+                                " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
                         }
-                        directive += `${GenerateJustification(departurePullSection[absence_type][destination][date])}`;
                     }
                 }
                 middleCount++;
