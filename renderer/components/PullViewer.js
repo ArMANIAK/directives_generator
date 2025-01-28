@@ -41,6 +41,11 @@ export default function PullViewer() {
         else if (el.orderSection === 'depart') {
             activity = 'вибуття';
             date = formatDate(el.date_start);
+        } else {
+            if (el.sectionType === 'financial_support')
+                activity = "ГДО";
+            else
+                activity = 'інші пункти'
         }
 
         const servant = GenerateRankAndName(el.servant_id, 'nominative');

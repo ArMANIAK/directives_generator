@@ -35,6 +35,7 @@ import {
 
 import ArrivalPage from "./pages/ArrivalPage";
 import DeparturePage from "./pages/DeparturePage";
+import OtherPointsPage from "./pages/OtherPointsPage";
 
 export default function MainScreen() {
 
@@ -316,6 +317,12 @@ export default function MainScreen() {
                 addServant={ addServant }
                 deleteServant={ deleteServant }
                 absentServants={ absentServants }
+            /> }
+            { record.orderSection === "other_points" && <OtherPointsPage
+                handleChange={ handleChange }
+                handleMultipleValueChange={ handleMultipleValueChange }
+                addServant={ addServant }
+                deleteServant={ deleteServant }
             /> }
             <Grid container>
                 <Button
