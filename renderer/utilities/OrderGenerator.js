@@ -414,7 +414,8 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
 
                 directive += block;
                 directive += GenerateTripDays(servant.trip_days);
-                directive += GenerateRemoveFromRation(servant.servant_id, formatDate(servant.order_date, false));
+                let dateToRemove = servant.date_start > servant.order_date ? servant.date_start : servant.order_date;
+                directive += GenerateRemoveFromRation(servant.servant_id, formatDate(dateToRemove, false));
                 directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
                     " (вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
                     " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
