@@ -3,6 +3,14 @@ import { GenerateRankAndName } from "../utilities/ServantsGenerators";
 import { useDispatch, useSelector } from "react-redux";
 import { removeRow, setRecord } from "../store";
 
+const viewerStyle = {
+    height: "500px",
+    marginTop: "10px",
+    paddingTop: "10px",
+    borderTop: "gray solid 1px",
+    overflowY: "scroll"
+}
+
 const absence_type = require('../dictionaries/absence_types.json');
 export default function PullViewer() {
     const dispatch = useDispatch();
@@ -33,7 +41,7 @@ export default function PullViewer() {
     })
 
     return (
-        <TableContainer component={ Paper }>
+        <TableContainer style={viewerStyle} component={ Paper }>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
