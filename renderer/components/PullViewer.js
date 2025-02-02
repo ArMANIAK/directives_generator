@@ -2,6 +2,7 @@ import { Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell
 import { GenerateRankAndName } from "../utilities/ServantsGenerators";
 import { useDispatch, useSelector } from "react-redux";
 import { removeRow, setRecord } from "../store";
+import {formatDate} from "../utilities/DateUtilities";
 
 const viewerStyle = {
     height: "500px",
@@ -12,6 +13,7 @@ const viewerStyle = {
 }
 
 const absence_type = require('../dictionaries/absence_types.json');
+
 export default function PullViewer() {
     const dispatch = useDispatch();
     const pull = useSelector(state => state.pull)
@@ -32,12 +34,20 @@ export default function PullViewer() {
     console.log(" PULL VIEWER", pull)
     const rows = pull.map(el => {
         console.log(el)
-        const activity = el.orderSection === "arrive" ? "прибуття" : (el.orderSection === 'depart' ? 'вибуття' : 'інші пункти');
+        let activity, date;
+        if (el.orderSection === "arrive") {
+            activity = "прибуття";
+            date = formatDate(el.fact_date_end);
+        }
+        else if (el.orderSection === 'depart') {
+            activity = 'вибуття';
+            date = formatDate(el.date_start);
+        }
+
         const servant = GenerateRankAndName(el.servant_id, 'nominative');
-        const destination = el.destination === '' ? 'Не релевантно' : el.destination;
+        const destination = !el.destination ? 'Не релевантно' : el.destination;
         const absence = absence_type.find(item => item.value.toLowerCase() === el.absence_type.toLowerCase())?.label ?? 'Не релевантно';
-        const date_start = el.date_start;
-        return { activity, servant, destination, absence, date_start }
+        return { activity, servant, destination, absence, date }
     })
 
     return (
@@ -49,7 +59,7 @@ export default function PullViewer() {
                         <TableCell>Військовослужбовець/працівник ЗСУ</TableCell>
                         <TableCell>Тип відсутності</TableCell>
                         <TableCell>Куди</TableCell>
-                        <TableCell>з</TableCell>
+                        <TableCell>з/по</TableCell>
                         <TableCell>Дії</TableCell>
                     </TableRow>
                 </TableHead>
@@ -65,7 +75,7 @@ export default function PullViewer() {
                             <TableCell>{ row.servant }</TableCell>
                             <TableCell>{ row.absence }</TableCell>
                             <TableCell>{ row.destination }</TableCell>
-                            <TableCell>{ row.date_start || row.fact_date_end }</TableCell>
+                            <TableCell>{ row.date }</TableCell>
                             <TableCell>
                                 <Button onClick={editRow(ind)}>Редагувати</Button>
                                 <Button onClick={removeFromPull(ind)}>Видалити</Button>

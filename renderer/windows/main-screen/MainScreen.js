@@ -2,7 +2,7 @@
 
 import PullViewer from "../../components/PullViewer";
 import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import Grid from '@mui/material/Grid2';
 import {
     Button,
@@ -17,7 +17,6 @@ import {
     dateToDatepickerString,
     dateMath,
     dateStringCompare,
-    datePickerToDateString,
     getDateDifference
 } from "../../utilities/DateUtilities";
 import {convertPullToTempBook, convertTempBookToPull} from "../../utilities/PullToTempBookConverter"
@@ -31,9 +30,9 @@ import {
     addServantRecord,
     deleteServantRecord,
     addRow,
-    clearTempBookRecords
+    clearTempBookRecords,
 } from "../../store"
-import absence_types from "../../dictionaries/absence_types.json"
+
 import ArrivalPage from "./pages/ArrivalPage";
 import DeparturePage from "./pages/DeparturePage";
 
@@ -41,8 +40,8 @@ export default function MainScreen() {
 
     const dispatch = useDispatch();
     const record = useSelector(state => state.record)
-    const pull = useSelector(state => state.pull)
-    const [servants, setServantsState ] = useState([])
+    const pull = useSelector(state => state.pull, shallowEqual)
+    const [ , setServantsState ] = useState([])
     const [ tempBook, setTempBook ] = useState([]);
     const [ absentServants, setAbsentServants ] = useState([]);
 
@@ -64,7 +63,7 @@ export default function MainScreen() {
                 setTempBook(result);
                 setAbsentServants(result
                     .reduce((acc, el, ind)  => {
-                        if (el.arrive_order_no && el.arrive_order_no != record.order_no) return acc;
+                        if (el.arrive_order_no && "" + el.arrive_order_no !== "" + record.order_no) return acc;
                         let rec = convertTempBookToPull(el)
                         rec.id = ind;
                         acc.push(rec);
@@ -84,23 +83,32 @@ export default function MainScreen() {
 
     const shouldReturn = (tempBookRec, order_date) => {
         if (tempBookRec.arrive_order_no || !tempBookRec.planned_date_end) return false;
-        let planned_end_date = datePickerToDateString(tempBookRec.planned_date_end);
-        let abs_type = absence_types.find(el => el.label === tempBookRec.absence_type)?.value
-        if (abs_type === "mission") return dateStringCompare(planned_end_date, order_date) === -1;
-        return dateStringCompare(planned_end_date, order_date) < 1;
+        if (tempBookRec.absence_type === "mission") return dateStringCompare(tempBookRec.planned_date_end, order_date) === -1;
+        return dateStringCompare(tempBookRec.planned_date_end, order_date) < 1;
     }
+
+    const existInPull = record => {
+        const sameRecords = pull.filter(el => {
+            return el.orderSection === record.orderSection
+            && el.absence_type === record.absence_type
+            && el.servant_id === record.servant_id
+        });
+        return sameRecords.length > 0;
+    }
+
     const generateAutoPull = () => {
         console.log(tempBook)
         let autoPull = tempBook.reduce((acc, el, index) => {
-            if (el.depart_order_no == record.order_no
-                || el.arrive_order_no == record.order_no
-                || shouldReturn(el, record.order_date)) {
-                let row = convertTempBookToPull(el);
+            let row = convertTempBookToPull(el);
+            row.orderSection = "" + el.depart_order_no === "" + record.order_no ? "depart" : "arrive";
+            if (!existInPull(row)
+                && ("" + row.depart_order_no === "" + record.order_no
+                    || "" + row.arrive_order_no === "" + record.order_no
+                    || shouldReturn(row, record.order_date))) {
                 row.id = index;
                 row.order_no = record.order_no;
                 row.order_date = record.order_date;
-                row.orderSection = el.depart_order_no == record.order_no ? "depart" : "arrive";
-                if (row.orderSection && !row.fact_date_end) {
+                if (row.orderSection === "arrive" && !row.fact_date_end) {
                     if (dateStringCompare(row.planned_date_end, record.order_date) === -1)
                         row.fact_date_end = row.planned_date_end
                     else row.fact_date_end = row.order_date
@@ -194,7 +202,7 @@ export default function MainScreen() {
             return (
             absentServant.absence_type === record.absence_type
             && (record.destination && absentServant.destination === record.destination
-                || certificate && absentServant.certificate == certificate)
+                || certificate && "" + absentServant.certificate === "" + certificate)
         )})
     }
 
@@ -212,6 +220,9 @@ export default function MainScreen() {
             result.servant_id = el;
             result.certificate = record.certificate[ind];
             result.certificate_issue_date = record.certificate_issue_date[ind];
+            if (result.orderSection === "depart") result.fact_date_end = "";
+            if (!result.id)
+                result.id = tempBook.length
             return result;
         })
         dispatch(addRow(records));

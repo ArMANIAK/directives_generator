@@ -2,6 +2,7 @@ import {  createSlice } from '@reduxjs/toolkit'
 import { dateToDatepickerString } from "../../utilities/DateUtilities";
 
 const initialState = {
+    "id": "",
     "order_no": "",
     "order_date": dateToDatepickerString(new Date()),
     "orderSection": "arrive",

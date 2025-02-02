@@ -403,8 +403,8 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                 switch (absence_type) {
                     case "vacation":
                         vacationTerm = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id), false);
-                        block += " в " + servant.destination + " на " + servant.day_count + " " + dayEnding(servant.day_count) +
-                            " у частину щорічної відпустки " + vacationTerm + ".\n\n";
+                        block += " в " + servant.destination + " на " + (parseInt(servant.day_count) < 10 ? "0" : "") + servant.day_count +
+                            " " + dayEnding(servant.day_count) + " у частину щорічної відпустки " + vacationTerm + ".\n\n";
                         break;
                     case "family_circumstances":
                         vacationTerm = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id));

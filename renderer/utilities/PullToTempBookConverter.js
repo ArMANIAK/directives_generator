@@ -1,4 +1,4 @@
-import {dateMath, datePickerToDateString, dateToDatepickerString, formatDate, getDateDifference} from "./DateUtilities";
+import { dateMath, datePickerToDateString, dateToDatepickerString, formatDate } from "./DateUtilities";
 import { GenerateName, GenerateRankNameByServantId, GetTitleIndex } from "./ServantsGenerators";
 
 const absence_type = require('../dictionaries/absence_types.json');
@@ -19,7 +19,7 @@ const convertPullToTempBook = row => {
     }
     result.day_count = row.day_count
         ? (row.trip_days ? `${row.day_count}+${row.trip_days}` : row.day_count)
-        : (row.date_start && row.planned_date_end ? getDateDifference(new Date(row.date_start), new Date(row.planned_date_end)) : "?");
+        : "?";
     if (row.orderSection === "arrive") {
         result.arrive_order_no = row.order_no;
         result.arrive_order_date = row.order_date ? formatDate(new Date(row.order_date)) : "";
@@ -30,8 +30,9 @@ const convertPullToTempBook = row => {
         result.depart_order_date = row.order_date ? formatDate(new Date(row.order_date)) : "";
     }
     if (['health_circumstances', 'vacation', 'family_circumstances', 'sick_leave'].includes(row.absence_type)) {
-        let trip_days = row.trip_days ? parseInt(row.trip_days) : 0
-        result.planned_date_end = formatDate(dateMath(row.planned_date_end, trip_days + 1));
+        let trip_days = row.trip_days ? parseInt(row.trip_days) : 0;
+        if (!isNaN(parseInt(row.day_count)))
+            result.planned_date_end = formatDate(dateMath(row.date_start, parseInt(row.day_count) + trip_days));
     }
     return result;
 }
@@ -56,6 +57,8 @@ const convertTempBookToPull = record => {
         "certificate_issue_date": record.certificate_issue_date ? datePickerToDateString(record.certificate_issue_date) : "",
         "with_ration_certificate": record.with_ration_certificate === "так",
         "from_temp_book": true,
+        "depart_order_no": record.depart_order_no,
+        "arrive_order_no": record.arrive_order_no
     }
     if ((String (record.day_count)).indexOf("+") !== -1) {
         [ result.day_count, result.trip_days ] = record.day_count.split("+")
@@ -63,9 +66,9 @@ const convertTempBookToPull = record => {
         result.day_count = record.day_count !== "?" ? record.day_count : "";
         result.trip_days = "";
     }
-    if (['health_circumstances', 'vacation', 'family_circumstances', 'sick_leave'].includes(record.absence_type)) {
+    if (['health_circumstances', 'vacation', 'family_circumstances', 'sick_leave'].includes(result.absence_type)) {
         let trip_days = parseInt(result.trip_days) || 0;
-        result.planned_date_end = dateToDatepickerString(dateMath(result.planned_date_end, trip_days + 1, "subtract"))
+        result.planned_date_end = dateToDatepickerString(dateMath(result.planned_date_end, trip_days + 1, "subtract"));
     }
     return result;
 }
