@@ -2,6 +2,7 @@ import { Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell
 import { GenerateRankAndName } from "../utilities/ServantsGenerators";
 import { useDispatch, useSelector } from "react-redux";
 import { removeRow, setRecord } from "../store";
+import { formatDate } from "../utilities/DateUtilities";
 
 const viewerStyle = {
     height: "500px",
@@ -50,7 +51,8 @@ export default function PullViewer() {
 
         const servant = GenerateRankAndName(el.servant_id, 'nominative');
         const destination = !el.destination ? 'Не релевантно' : el.destination;
-        const absence = absence_type.find(item => item.value.toLowerCase() === el.absence_type.toLowerCase())?.label ?? 'Не релевантно';
+        const absence = el.orderSection === "other_points" ? ""
+            : (absence_type.find(item => item.value.toLowerCase() === el.absence_type.toLowerCase())?.label ?? 'Не релевантно');
         return { activity, servant, destination, absence, date }
     })
 

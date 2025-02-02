@@ -1,35 +1,17 @@
 import Grid from "@mui/material/Grid2";
-import Modal from '@mui/material/Modal';
-import { Checkbox, FormControl, FormControlLabel, MenuItem, TextField, Box } from "@mui/material";
+import { FormControl, MenuItem, TextField } from "@mui/material";
 import ServantSelector from "../../../components/ServantSelector";
 import { IoIosAddCircleOutline, IoIosTrash } from "react-icons/io";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { GenerateRankAndName } from "../../../utilities/ServantsGenerators";
-import { addRow } from "../../../store";
+import { useEffect } from "react";
 
-const modalStyle = {
-    width: "30%",
-    position: "absolute",
-    top: "30%",
-    left: "35%",
-    backgroundColor: "white",
-    padding: "50px",
-}
-
-export default function OtherPointsPage() {
-
-    const dispatch = useDispatch();
+export default function OtherPointsPage({ handleOtherPointChange, record }) {
 
     const initialState = {
-        section_type: "financial_support",
+        sectionType: "financial_support",
         servants: [""],
-        justification: "",
         "certificate": [""],
         "certificate_issue_date": [""],
     };
-
-    const [ record, setRecord ] = useState(initialState)
 
     const otherPoints = [
         {
@@ -44,22 +26,44 @@ export default function OtherPointsPage() {
             label: "Перепризначення",
             value: "reassignment"
         },
-    ]
+    ];
+
+    useEffect(() => {
+        handleOtherPointChange(initialState)
+    }, []);
 
     const handleMultipleValueChange = id => event => {
         const { name, value } = event.target
-        const newRecord = { ...record }
+        const newRecord = {
+            ...record,
+            servants: [ ...record.servants ],
+            certificate: [ ...record.certificate ],
+            certificate_issue_date: [ ...record.certificate_issue_date ],
+        }
         newRecord[name][id] = value
-        setRecord(newRecord);
+        handleOtherPointChange(newRecord);
     }
 
     const addServant = () => {
-        const newRecord = { ...record }
-        newRecord.servants.push("");
-        setRecord(newRecord);
+        const newRecord = {
+            ...record,
+            servants: [ ...record.servants, "" ],
+            certificate: [ ...record.certificate, "" ],
+            certificate_issue_date: [ ...record.certificate_issue_date, "" ],
+        };
+        handleOtherPointChange(newRecord);
     }
 
-console.log("OTHER POINTS", record)
+    const deleteServant = index => () => {
+        const newRecord = {
+            ...record,
+            servants: record.servants.filter((el, ind) => ind !== index),
+            certificate: record.certificate.filter((el, ind) => ind !== index),
+            certificate_issue_date: record.certificate_issue_date.filter((el, ind) => ind !== index),
+        };
+        handleOtherPointChange(newRecord);
+    }
+
     return (
         <Grid direction={'column'} container spacing={2}>
             <Grid container>
@@ -68,9 +72,9 @@ console.log("OTHER POINTS", record)
                         <TextField
                             select
                             label="Інші пункти наказу по стройовій"
-                            name="section_type"
-                            value={ record.section_type }
-                            onChange={ () => {} }
+                            name="sectionType"
+                            value={ record.sectionType || "financial_support" }
+                            onChange={ event => {handleOtherPointChange({ ...record, sectionType: event.target.value })} }
                             slotProps={ { inputLabel: { shrink: true } } }
                         >
                             { otherPoints.map(el => <MenuItem key={el.value} value={el.value}>{el.label}</MenuItem>) }

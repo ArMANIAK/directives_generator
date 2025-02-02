@@ -197,6 +197,8 @@ export default function MainScreen() {
         dispatch(deleteServantRecord(index));
     }
 
+    const handleOtherPointChange = record => dispatch(setRecord(record))
+
     const getSimilarActivities = (absentServants, record, certificate) => {
         if (record.orderSection === "depart") return [];
         return absentServants.filter(absentServant => {
@@ -207,7 +209,7 @@ export default function MainScreen() {
         )})
     }
 
-    const onSubmit = () => {
+    const submitMovementPoint = () => {
         let records = record.servants.map((el, ind) => {
             let similarActivities = getSimilarActivities(absentServants, record, record.certificate[ind]);
             let result = (similarActivities.length > 0)
@@ -225,14 +227,36 @@ export default function MainScreen() {
             if (!result.id)
                 result.id = tempBook.length
             return result;
-        })
+        });
+        if (records.length > 0) return records;
+        return [];
+
+    }
+
+    const submitOtherPoints = () => {
+        let records = record.servants.map((el, ind) => {
+            return {
+                ...record,
+                servant_id: el,
+                certificate: record.certificate[ind],
+                certificate_issue_date: record.certificate_issue_date[ind],
+            }
+        });
+        if (records.length > 0) return records;
+        return [];
+    }
+
+    const onSubmit = () => {
+        let records = [];
+        if (record.orderSection === "arrive" || record.orderSection === "depart") records = submitMovementPoint();
+        else records = submitOtherPoints()
         dispatch(addRow(records));
         dispatch(resetRecord())
     }
 
     const SaveClauses = () => {
         const updatedTempBook = [ ...tempBook ];
-        pull.forEach(el => {
+        pull.filter(el => el.orderSection !== "other_points").forEach(el => {
             const tempBookRecordUpdates = convertPullToTempBook(el)
             if (el.id || el.id === 0)
                 updatedTempBook[el.id] = { ...tempBook[el.id], ...tempBookRecordUpdates }
@@ -319,10 +343,8 @@ export default function MainScreen() {
                 absentServants={ absentServants }
             /> }
             { record.orderSection === "other_points" && <OtherPointsPage
-                handleChange={ handleChange }
-                handleMultipleValueChange={ handleMultipleValueChange }
-                addServant={ addServant }
-                deleteServant={ deleteServant }
+                handleOtherPointChange={ handleOtherPointChange }
+                record={ record }
             /> }
             <Grid container>
                 <Button
