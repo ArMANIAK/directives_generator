@@ -11,7 +11,7 @@ export const pullSlice = createSlice({
             return state.filter((el, ind) => ind !== action.payload)
         },
         resetPull: () => [],
-        clearTempBookRecords: (state) => state.filter(el => !el.from_temp_book)
+        clearTempBookRecords: (state) => { state = state.filter(el => !el.from_temp_book) }
     }
 });
 

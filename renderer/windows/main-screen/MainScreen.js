@@ -17,7 +17,8 @@ import {
     dateToDatepickerString,
     dateMath,
     dateStringCompare,
-    getDateDifference
+    getDateDifference,
+    formatDate
 } from "../../utilities/DateUtilities";
 import {convertPullToTempBook, convertTempBookToPull} from "../../utilities/PullToTempBookConverter"
 import {
@@ -85,7 +86,8 @@ export default function MainScreen() {
     const shouldReturn = (tempBookRec, order_date) => {
         if (tempBookRec.arrive_order_no || !tempBookRec.planned_date_end) return false;
         if (tempBookRec.absence_type === "mission") return dateStringCompare(tempBookRec.planned_date_end, order_date) === -1;
-        return dateStringCompare(tempBookRec.planned_date_end, order_date) < 1;
+        let planned_end = dateMath(tempBookRec.planned_date_end, (parseInt(tempBookRec.trip_days) || 0) + 1);
+        return dateStringCompare(dateToDatepickerString(planned_end), order_date) < 1;
     }
 
     const existInPull = record => {
@@ -111,7 +113,10 @@ export default function MainScreen() {
                 row.order_date = record.order_date;
                 if (row.orderSection === "arrive" && !row.fact_date_end) {
                     if (dateStringCompare(row.planned_date_end, record.order_date) === -1)
-                        row.fact_date_end = row.planned_date_end
+                        row.fact_date_end = dateToDatepickerString(
+                            dateMath(row.planned_date_end,
+                                (parseInt(row.trip_days) || 0) + !!(row.absence_type !== "mission")
+                            ))
                     else row.fact_date_end = row.order_date
                 }
                 acc.push(row);
@@ -224,13 +229,14 @@ export default function MainScreen() {
             result.certificate = record.certificate[ind];
             result.certificate_issue_date = record.certificate_issue_date[ind];
             if (result.orderSection === "depart") result.fact_date_end = "";
-            if (!result.id)
+            if (!result.id) {
                 result.id = tempBook.length
+                setTempBook(state => [ ...state, result ]);
+            }
             return result;
         });
         if (records.length > 0) return records;
         return [];
-
     }
 
     const submitOtherPoints = () => {
@@ -262,8 +268,9 @@ export default function MainScreen() {
                 updatedTempBook[el.id] = { ...tempBook[el.id], ...tempBookRecordUpdates }
             else updatedTempBook.push(tempBookRecordUpdates)
         })
+
         const ipcRenderer = window.electron.ipcRenderer;
-        ipcRenderer.invoke('save-temp-book', updatedTempBook).then(() => {
+        ipcRenderer.invoke('save-temp-book', updatedTempBook.filter(el => el)).then(() => {
             setTempBook(updatedTempBook)
         }).catch((err) => {
             console.error('Error saving temporal book:', err);
