@@ -100,7 +100,9 @@ const tempBookRawMapToHeaders = {
     "Дата наказу, яким прибув": "arrive_order_date",
     "Номер наказу, яким прибув": "arrive_order_no",
     "Ідентифікатор військовослужбовця (відповідно до ідентифікатора в словнику)": "servant_id",
-    "З продовольчим атестатом (так/ні)": "with_ration_certificate"
+    "З продовольчим атестатом (так/ні)": "with_ration_certificate",
+    "Мета": "purpose",
+    "Підстава": "reason"
 }
 
 const tempBookHeadersMapToRaw = {
@@ -109,7 +111,6 @@ const tempBookHeadersMapToRaw = {
     "rank": "Військове звання (для наочності)",
     "servant_name": "Прізвище та ініціали (для наочності)",
     "title_index": "Індекс посади",
-    "servant_id": "Ідентифікатор військовослужбовця (відповідно до ідентифікатора в словнику)",
     "absence_type": "Тип відсутності",
     "destination": "Місце тимчасового перебування",
     "date_start": "Дата вибуття",
@@ -120,7 +121,10 @@ const tempBookHeadersMapToRaw = {
     "fact_date_end": "Реальна дата повернення",
     "arrive_order_date": "Дата наказу, яким прибув",
     "arrive_order_no": "Номер наказу, яким прибув",
-    "with_ration_certificate": "З продовольчим атестатом (так/ні)"
+    "servant_id": "Ідентифікатор військовослужбовця (відповідно до ідентифікатора в словнику)",
+    "with_ration_certificate": "З продовольчим атестатом (так/ні)",
+    "purpose": "Мета",
+    "reason": "Підстава"
 }
 
 const convertHeaders = (data, headerDictionary) => {
