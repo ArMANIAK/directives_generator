@@ -230,7 +230,7 @@ export default function MainScreen() {
             result.certificate_issue_date = record.certificate_issue_date[ind];
             if (result.orderSection === "depart") result.fact_date_end = "";
             if (!result.id) {
-                result.id = tempBook.length
+                result.id = tempBook.length + ind
                 setTempBook(state => [ ...state, result ]);
             }
             return result;
