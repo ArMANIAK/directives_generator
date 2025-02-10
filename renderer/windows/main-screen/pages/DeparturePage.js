@@ -106,7 +106,7 @@ export default function DeparturePage({
                     </FormControl>
                 </Grid>
                 <Grid size={5}>
-                    { ["mission", "medical_care"].includes(record.absence_type) &&
+                    { ["mission", "medical_care", "medical_board"].includes(record.absence_type) &&
                         <FormControlLabel
                             control={ <Checkbox
                                 name="with_ration_certificate"

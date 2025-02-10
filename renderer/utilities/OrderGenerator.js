@@ -71,7 +71,7 @@ function GenerateCertificatesRange(records) {
 
 function GenerateJustification(records) {
     let justification = 'Підстава: ';
-    if (records[0].reason)
+    if (records[0].orderSection === "depart" && records[0].reason)
         justification += `${records[0].reason}, `;
 
     justification += GenerateCertificatesRange(records) ;
