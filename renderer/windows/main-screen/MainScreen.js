@@ -17,8 +17,7 @@ import {
     dateToDatepickerString,
     dateMath,
     dateStringCompare,
-    getDateDifference,
-    formatDate
+    getDateDifference
 } from "../../utilities/DateUtilities";
 import {convertPullToTempBook, convertTempBookToPull} from "../../utilities/PullToTempBookConverter"
 import {
@@ -79,9 +78,12 @@ export default function MainScreen() {
 
     useEffect(() => {
         dispatch(clearTempBookRecords())
-        console.log(tempBook)
-        generateAutoPull()
+        if (pull.length === 0) generateAutoPull()
     }, [ record.order_no, record.order_date ])
+
+    useEffect(() => {
+        generateAutoPull()
+    }, [ pull ])
 
     const shouldReturn = (tempBookRec, order_date) => {
         if (tempBookRec.arrive_order_no || !tempBookRec.planned_date_end) return false;
@@ -209,8 +211,10 @@ export default function MainScreen() {
         return absentServants.filter(absentServant => {
             return (
             absentServant.absence_type === record.absence_type
-            && (record.destination && absentServant.destination === record.destination
-                || certificate && "" + absentServant.certificate === "" + certificate)
+                && absentServant.servant_id === record.servant_id
+                && (record.destination && absentServant.destination === record.destination)
+                    || (!["medical_care", "medical_board"].includes(record.absence_type) &&
+                        certificate && "" + absentServant.certificate === "" + certificate)
         )})
     }
 

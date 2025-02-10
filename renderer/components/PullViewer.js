@@ -33,7 +33,6 @@ export default function PullViewer() {
 
     console.log(" PULL VIEWER", pull)
     const rows = pull.map(el => {
-        console.log(el)
         let activity, date;
         if (el.orderSection === "arrive") {
             activity = "прибуття";
