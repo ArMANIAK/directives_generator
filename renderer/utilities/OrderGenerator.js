@@ -75,7 +75,7 @@ function GenerateJustification(records) {
         justification += `${records[0].reason}, `;
 
     justification += GenerateCertificatesRange(records) ;
-    if (records[0].ration_certificate_issue_date) {
+    if (records[0].ration_certificate) {
         justification += `, продовольчий атестат від ${formatDate(new Date(records[0].ration_certificate_issue_date))} № ${records[0].ration_certificate}`;
     }
     justification += '.\n\n';

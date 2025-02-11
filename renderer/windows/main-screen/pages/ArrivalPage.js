@@ -55,7 +55,7 @@ export default function ArrivalPage({
                     </FormControl>
                 </Grid>
                 <Grid size={5}>
-                    { record.orderSection !== 'other_points' && ["mission", "medical_care"].includes(record.absence_type) &&
+                    { ["mission", "medical_care", "medical_board"].includes(record.absence_type) &&
                         <FormControlLabel
                             control={ <Checkbox
                                 name="with_ration_certificate"

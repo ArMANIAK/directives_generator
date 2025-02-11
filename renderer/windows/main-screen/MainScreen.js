@@ -117,7 +117,7 @@ export default function MainScreen() {
                     if (dateStringCompare(row.planned_date_end, record.order_date) === -1)
                         row.fact_date_end = dateToDatepickerString(
                             dateMath(row.planned_date_end,
-                                (parseInt(row.trip_days) || 0) + !!(row.absence_type !== "mission")
+                                (parseInt(row.trip_days) || 0) + row.absence_type !== "mission"
                             ))
                     else row.fact_date_end = row.order_date
                 }
@@ -234,8 +234,8 @@ export default function MainScreen() {
             result.certificate_issue_date = record.certificate_issue_date[ind];
             if (result.orderSection === "depart") result.fact_date_end = "";
             if (!result.id) {
-                result.id = tempBook.length + ind
-                setTempBook(state => [ ...state, result ]);
+                result.id = tempBook.length + ind;
+                setTempBook(state => [ ...state, convertPullToTempBook(result) ]);
             }
             return result;
         });
@@ -257,7 +257,7 @@ export default function MainScreen() {
     }
 
     const onSubmit = () => {
-        let records = [];
+        let records;
         if (record.orderSection === "arrive" || record.orderSection === "depart") records = submitMovementPoint();
         else records = submitOtherPoints()
         dispatch(addRow(records));
