@@ -117,7 +117,7 @@ export default function MainScreen() {
                     if (dateStringCompare(row.planned_date_end, record.order_date) === -1)
                         row.fact_date_end = dateToDatepickerString(
                             dateMath(row.planned_date_end,
-                                (parseInt(row.trip_days) || 0) + row.absence_type !== "mission"
+                                (parseInt(row.trip_days) || 0) + !!(row.absence_type !== "mission")
                             ))
                     else row.fact_date_end = row.order_date
                 }
@@ -202,6 +202,10 @@ export default function MainScreen() {
 
     const deleteServant = index => () => {
         dispatch(deleteServantRecord(index));
+    }
+
+    const deleteFromTempbook = id => {
+        setTempBook(tempBook.splice(id, 1))
     }
 
     const handleOtherPointChange = record => dispatch(setRecord(record))
@@ -375,7 +379,7 @@ export default function MainScreen() {
                 </Button>
             </Grid>
             <Grid container>
-                <PullViewer />
+                <PullViewer deleteFromTempbook={ deleteFromTempbook }/>
             </Grid>
         </Grid>
     )

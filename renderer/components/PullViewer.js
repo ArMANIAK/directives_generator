@@ -14,12 +14,13 @@ const viewerStyle = {
 
 const absence_type = require('../dictionaries/absence_types.json');
 
-export default function PullViewer() {
+export default function PullViewer({ deleteFromTempbook }) {
     const dispatch = useDispatch();
     const pull = useSelector(state => state.pull)
 
     const removeFromPull = id => () => {
         dispatch(removeRow(id));
+        deleteFromTempbook(id);
     }
 
     const editRow = id => () => {
@@ -29,6 +30,7 @@ export default function PullViewer() {
         record.certificate_issue_date = [ record.certificate_issue_date ];
         dispatch(setRecord(record));
         dispatch(removeRow(id));
+        deleteFromTempbook(id);
     }
 
     console.log(" PULL VIEWER", pull)
