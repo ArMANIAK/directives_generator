@@ -2,7 +2,7 @@ import { getServantById, isEmployee } from "../services/ServantsService";
 const certificate = require("../dictionaries/certificates.json");
 
 import {formatDate, dateMath, dateStartToEndFormat, dayEnding} from "./DateUtilities";
-import { GenerateRankAndName, GenerateFullTitle } from "./ServantsGenerators";
+import { GenerateRankAndName, GenerateServantRankNameAndTitle } from "./ServantsGenerators";
 
 function GenerateAddToRation(servant_id, order_date = null) {
     const servant = getServantById(servant_id);
@@ -33,7 +33,7 @@ function GenerateServantBlock(
     with_ration_certificate = false,
     isCapitalised = false
 ) {
-    let servant = `${GenerateFullTitle(servant_id)}.\n\n`;
+    let servant = `${GenerateServantRankNameAndTitle(servant_id)}.\n\n`;
     let block = isCapitalised ? servant[0].toLocaleUpperCase() + servant.slice(1) : servant;
     if (!isEmployee(servant_id) && addOrRemove === "add")
         block += GenerateAddToRation(servant_id, order_date);
@@ -400,7 +400,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                     withSubClauses = true;
                     directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                 }
-                let fullServantTitle = GenerateFullTitle(servant.servant_id);
+                let fullServantTitle = GenerateServantRankNameAndTitle(servant.servant_id);
                 let block = withSubClauses ? fullServantTitle[0].toLocaleUpperCase() + fullServantTitle.slice(1) : fullServantTitle;
                 let vacationTerm = "";
                 switch (absence_type) {
@@ -483,14 +483,14 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
         if (otherClausesPull.financial_support.length > 1) {
             directive = starting_index + ". Нижчепойменованим військовослужбовцям " + directive + ":\n\n";
             for (let servant of otherClausesPull.financial_support) {
-                let currentServant = GenerateFullTitle(servant.servant_id, "dative", "full");
+                let currentServant = GenerateServantRankNameAndTitle(servant.servant_id, "dative", "full");
                 directive += `${starting_index}.${middle_ind++}. ` + currentServant[0].toLocaleUpperCase() +
                     currentServant.slice(1) + ".\n\n" + "Підстава: рапорт " +
                     GenerateRankAndName(servant.servant_id, "genitive") + " (вх. № " + servant.certificate +
                     " від " + formatDate(new Date(servant.certificate_issue_date)) + ").\n\n";
             }
         } else {
-            let servant = GenerateFullTitle(otherClausesPull.financial_support[0]["servant_id"], "dative", "full");
+            let servant = GenerateServantRankNameAndTitle(otherClausesPull.financial_support[0]["servant_id"], "dative", "full");
             directive = `${starting_index}. ` + servant[0].toLocaleUpperCase() + servant.slice(1) + " " + directive + ".\n\n" + "Підстава: рапорт " +
                 GenerateRankAndName(otherClausesPull.financial_support[0].servant_id, "genitive") +
                 " (вх. № " + otherClausesPull.financial_support[0].certificate + " від " +

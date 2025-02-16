@@ -2,6 +2,8 @@ import { store } from "../store";
 
 export const getServants = () => store.getState().dictionaries?.servants;
 
+export const getRoles = () => store.getState().dictionaries?.roles;
+
 export const getTitles = () => store.getState().dictionaries?.titles;
 
 export const getDepartments = () => store.getState().dictionaries?.departments;

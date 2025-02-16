@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useDispatch } from "react-redux";
 import Grid from '@mui/material/Grid2';
 import {
     FormControl,
@@ -8,10 +9,18 @@ import {
     Radio,
     RadioGroup
 } from "@mui/material";
-import {  GenerateFullTitle } from "../../utilities/ServantsGenerators";
-import { TITLES_VAR, TITLES_SHEET, DEPARTMENTS_VAR, DEPARTMENTS_SHEET, SERVANTS_VAR, SERVANTS_SHEET } from "../../dictionaries/constants";
-import { setDepartments, setServants, setTitles } from "../../store";
-import { useDispatch } from "react-redux";
+import {
+    ROLES_VAR,
+    ROLES_SHEET,
+    TITLES_VAR,
+    TITLES_SHEET,
+    DEPARTMENTS_VAR,
+    DEPARTMENTS_SHEET,
+    SERVANTS_VAR,
+    SERVANTS_SHEET
+} from "../../dictionaries/constants";
+import { setRoles, setTitles, setDepartments, setServants } from "../../store";
+import RolesPage from "./pages/RolesPage";
 import TitlesPage from "./pages/TitlesPage";
 import DepartmentsPage from "./pages/DepartmentsPage";
 import ServantsPage from "./pages/ServantsPage";
@@ -30,6 +39,7 @@ export default function DictionaryManagementScreen() {
         if (typeof window !== 'undefined' && window.electron) {
             const ipcRenderer = window.electron.ipcRenderer;
             ipcRenderer.invoke('get-dict').then((result) => {
+                dispatch(setRoles(result.roles));
                 dispatch(setTitles(result.titles));
                 dispatch(setDepartments(result.departments));
                 dispatch(setServants(result.servants));
@@ -41,7 +51,7 @@ export default function DictionaryManagementScreen() {
     }
 
     useEffect(() => {
-        setDictionaryType(TITLES_VAR);
+        setDictionaryType(ROLES_VAR);
     }, [])
 
     const dispatcher = dictionary => {
@@ -85,18 +95,23 @@ export default function DictionaryManagementScreen() {
                     <RadioGroup
                         row
                         name="dictionaryType"
-                        value={ dictionaryType || TITLES_VAR }
+                        value={ dictionaryType || ROLES_VAR }
                         onChange={ event => setDictionaryType(event.target.value) }
                     >
                         <FormControlLabel
-                            value={ TITLES_VAR }
+                            value={ ROLES_VAR }
                             control={ <Radio /> }
-                            label={ TITLES_SHEET }
+                            label={ ROLES_SHEET }
                         />
                         <FormControlLabel
                             value={ DEPARTMENTS_VAR }
                             control={ <Radio /> }
                             label={ DEPARTMENTS_SHEET }
+                        />
+                        <FormControlLabel
+                            value={ TITLES_VAR }
+                            control={ <Radio /> }
+                            label={ TITLES_SHEET }
                         />
                         <FormControlLabel
                             value={ SERVANTS_VAR }
@@ -106,6 +121,12 @@ export default function DictionaryManagementScreen() {
                     </RadioGroup>
                 </FormControl>
             </Grid>
+            {dictionaryType === ROLES_VAR &&
+                <RolesPage
+                    saveRecord={ saveRecord }
+                    removeRecord={ removeRecord }
+                />
+            }
             {dictionaryType === TITLES_VAR &&
                 <TitlesPage
                     saveRecord={ saveRecord }

@@ -11,7 +11,7 @@ import {
     Radio,
     RadioGroup, TextField
 } from "@mui/material";
-import {  GenerateFullTitle } from "../../utilities/ServantsGenerators";
+import {  GenerateServantRankNameAndTitle } from "../../utilities/ServantsGenerators";
 import { GenerateOrder } from "../../utilities/OrderGenerator";
 import {
     dateToDatepickerString,
@@ -21,6 +21,7 @@ import {
 } from "../../utilities/DateUtilities";
 import {convertPullToTempBook, convertTempBookToPull} from "../../utilities/PullToTempBookConverter"
 import {
+    setRoles,
     setTitles,
     setDepartments,
     setServants,
@@ -51,10 +52,11 @@ export default function MainScreen() {
             const ipcRenderer = window.electron.ipcRenderer;
 
             ipcRenderer.invoke('get-dict').then((result) => {
-                dispatch(setTitles(result.titles))
-                dispatch(setDepartments(result.departments))
-                dispatch(setServants(result.servants.filter(el => el.retired !== "так")))
-                setServantsState(result.servants)
+                dispatch(setRoles(result.roles));
+                dispatch(setTitles(result.titles));
+                dispatch(setDepartments(result.departments));
+                dispatch(setServants(result.servants.filter(el => el.retired !== "так")));
+                setServantsState(result.servants);
             }).catch((err) => {
                 console.error('Error fetching dictionary:', err);
             });
@@ -337,7 +339,7 @@ export default function MainScreen() {
                 </Grid>
             </Grid>
             <Grid container>
-                {!record.servant ? "" : GenerateFullTitle(record.servant.id, "nominative")}
+                {!record.servant ? "" : GenerateServantRankNameAndTitle(record.servant.id, "nominative")}
             </Grid>
             { record.orderSection === "arrive" && <ArrivalPage
                 record={ record }

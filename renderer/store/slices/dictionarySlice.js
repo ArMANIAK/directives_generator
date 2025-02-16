@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
+    "roles": [],
     "titles": [],
     "departments": [],
     "servants": []
@@ -10,6 +11,9 @@ export const dictionarySlice = createSlice({
     name: 'dictionaries',
     initialState,
     reducers: {
+        setRoles: (state, action) => {
+            state.roles = action.payload
+        },
         setTitles: (state, action) => {
             state.titles = action.payload
         },
@@ -22,6 +26,6 @@ export const dictionarySlice = createSlice({
     }
 })
 
-export const { setTitles, setDepartments, setServants } = dictionarySlice.actions
+export const { setRoles, setTitles, setDepartments, setServants } = dictionarySlice.actions
 
 export default dictionarySlice.reducer
