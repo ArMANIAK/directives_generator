@@ -496,6 +496,30 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
                 " (вх. № " + otherClausesPull.financial_support[0].certificate + " від " +
                 formatDate(new Date(otherClausesPull.financial_support[0].certificate_issue_date)) + ").\n\n";
         }
+        starting_index++;
+    }
+    if (otherClausesPull.social_support) {
+        let middle_ind = 1;
+        let text = ` виплатити грошову допомогу для вирішення соціально-побутових питань за ${(new Date()).getFullYear()} рік згідно з ` +
+            `наказом Міністерства оборони України від 07.06.2018 № 260 "Про затвердження Порядку виплати грошового забезпечення` +
+            ` військовослужбовцям Збройних Сил України та деяким іншим особам" у розмірі місячного грошового забезпечення`;
+        if (otherClausesPull.social_support.length > 1) {
+            directive += starting_index + ". Нижчепойменованим військовослужбовцям " + text + ":\n\n";
+            for (let servant of otherClausesPull.social_support) {
+                let currentServant = GenerateServantRankNameAndTitle(servant.servant_id, "dative", "full");
+                directive += `${starting_index}.${middle_ind++}. ` + currentServant[0].toLocaleUpperCase() +
+                    currentServant.slice(1) + ".\n\n" + "Підстава: рапорт " +
+                    GenerateRankAndName(servant.servant_id, "genitive") + " (вх. № " + servant.certificate +
+                    " від " + formatDate(new Date(servant.certificate_issue_date)) + ").\n\n";
+            }
+        } else {
+            let servant = GenerateServantRankNameAndTitle(otherClausesPull.financial_support[0]["servant_id"], "dative", "full");
+            directive += `${starting_index}. ` + servant[0].toLocaleUpperCase() + servant.slice(1) + " " + text + ".\n\n" + "Підстава: рапорт " +
+                GenerateRankAndName(otherClausesPull.social_support[0].servant_id, "genitive") +
+                " (вх. № " + otherClausesPull.social_support[0].certificate + " від " +
+                formatDate(new Date(otherClausesPull.social_support[0].certificate_issue_date)) + ").\n\n";
+        }
+        starting_index++;
     }
 
     return directive;
