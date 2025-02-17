@@ -205,7 +205,8 @@ export default function MainScreen() {
     }
 
     const deleteFromTempbook = id => {
-        setTempBook(tempBook.splice(id, 1))
+        tempBook.splice(id, 1)
+        setTempBook(tempBook)
     }
 
     const handleOtherPointChange = record => dispatch(setRecord(record))
