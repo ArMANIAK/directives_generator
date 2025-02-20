@@ -32,7 +32,13 @@ export function GenerateName(id, nameCase = "accusative", form = "short") {
     return servant['last_name_' + nameCase] + ' ' + (form === 'short' ? servant.first_name_short : servant['first_name_' + nameCase]);
 }
 
-export function GenerateFullTitle(title, titleCase) {
+export function GenerateFullTitleByTitleIndex(index, titleCase = "accusative") {
+    const title = getTitles().find(el => "" + el.title_index === "" + index)
+    if (!title) return "";
+    return GenerateFullTitle(title, titleCase)
+}
+
+export function GenerateFullTitle(title, titleCase = "accusative") {
     let fullTitle = "";
     const primaryRole = getRoles().find(el => el.id === title.primary_role);
     const primaryRoleName = primaryRole ? primaryRole["name_" + titleCase] : "";

@@ -22,7 +22,8 @@ const initialState = {
     "certificate_issue_date": [""],
     "with_ration_certificate": false,
     "ration_certificate": "",
-    "ration_certificate_issue_date": ""
+    "ration_certificate_issue_date": "",
+    "settings": {}
 }
 
 export const recordSlice = createSlice({
@@ -30,8 +31,10 @@ export const recordSlice = createSlice({
     initialState,
     reducers: {
         setRecord: (state, action) => {
+            let newState = { ...state }
             for (let prop in action.payload)
-                state[prop] = action.payload[prop]
+                newState[prop] = action.payload[prop]
+            return newState
         },
         resetRecord: (state) => {
             return { ...initialState, order_no: state.order_no, order_date: state.order_date };

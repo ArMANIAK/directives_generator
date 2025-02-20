@@ -1,8 +1,12 @@
-import { getServantById, isEmployee } from "../services/ServantsService";
+import {convertAmountIntoWords, getServantById, isEmployee, isFemale} from "../services/ServantsService";
 const certificate = require("../dictionaries/certificates.json");
 
 import {formatDate, dateMath, dateStartToEndFormat, dayEnding} from "./DateUtilities";
-import { GenerateRankAndName, GenerateServantRankNameAndTitle } from "./ServantsGenerators";
+import {
+    GenerateFullTitleByTitleIndex,
+    GenerateRankAndName,
+    GenerateServantRankNameAndTitle
+} from "./ServantsGenerators";
 
 function GenerateAddToRation(servant_id, order_date = null) {
     const servant = getServantById(servant_id);
@@ -475,6 +479,26 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
 function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
     if (!Object.keys(otherClausesPull)) return "";
     let directive = "";
+    if (otherClausesPull.reassignment) {
+        for (let servant of otherClausesPull.reassignment) {
+            let settings = servant.settings;
+            let currentServant = GenerateServantRankNameAndTitle(servant.servant_id, "accusative", "full");
+            directive += `${starting_index++}. ${currentServant[0].toLocaleUpperCase() + currentServant.slice(1)}, ` +
+                `призначен${isFemale(servant.servant_id) ? "у" : "ого"} наказом ${settings.nomenclature} (по особовому складу) від ` +
+                `${formatDate(settings.order_date, false)} № ${settings.order_no} на посаду ` +
+                `${GenerateFullTitleByTitleIndex(settings.title_index)}, ВОС-${settings.MOS}, вважати так${isFemale(servant.servant_id) ? "ою" : "им"}, ` +
+                `що з ${formatDate(settings.reassigned_date, false)} справи та посаду прийня${isFemale(servant.servant_id) ? "ла" : "в"} ` +
+                `і приступи${isFemale(servant.servant_id) ? "ла" : "в"} до виконання службових обов’язків за посадою. Встановити посадовий оклад ` +
+                `згідно з тарифним розрядом ${settings.tarif} у сумі ${settings.amount} (${convertAmountIntoWords(settings.amount)} 00 копійок, ` +
+                `шпк “${settings.position_category}”.\nВиплачувати щомісячну премію за особистий внесок у загальні результати служби в розмірі ` +
+                `${settings.bonus} %${!settings.state_secret ? " та" : ","} надбавку за особливе проходження служби у розмірі ` +
+                `${settings.NOPS}% посадового окладу з урахуванням окладу за військовим званням`;
+            if (settings.state_secret)
+                directive += ` та надбавку за роботу в умовах режимних обмежень у розмірі ${settings.state_secret} % до посадового окладу з ${settings.reassigned_date}`;
+            directive += `.\n\nПідстава: витяг із наказу ${settings.nomenclature} (по особовому складу) від ${formatDate(settings.order_date, false)} ` +
+                `№ ${settings.order_no}, рапорт ${GenerateRankAndName(servant.servant_id, "genitive")} (вх. № ${servant.certificate} від ${servant.certificate_issue_date}).\n\n`;
+        }
+    }
     if (otherClausesPull.financial_support) {
         let middle_ind = 1;
         directive = `виплатити грошову допомогу на оздоровлення за ${(new Date()).getFullYear()} рік згідно з ` +

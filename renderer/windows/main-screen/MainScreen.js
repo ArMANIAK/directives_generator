@@ -211,7 +211,11 @@ export default function MainScreen() {
         setTempBook(tempBook)
     }
 
-    const handleOtherPointChange = record => dispatch(setRecord(record))
+    const handleOtherPointChange = otherPoint => dispatch(setRecord({
+        ...record,
+        ...otherPoint,
+        settings: { ...otherPoint.settings }
+    }))
 
     const getSimilarActivities = (absentServants, record, certificate) => {
         if (record.orderSection === "depart") return [];
@@ -253,10 +257,12 @@ export default function MainScreen() {
     const submitOtherPoints = () => {
         let records = record.servants.map((el, ind) => {
             return {
-                ...record,
+                orderSection: record.orderSection,
+                sectionType: record.sectionType,
                 servant_id: el,
                 certificate: record.certificate[ind],
                 certificate_issue_date: record.certificate_issue_date[ind],
+                settings: { ...record.settings }
             }
         });
         if (records.length > 0) return records;

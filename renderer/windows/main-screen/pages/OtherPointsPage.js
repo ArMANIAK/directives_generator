@@ -1,9 +1,39 @@
 import Grid from "@mui/material/Grid2";
 import { FormControl, MenuItem, TextField } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import FinancialSupport from "./FinancialSupport";
+import ReassignmentPage from "./ReassignmentPage";
+import {useDispatch, useSelector} from "react-redux";
+import {GenerateFullTitle} from "../../../utilities/ServantsGenerators";
+import {setServants, setTitles} from "../../../store";
 
 export default function OtherPointsPage({ handleOtherPointChange, record }) {
+
+    const dispatch = useDispatch();
+    const [ , setDictionaries ] = useState({});
+
+    const titles = useSelector(state => state.dictionaries.titles);
+    const titlesList = titles.map(el => ({
+        label: `${el.title_index} - ${GenerateFullTitle(el, "nominative")}`,
+        value: el.title_index
+    }));
+
+    useEffect(() => {
+        getDictionaries();
+    }, []);
+
+    const getDictionaries = () => {
+        if (typeof window !== 'undefined' && window.electron) {
+            const ipcRenderer = window.electron.ipcRenderer;
+            ipcRenderer.invoke('get-dict').then((result) => {
+                dispatch(setTitles(result.titles));
+                dispatch(setServants(result.servants));
+                setDictionaries(result);
+            }).catch((err) => {
+                console.error('Error fetching dictionary:', err);
+            });
+        }
+    }
 
     const initialState = {
         sectionType: "financial_support",
@@ -73,7 +103,7 @@ export default function OtherPointsPage({ handleOtherPointChange, record }) {
                             label="Інші пункти наказу по стройовій"
                             name="sectionType"
                             value={ record.sectionType || "financial_support" }
-                            onChange={ event => {handleOtherPointChange({ ...record, sectionType: event.target.value })} }
+                            onChange={ event => { handleOtherPointChange({ ...record, sectionType: event.target.value })} }
                             slotProps={ { inputLabel: { shrink: true } } }
                         >
                             { otherPoints.map(el => <MenuItem key={el.value} value={el.value}>{el.label}</MenuItem>) }
@@ -87,6 +117,14 @@ export default function OtherPointsPage({ handleOtherPointChange, record }) {
                     handleMultipleValueChange={ handleMultipleValueChange }
                     addServant={ addServant }
                     deleteServant={ deleteServant }
+                />
+            }
+            { record.sectionType === "reassignment" &&
+                <ReassignmentPage
+                    record={ record }
+                    handleMultipleValueChange={ handleMultipleValueChange }
+                    handleOtherPointChange={ handleOtherPointChange }
+                    titlesList={ titlesList }
                 />
             }
         </Grid>
