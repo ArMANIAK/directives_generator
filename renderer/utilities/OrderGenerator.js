@@ -494,7 +494,8 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
                 `${settings.bonus} %${!settings.state_secret ? " та" : ","} надбавку за особливе проходження служби у розмірі ` +
                 `${settings.NOPS}% посадового окладу з урахуванням окладу за військовим званням`;
             if (settings.state_secret)
-                directive += ` та надбавку за роботу в умовах режимних обмежень у розмірі ${settings.state_secret} % до посадового окладу з ${settings.reassigned_date}`;
+                directive += ` та надбавку за роботу в умовах режимних обмежень у розмірі ${settings.state_secret} % до посадового окладу ` +
+                    `з ${formatDate(settings.reassigned_date, false)}`;
             directive += `.\n\nПідстава: витяг із наказу ${settings.nomenclature} (по особовому складу) від ${formatDate(settings.order_date, false)} ` +
                 `№ ${settings.order_no}, рапорт ${GenerateRankAndName(servant.servant_id, "genitive")} (вх. № ${servant.certificate} від ${servant.certificate_issue_date}).\n\n`;
         }
