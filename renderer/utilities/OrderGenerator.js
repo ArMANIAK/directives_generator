@@ -272,8 +272,8 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                         directive += `${GenerateJustification(arrivePullSection[absence_type][destination][date])}`;
                     }
                 }
+                middleCount++;
             }
-            middleCount++;
         }
     }
     for (let absence_type of withoutDestination) {
