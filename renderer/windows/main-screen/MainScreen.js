@@ -41,8 +41,8 @@ import OtherPointsPage from "./pages/OtherPointsPage";
 export default function MainScreen() {
 
     const dispatch = useDispatch();
-    const record = useSelector(state => state.record)
-    const pull = useSelector(state => state.pull, shallowEqual)
+    const record = useSelector(state => { return {...state.record } }, shallowEqual)
+    const pull = useSelector(state => [ ...state.pull ], shallowEqual)
     const [ , setServantsState ] = useState([])
     const [ tempBook, setTempBook ] = useState([]);
     const [ absentServants, setAbsentServants ] = useState([]);
@@ -107,7 +107,10 @@ export default function MainScreen() {
         console.log(tempBook)
         let autoPull = tempBook.reduce((acc, el, index) => {
             let row = convertTempBookToPull(el);
-            row.orderSection = "" + el.depart_order_no === "" + record.order_no ? "depart" : "arrive";
+            if (row.depart_order_no && "" + row.depart_order_no === "" + record.order_no)
+                row.orderSection = "depart";
+            else
+                row.orderSection = "arrive";
             if (!existInPull(row)
                 && ("" + row.depart_order_no === "" + record.order_no
                     || "" + row.arrive_order_no === "" + record.order_no
@@ -235,7 +238,6 @@ export default function MainScreen() {
             let result = (similarActivities.length > 0)
                 ? {
                     ...similarActivities[0],
-                    fact_date_end: record.fact_date_end,
                     orderSection: record.orderSection,
                     order_no: record.order_no,
                     order_date: record.order_date,
@@ -243,10 +245,17 @@ export default function MainScreen() {
             result.servant_id = el;
             result.certificate = record.certificate[ind];
             result.certificate_issue_date = record.certificate_issue_date[ind];
-            if (result.orderSection === "depart") result.fact_date_end = "";
-            if (!result.id) {
-                result.id = tempBook.length + ind;
-                setTempBook(state => [ ...state, convertPullToTempBook(result) ]);
+            if (result.orderSection === "arrive") result.fact_date_end = record.fact_date_end;
+            let newRecord = convertPullToTempBook(result);
+            if (result.id || result.id === 0) {
+                setTempBook(state => {
+                    let newTempbookState = [...state];
+                    newTempbookState[result.id] = newRecord;
+                    return newTempbookState;
+                })
+            } else {
+                newRecord.id = tempBook.length + ind;
+                setTempBook(state => [ ...state, newRecord ]);
             }
             return result;
         });
@@ -278,17 +287,9 @@ export default function MainScreen() {
     }
 
     const SaveClauses = () => {
-        const updatedTempBook = [ ...tempBook ];
-        pull.filter(el => el.orderSection !== "other_points").forEach(el => {
-            const tempBookRecordUpdates = convertPullToTempBook(el)
-            if (el.id || el.id === 0)
-                updatedTempBook[el.id] = { ...tempBook[el.id], ...tempBookRecordUpdates }
-            else updatedTempBook.push(tempBookRecordUpdates)
-        })
-
         const ipcRenderer = window.electron.ipcRenderer;
-        ipcRenderer.invoke('save-temp-book', updatedTempBook.filter(el => el)).then(() => {
-            setTempBook(updatedTempBook)
+        ipcRenderer.invoke('save-temp-book', tempBook.filter(el => el)).then(() => {
+            setTempBook([ ...tempBook ]);
         }).catch((err) => {
             console.error('Error saving temporal book:', err);
         });

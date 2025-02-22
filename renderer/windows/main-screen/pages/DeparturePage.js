@@ -159,7 +159,7 @@ export default function DeparturePage({
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
                 </Grid>
-                { !["medical_care", "health_circumstances", "medical_board"].includes(record.absence_type) && <>
+                { !["medical_care", "medical_board"].includes(record.absence_type) && <>
                     <Grid size={2}>
                         <TextField
                             type='number'
@@ -184,7 +184,7 @@ export default function DeparturePage({
                         />
                     </Grid>
                 </> }
-                { ['health_circumstances', 'vacation', 'family_circumstances'].includes(record.absence_type) &&
+                { ['vacation', 'family_circumstances'].includes(record.absence_type) &&
                     <Grid size={2}>
                         <TextField
                             type='number'
