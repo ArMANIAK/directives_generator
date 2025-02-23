@@ -482,9 +482,10 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
     if (otherClausesPull.reassignment) {
         for (let servant of otherClausesPull.reassignment) {
             let settings = servant.settings;
-            let currentServant = GenerateServantRankNameAndTitle(servant.servant_id, "accusative", "full");
+            let currentServant = GenerateRankAndName(servant.servant_id, "accusative", "full");
             directive += `${starting_index++}. ${currentServant[0].toLocaleUpperCase() + currentServant.slice(1)}, ` +
-                `призначен${isFemale(servant.servant_id) ? "у" : "ого"} наказом ${settings.nomenclature} (по особовому складу) від ` +
+                GenerateFullTitleByTitleIndex(settings.old_title_index, "accusative") +
+                `, призначен${isFemale(servant.servant_id) ? "у" : "ого"} наказом ${settings.nomenclature} (по особовому складу) від ` +
                 `${formatDate(settings.order_date, false)} № ${settings.order_no} на посаду ` +
                 `${GenerateFullTitleByTitleIndex(settings.title_index)}, ВОС-${settings.MOS}, вважати так${isFemale(servant.servant_id) ? "ою" : "им"}, ` +
                 `що з ${formatDate(settings.reassigned_date, false)} справи та посаду прийня${isFemale(servant.servant_id) ? "ла" : "в"} ` +

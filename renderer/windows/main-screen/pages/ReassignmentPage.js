@@ -3,8 +3,9 @@ import ServantSelector from "../../../components/ServantSelector";
 import { TextField } from "@mui/material";
 import { useEffect } from "react";
 import Selector from "../../../components/Selector";
+import { useSelector } from "react-redux";
 
-export default function ReassignmentPage({ record, handleMultipleValueChange, handleOtherPointChange, titlesList }) {
+export default function ReassignmentPage({ handleMultipleValueChange, handleOtherPointChange, titlesList }) {
 
     const initialState = {
         nomenclature: "",
@@ -20,6 +21,8 @@ export default function ReassignmentPage({ record, handleMultipleValueChange, ha
         bonus: "",
         state_secret: ""
     };
+
+    const record = useSelector(state => state.record)
 
     const handleChange = event => {
         const { name, value } = event.target;
