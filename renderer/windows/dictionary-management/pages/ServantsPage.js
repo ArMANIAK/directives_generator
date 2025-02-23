@@ -5,8 +5,8 @@ import DictionaryViewer from "../../../components/DictionaryViewer";
 import { SERVANTS_VAR } from "../../../dictionaries/constants";
 import {
     GenerateFullDepartment,
-    GenerateRankAndName,
-    GenerateRankName
+    GenerateFullTitle,
+    GenerateRankAndName
 } from "../../../utilities/ServantsGenerators";
 import Selector from "../../../components/Selector";
 import { useSelector } from "react-redux";
@@ -27,10 +27,6 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
         "rank": "",
         "speciality": "",
         "gender": "",
-        "primary_title": "",
-        "primary_department": "",
-        "secondary_title": "",
-        "secondary_department": "",
         "supplied_by": "",
         "title_index": "",
         "retired": "ні"
@@ -41,11 +37,11 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
     const ranks = require("../../../dictionaries/ranks.json");
     const ranksList = ranks.map(el => ({ label: el.name_nominative, value: el.id }))
 
-    const departments = useSelector(state => state.dictionaries.departments);
-    const departmentsList = departments.map(el => ({ label: el.name_nominative, value: el.id }))
-
     const titles = useSelector(state => state.dictionaries.titles);
-    const titlesList = titles.map(el => ({ label: el.name_nominative, value: el.id }))
+    const titlesList = titles.map(el => ({
+        label: `${el.title_index} - ${GenerateFullTitle(el, "nominative")}`,
+        value: el.title_index
+    }))
 
     const handleChange = event => {
         let updated = { ...servant, [event.target.name]: event.target.value };
@@ -72,26 +68,15 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
 
     const headers = [
         { label: "Військовослужбовець / працівник ЗСУ", eval: row => GenerateRankAndName(row.id, "nominative") },
-        { label: "Підрозділ", eval: row => GenerateFullDepartment(row.primary_department || row.secondary_department, "nominative", true) },
-    ];
-
-    const generateServantPreview = () => {
-        let result = `${GenerateRankName(servant.rank, servant.speciality, "nominative")} ${servant.last_name_nominative} ${servant.first_name_short}`;
-        const isFullDepartment = servant.primary_department && servant.secondary_department;
-        const firstTitle = titles.find(el => parseInt(el.id) === parseInt(servant.primary_title));
-        if (firstTitle)
-            result += ", " + firstTitle['name_nominative'];
-        if (servant.primary_department)
-            result += " " + GenerateFullDepartment(servant.primary_department, "genitive", isFullDepartment)
-        if (servant.secondary_title) {
-            const secondTitle = titles.find(el => parseInt(el.id) === parseInt(servant.secondary_title));
-            if (secondTitle)
-                result += " - " + secondTitle['name_nominative'] + " ";
-            if (servant.secondary_department)
-                result += " " + GenerateFullDepartment(servant.secondary_department, "genitive");
+        { label: "Індекс посади", value: "title_index"},
+        { label: "Підрозділ", eval: row => {
+                let titleByIndex = titles.find(el => el.title_index === row.title_index);
+                if (titleByIndex)
+                    return GenerateFullDepartment(titleByIndex.primary_department || titleByIndex.secondary_department, "nominative", true)
+                return "";
+            }
         }
-        return result;
-    }
+    ];
 
     return (
         <Grid direction={'column'} container spacing={2}>
@@ -235,46 +220,6 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                 </Grid>
             </Grid>
             <Grid container>
-                <Grid size={5}>
-                    <Selector
-                        handleChange={ handleChange }
-                        label="Первинна посада"
-                        list={ titlesList }
-                        name="primary_title"
-                        value={ servant.primary_title }
-                    />
-                </Grid>
-                <Grid size={5}>
-                    <Selector
-                        handleChange={ handleChange }
-                        label="Підрозділ первинної посади"
-                        list={ departmentsList }
-                        name="primary_department"
-                        value={ servant.primary_department }
-                    />
-                </Grid>
-            </Grid>
-            <Grid container>
-                <Grid size={5}>
-                    <Selector
-                        handleChange={ handleChange }
-                        label="Вторинна посада"
-                        list={ titlesList }
-                        name="secondary_title"
-                        value={ servant.secondary_title }
-                    />
-                </Grid>
-                <Grid size={5}>
-                    <Selector
-                        handleChange={ handleChange }
-                        label="Підрозділ вторинної посади"
-                        list={ departmentsList }
-                        name="secondary_department"
-                        value={ servant.secondary_department }
-                    />
-                </Grid>
-            </Grid>
-            <Grid container>
                 <Grid size={8}>
                     <TextField
                         fullWidth
@@ -298,19 +243,16 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                 </Grid>
             </Grid>
             <Grid container>
-                <Grid size={5}>
-                    <TextField
+                <Grid size={8}>
+                    <Selector
                         fullWidth
+                        handleChange={ handleChange }
                         label="Індекс поточної посади"
+                        list={ titlesList }
                         name="title_index"
                         value={ servant.title_index }
-                        onChange={ handleChange }
-                        slotProps={ { inputLabel: { shrink: true } } }
                     />
                 </Grid>
-            </Grid>
-            <Grid>
-                { generateServantPreview() }
             </Grid>
             <Grid>
                 <Button

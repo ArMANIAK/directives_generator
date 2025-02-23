@@ -1,4 +1,4 @@
-import { getServantById, getTitles, getDepartments } from "../services/ServantsService";
+import { getServantById, getRoles, getTitles, getDepartments } from "../services/ServantsService";
 const ranks = require("../dictionaries/ranks.json");
 
 
@@ -32,22 +32,39 @@ export function GenerateName(id, nameCase = "accusative", form = "short") {
     return servant['last_name_' + nameCase] + ' ' + (form === 'short' ? servant.first_name_short : servant['first_name_' + nameCase]);
 }
 
-export function GenerateFullTitle(id, servantCase = "accusative", form = "short") {
+export function GenerateFullTitleByTitleIndex(index, titleCase = "accusative") {
+    const title = getTitles().find(el => "" + el.title_index === "" + index)
+    if (!title) return "";
+    return GenerateFullTitle(title, titleCase)
+}
+
+export function GenerateFullTitle(title, titleCase = "accusative") {
+    let fullTitle = "";
+    const primaryRole = getRoles().find(el => el.id === title.primary_role);
+    const primaryRoleName = primaryRole ? primaryRole["name_" + titleCase] : "";
+    if (primaryRoleName) fullTitle += primaryRoleName;
+    if (title.primary_department)
+        fullTitle += " " + GenerateFullDepartment(title.primary_department, "genitive", !!title.secondary_role)
+    if (title.secondary_role) {
+        const secondaryTitle = getRoles().find(el => el.id === title.secondary_role);
+        if (secondaryTitle)
+            fullTitle += ` – ${secondaryTitle["name_" + titleCase]}`;
+    }
+    if (title.secondary_department) fullTitle += " " + GenerateFullDepartment(title.secondary_department)
+    return fullTitle;
+
+}
+
+export function GenerateServantRankNameAndTitle(id, servantCase = "accusative", form = "short") {
     const servant = getServantById(id);
     if (!servant) return "";
-    let fullTitle = GenerateRankAndName(id, servantCase, form);
-    const primaryTitle = getTitles().find(el => el.id === servant.primary_title);
-    const primaryTitleName = primaryTitle ? primaryTitle["name_" + servantCase] : "";
-    if (primaryTitleName) fullTitle += `, ${primaryTitleName}`;
-    if (servant.primary_department)
-        fullTitle += " " + GenerateFullDepartment(servant.primary_department, "genitive", !!servant.secondary_title)
-    if (servant.secondary_title) {
-        const secondaryTitle = getTitles().find(el => el.id === servant.secondary_title);
-        if (secondaryTitle)
-            fullTitle += ` – ${secondaryTitle["name_" + servantCase]}`;
-    }
-    if (servant.secondary_department) fullTitle += " " + GenerateFullDepartment(servant.secondary_department)
-    return fullTitle;
+    let fullText = GenerateRankAndName(id, servantCase, form);
+    const title = getTitles().find(el => el.title_index === servant.title_index);
+    if (!title) return fullText;
+    const fullTitle = GenerateFullTitle(title, servantCase);
+    if (fullTitle)
+        fullText += `, ${fullTitle}`
+    return fullText;
 }
 
 export function GenerateFullDepartment(id, departmentCase = 'genitive', firstLevel = false) {

@@ -11,7 +11,7 @@ import {
     Radio,
     RadioGroup, TextField
 } from "@mui/material";
-import {  GenerateFullTitle } from "../../utilities/ServantsGenerators";
+import {  GenerateServantRankNameAndTitle } from "../../utilities/ServantsGenerators";
 import { GenerateOrder } from "../../utilities/OrderGenerator";
 import {
     dateToDatepickerString,
@@ -21,6 +21,7 @@ import {
 } from "../../utilities/DateUtilities";
 import {convertPullToTempBook, convertTempBookToPull} from "../../utilities/PullToTempBookConverter"
 import {
+    setRoles,
     setTitles,
     setDepartments,
     setServants,
@@ -36,13 +37,15 @@ import {
 import ArrivalPage from "./pages/ArrivalPage";
 import DeparturePage from "./pages/DeparturePage";
 import OtherPointsPage from "./pages/OtherPointsPage";
+import { SERVANTS_SHEET, SERVANTS_VAR } from "../../dictionaries/constants";
+import { getServantById } from "../../services/ServantsService";
 
 export default function MainScreen() {
 
     const dispatch = useDispatch();
     const record = useSelector(state => { return {...state.record } }, shallowEqual)
     const pull = useSelector(state => [ ...state.pull ], shallowEqual)
-    const [ , setServantsState ] = useState([])
+    const [ servants, setServantsState ] = useState([])
     const [ tempBook, setTempBook ] = useState([]);
     const [ absentServants, setAbsentServants ] = useState([]);
 
@@ -51,10 +54,11 @@ export default function MainScreen() {
             const ipcRenderer = window.electron.ipcRenderer;
 
             ipcRenderer.invoke('get-dict').then((result) => {
-                dispatch(setTitles(result.titles))
-                dispatch(setDepartments(result.departments))
-                dispatch(setServants(result.servants.filter(el => el.retired !== "так")))
-                setServantsState(result.servants)
+                dispatch(setRoles(result.roles));
+                dispatch(setTitles(result.titles));
+                dispatch(setDepartments(result.departments));
+                dispatch(setServants(result.servants));
+                setServantsState(result.servants);
             }).catch((err) => {
                 console.error('Error fetching dictionary:', err);
             });
@@ -212,7 +216,11 @@ export default function MainScreen() {
         setTempBook(tempBook)
     }
 
-    const handleOtherPointChange = record => dispatch(setRecord(record))
+    const handleOtherPointChange = otherPoint => dispatch(setRecord({
+        ...record,
+        ...otherPoint,
+        settings: { ...otherPoint.settings }
+    }))
 
     const getSimilarActivities = (absentServants, record, certificate) => {
         if (record.orderSection === "depart") return [];
@@ -259,12 +267,33 @@ export default function MainScreen() {
 
     const submitOtherPoints = () => {
         let records = record.servants.map((el, ind) => {
-            return {
-                ...record,
+            const newPoint = {
+                orderSection: record.orderSection,
+                sectionType: record.sectionType,
                 servant_id: el,
                 certificate: record.certificate[ind],
                 certificate_issue_date: record.certificate_issue_date[ind],
+                settings: { ...record.settings }
+            };
+            if (record.sectionType === "reassignment") {
+                const servant = getServantById(el)
+                newPoint.settings.old_title_index = servant?.title_index;
+                let updatedServants = servants.map(el => {
+                    if (el.id === record.servants[0]) {
+                        return { ...el, title_index: record.settings.title_index };
+                    } else return el;
+                })
+                const ipcRenderer = window.electron.ipcRenderer;
+                ipcRenderer.invoke("save-dict", { dictionaryType: SERVANTS_VAR, dictionary: updatedServants })
+                    .then(() => {
+                        dispatch(setServants(updatedServants));
+                        setServantsState([ ...updatedServants ]);
+                    })
+                    .catch((err) => {
+                        console.error(`Error saving ${SERVANTS_SHEET} dictionary:`, err);
+                    });
             }
+            return newPoint;
         });
         if (records.length > 0) return records;
         return [];
@@ -338,7 +367,7 @@ export default function MainScreen() {
                 </Grid>
             </Grid>
             <Grid container>
-                {!record.servant ? "" : GenerateFullTitle(record.servant.id, "nominative")}
+                {!record.servant ? "" : GenerateServantRankNameAndTitle(record.servant.id, "nominative")}
             </Grid>
             { record.orderSection === "arrive" && <ArrivalPage
                 record={ record }

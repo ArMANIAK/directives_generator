@@ -1,5 +1,7 @@
 const XLSX = require("xlsx");
 const {
+    ROLES_VAR,
+    ROLES_SHEET,
     TITLES_VAR,
     TITLES_SHEET,
     DEPARTMENTS_VAR,
@@ -22,10 +24,6 @@ const servantsHeaderMapToRaw = {
     "rank": "Військове звання (ідентифікатор з аркуша \"Військові звання\")",
     "speciality": "Спеціалізація",
     "gender": "Гендер",
-    "primary_title": "Основна посада (ідентифікатор з аркуша \"Посади\")",
-    "primary_department": "Основний підрозділ (ідентифікатор з аркуша \"Підрозділи\")",
-    "secondary_title": "Вторинна посада (через тире до основної посади, ідентифікатор з аркуша \"Посади\")",
-    "secondary_department": "Вторинний підрозділ (ідентифікатор з аркуша \"Підрозділи\")",
     "supplied_by": "На котловому забезпеченні при...",
     "title_index": "Індекс посади",
     "retired": "Звільнений/переведений"
@@ -45,10 +43,6 @@ const servantsRawMapToHeader = {
     "Військове звання (ідентифікатор з аркуша \"Військові звання\")": "rank",
     "Спеціалізація": "speciality",
     "Гендер": "gender",
-    "Основна посада (ідентифікатор з аркуша \"Посади\")": "primary_title",
-    "Основний підрозділ (ідентифікатор з аркуша \"Підрозділи\")": "primary_department",
-    "Вторинна посада (через тире до основної посади, ідентифікатор з аркуша \"Посади\")": "secondary_title",
-    "Вторинний підрозділ (ідентифікатор з аркуша \"Підрозділи\")": "secondary_department",
     "На котловому забезпеченні при...": "supplied_by",
     "Індекс посади": "title_index",
     "Звільнений/переведений": "retired"
@@ -69,18 +63,36 @@ const departmentsHeadersMapToRaw = {
     "parent_id": "Ідентифікатор керівного підрозділу"
 }
 
+const rolesRawMapToHeaders = {
+    "Ідентифікатор": "id",
+    "Назва ролі в називному відмінку": "name_nominative",
+    "Назва ролі в давальному відмінку": "name_dative",
+    "Назва ролі в знахідному відмінку": "name_accusative"
+}
+
+const rolesHeadersMapToRaw = {
+    "id": "Ідентифікатор",
+    "name_nominative": "Назва ролі в називному відмінку",
+    "name_dative": "Назва ролі в давальному відмінку",
+    "name_accusative": "Назва ролі в знахідному відмінку"
+}
+
 const titlesRawMapToHeaders = {
     "Ідентифікатор": "id",
-    "Назва посади в називному відмінку": "name_nominative",
-    "Назва посади в давальному відмінку": "name_dative",
-    "Назва посади в знахідному відмінку": "name_accusative"
+    "Індекс посади": "title_index",
+    "Основна роль (ідентифікатор з аркуша \"Ролі\")": "primary_role",
+    "Основний підрозділ (ідентифікатор з аркуша \"Підрозділи\")": "primary_department",
+    "Вторинна роль (через тире до основної ролі, ідентифікатор з аркуша \"Ролі\")": "secondary_role",
+    "Вторинний підрозділ (ідентифікатор з аркуша \"Підрозділи\")": "secondary_department"
 }
 
 const titlesHeadersMapToRaw = {
     "id": "Ідентифікатор",
-    "name_nominative": "Назва посади в називному відмінку",
-    "name_dative": "Назва посади в давальному відмінку",
-    "name_accusative": "Назва посади в знахідному відмінку"
+    "title_index": "Індекс посади",
+    "primary_role": "Основна роль (ідентифікатор з аркуша \"Ролі\")",
+    "primary_department": "Основний підрозділ (ідентифікатор з аркуша \"Підрозділи\")",
+    "secondary_role": "Вторинна роль (через тире до основної ролі, ідентифікатор з аркуша \"Ролі\")",
+    "secondary_department": "Вторинний підрозділ (ідентифікатор з аркуша \"Підрозділи\")"
 }
 
 const tempBookRawMapToHeaders = {
@@ -135,10 +147,12 @@ const convertHeaders = (data, headerDictionary) => {
 
 const loadDictionaries = dictionaryFilePath => {
     const workbook = XLSX.readFile(dictionaryFilePath);
+    let roles = XLSX.utils.sheet_to_json(workbook.Sheets[ROLES_SHEET], { header: 1, defval: "" });
     let titles = XLSX.utils.sheet_to_json(workbook.Sheets[TITLES_SHEET], { header: 1, defval: "" });
-    let departments = XLSX.utils.sheet_to_json(workbook.Sheets["Підрозділи"], { header: 1, defval: "" });
-    let servants = XLSX.utils.sheet_to_json(workbook.Sheets["Персонал"], { header: 1, defval: "" });
+    let departments = XLSX.utils.sheet_to_json(workbook.Sheets[DEPARTMENTS_SHEET], { header: 1, defval: "" });
+    let servants = XLSX.utils.sheet_to_json(workbook.Sheets[SERVANTS_SHEET], { header: 1, defval: "" });
     return {
+        roles: convertHeaders(roles, rolesRawMapToHeaders),
         titles: convertHeaders(titles, titlesRawMapToHeaders),
         departments: convertHeaders(departments, departmentsRawMapToHeaders),
         servants: convertHeaders(servants, servantsRawMapToHeader) };
@@ -164,6 +178,11 @@ const saveDictionary = (dictionaryFilePath, dictionaryType, data) => {
     console.log("SAVE DICTIONARY", dictionaryType, data);
     let sheet, converter;
     switch (dictionaryType) {
+        case ROLES_VAR: {
+            sheet = ROLES_SHEET;
+            converter = rolesHeadersMapToRaw;
+            break;
+        }
         case TITLES_VAR: {
             sheet = TITLES_SHEET;
             converter = titlesHeadersMapToRaw;

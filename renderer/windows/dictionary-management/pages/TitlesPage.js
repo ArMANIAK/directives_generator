@@ -3,17 +3,28 @@ import { TextField, Button } from "@mui/material";
 import { useState } from "react";
 import DictionaryViewer from "../../../components/DictionaryViewer";
 import { TITLES_VAR } from "../../../dictionaries/constants";
+import Selector from "../../../components/Selector";
+import { useSelector } from "react-redux";
+import { GenerateFullDepartment, GenerateFullTitle } from "../../../utilities/ServantsGenerators";
 
 export default function TitlesPage({ saveRecord, removeRecord }) {
 
     const initState = {
         id: undefined,
-        name_nominative: "",
-        name_dative: "",
-        name_accusative: ""
+        "title_index": "",
+        "primary_role": "",
+        "primary_department": "",
+        "secondary_role": "",
+        "secondary_department": "",
     }
 
     const [ title, setTitle ] = useState(initState);
+
+    const roles = useSelector(state => state.dictionaries.roles);
+    const rolesList = roles.map(el => ({ label: el.name_nominative, value: el.id }))
+
+    const departments = useSelector(state => state.dictionaries.departments);
+    const departmentsList = departments.map(el => ({ label: el.name_nominative, value: el.id }))
 
     const handleChange = event => {
         let updated = { ...title, [event.target.name]: event.target.value };
@@ -32,42 +43,74 @@ export default function TitlesPage({ saveRecord, removeRecord }) {
 
     const headers = [
         {
+            label: "Індекс посади",
+            value: "title_index"
+        },
+        {
             label: "Назва посади",
+            eval: el => GenerateFullTitle(el, "nominative"),
             value: "name_nominative"
+        },
+        { label: "Підрозділ", eval: row => {
+                return GenerateFullDepartment(row.primary_department || row.secondary_department, "nominative", true)
+            }
         }
     ]
 
     return (
         <Grid direction={'column'} container spacing={2}>
-            <Grid>
+            <Grid size={5}>
                 <TextField
                     fullWidth
-                    label="Назва посади в називному відмінку"
-                    name="name_nominative"
-                    value={ title.name_nominative }
+                    label="Індекс посади"
+                    name="title_index"
+                    value={ title.title_index }
                     onChange={ handleChange }
                     slotProps={ { inputLabel: { shrink: true } } }
                 />
             </Grid>
-            <Grid>
-                <TextField
-                    fullWidth
-                    label="Назва посади в давальному відмінку"
-                    name="name_dative"
-                    value={ title.name_dative }
-                    onChange={ handleChange }
-                    slotProps={ { inputLabel: { shrink: true } } }
-                />
+            <Grid container>
+                <Grid size={5}>
+                    <Selector
+                        handleChange={ handleChange }
+                        label="Первинна роль"
+                        list={ rolesList }
+                        name="primary_role"
+                        value={ title.primary_role }
+                    />
+                </Grid>
+                <Grid size={5}>
+                    <Selector
+                        handleChange={ handleChange }
+                        label="Підрозділ первинної ролі"
+                        list={ departmentsList }
+                        name="primary_department"
+                        value={ title.primary_department }
+                    />
+                </Grid>
+            </Grid>
+            <Grid container>
+                <Grid size={5}>
+                    <Selector
+                        handleChange={ handleChange }
+                        label="Вторинна роль"
+                        list={ rolesList }
+                        name="secondary_role"
+                        value={ title.secondary_role }
+                    />
+                </Grid>
+                <Grid size={5}>
+                    <Selector
+                        handleChange={ handleChange }
+                        label="Підрозділ вторинної ролі"
+                        list={ departmentsList }
+                        name="secondary_department"
+                        value={ title.secondary_department }
+                    />
+                </Grid>
             </Grid>
             <Grid>
-                <TextField
-                    fullWidth
-                    label="Назва посади в знахідному відмінку"
-                    name="name_accusative"
-                    value={ title.name_accusative }
-                    onChange={ handleChange }
-                    slotProps={ { inputLabel: { shrink: true } } }
-                />
+                { GenerateFullTitle(title, "nominative") }
             </Grid>
             <Grid>
                 <Button

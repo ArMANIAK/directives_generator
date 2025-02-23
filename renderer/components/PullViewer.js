@@ -46,6 +46,10 @@ export default function PullViewer({ deleteFromTempbook }) {
         } else {
             if (el.sectionType === 'financial_support')
                 activity = "ГДО";
+            else if (el.sectionType === 'social_support')
+                activity = "Соціально-побутова допомога"
+            else if (el.sectionType === 'reassignment')
+                activity = "Перепризначення"
             else
                 activity = 'інші пункти'
         }

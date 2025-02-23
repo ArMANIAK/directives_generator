@@ -3,10 +3,10 @@
 import { GenerateRankAndName, GetGeneralDepartmentName } from "../utilities/ServantsGenerators";
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import { getServants } from "../services/ServantsService"
+import { getActiveServants } from "../services/ServantsService"
 
 export default function ServantSelector({ value, handleChange }) {
-    const servants = getServants();
+    const servants = getActiveServants();
 
     let chosenServant = { label: "", id: "" };
     const servantsList = servants ? servants.map(el => {

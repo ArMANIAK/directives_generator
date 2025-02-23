@@ -1,8 +1,12 @@
-import { getServantById, isEmployee } from "../services/ServantsService";
+import {convertAmountIntoWords, getServantById, isEmployee, isFemale} from "../services/ServantsService";
 const certificate = require("../dictionaries/certificates.json");
 
 import {formatDate, dateMath, dateStartToEndFormat, dayEnding} from "./DateUtilities";
-import { GenerateRankAndName, GenerateFullTitle } from "./ServantsGenerators";
+import {
+    GenerateFullTitleByTitleIndex,
+    GenerateRankAndName,
+    GenerateServantRankNameAndTitle
+} from "./ServantsGenerators";
 
 function GenerateAddToRation(servant_id, order_date = null) {
     const servant = getServantById(servant_id);
@@ -33,7 +37,7 @@ function GenerateServantBlock(
     with_ration_certificate = false,
     isCapitalised = false
 ) {
-    let servant = `${GenerateFullTitle(servant_id)}.\n\n`;
+    let servant = `${GenerateServantRankNameAndTitle(servant_id)}.\n\n`;
     let block = isCapitalised ? servant[0].toLocaleUpperCase() + servant.slice(1) : servant;
     if (!isEmployee(servant_id) && addOrRemove === "add")
         block += GenerateAddToRation(servant_id, order_date);
@@ -400,7 +404,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                     withSubClauses = true;
                     directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                 }
-                let fullServantTitle = GenerateFullTitle(servant.servant_id);
+                let fullServantTitle = GenerateServantRankNameAndTitle(servant.servant_id);
                 let block = withSubClauses ? fullServantTitle[0].toLocaleUpperCase() + fullServantTitle.slice(1) : fullServantTitle;
                 let vacationTerm = "";
                 switch (absence_type) {
@@ -475,6 +479,28 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
 function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
     if (!Object.keys(otherClausesPull)) return "";
     let directive = "";
+    if (otherClausesPull.reassignment) {
+        for (let servant of otherClausesPull.reassignment) {
+            let settings = servant.settings;
+            let currentServant = GenerateRankAndName(servant.servant_id, "accusative", "full");
+            directive += `${starting_index++}. ${currentServant[0].toLocaleUpperCase() + currentServant.slice(1)}, ` +
+                GenerateFullTitleByTitleIndex(settings.old_title_index, "accusative") +
+                `, призначен${isFemale(servant.servant_id) ? "у" : "ого"} наказом ${settings.nomenclature} (по особовому складу) від ` +
+                `${formatDate(settings.order_date, false)} № ${settings.order_no} на посаду ` +
+                `${GenerateFullTitleByTitleIndex(settings.title_index)}, ВОС-${settings.MOS}, вважати так${isFemale(servant.servant_id) ? "ою" : "им"}, ` +
+                `що з ${formatDate(settings.reassigned_date, false)} справи та посаду прийня${isFemale(servant.servant_id) ? "ла" : "в"} ` +
+                `і приступи${isFemale(servant.servant_id) ? "ла" : "в"} до виконання службових обов’язків за посадою. Встановити посадовий оклад ` +
+                `згідно з тарифним розрядом ${settings.tarif} у сумі ${settings.amount} (${convertAmountIntoWords(settings.amount)} 00 копійок, ` +
+                `шпк “${settings.position_category}”.\nВиплачувати щомісячну премію за особистий внесок у загальні результати служби в розмірі ` +
+                `${settings.bonus} %${!settings.state_secret ? " та" : ","} надбавку за особливе проходження служби у розмірі ` +
+                `${settings.NOPS}% посадового окладу з урахуванням окладу за військовим званням`;
+            if (settings.state_secret)
+                directive += ` та надбавку за роботу в умовах режимних обмежень у розмірі ${settings.state_secret} % до посадового окладу ` +
+                    `з ${formatDate(settings.reassigned_date, false)}`;
+            directive += `.\n\nПідстава: витяг із наказу ${settings.nomenclature} (по особовому складу) від ${formatDate(settings.order_date, false)} ` +
+                `№ ${settings.order_no}, рапорт ${GenerateRankAndName(servant.servant_id, "genitive")} (вх. № ${servant.certificate} від ${servant.certificate_issue_date}).\n\n`;
+        }
+    }
     if (otherClausesPull.financial_support) {
         let middle_ind = 1;
         directive = `виплатити грошову допомогу на оздоровлення за ${(new Date()).getFullYear()} рік згідно з ` +
@@ -483,19 +509,43 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
         if (otherClausesPull.financial_support.length > 1) {
             directive = starting_index + ". Нижчепойменованим військовослужбовцям " + directive + ":\n\n";
             for (let servant of otherClausesPull.financial_support) {
-                let currentServant = GenerateFullTitle(servant.servant_id, "dative", "full");
+                let currentServant = GenerateServantRankNameAndTitle(servant.servant_id, "dative", "full");
                 directive += `${starting_index}.${middle_ind++}. ` + currentServant[0].toLocaleUpperCase() +
                     currentServant.slice(1) + ".\n\n" + "Підстава: рапорт " +
                     GenerateRankAndName(servant.servant_id, "genitive") + " (вх. № " + servant.certificate +
                     " від " + formatDate(new Date(servant.certificate_issue_date)) + ").\n\n";
             }
         } else {
-            let servant = GenerateFullTitle(otherClausesPull.financial_support[0]["servant_id"], "dative", "full");
+            let servant = GenerateServantRankNameAndTitle(otherClausesPull.financial_support[0]["servant_id"], "dative", "full");
             directive = `${starting_index}. ` + servant[0].toLocaleUpperCase() + servant.slice(1) + " " + directive + ".\n\n" + "Підстава: рапорт " +
                 GenerateRankAndName(otherClausesPull.financial_support[0].servant_id, "genitive") +
                 " (вх. № " + otherClausesPull.financial_support[0].certificate + " від " +
                 formatDate(new Date(otherClausesPull.financial_support[0].certificate_issue_date)) + ").\n\n";
         }
+        starting_index++;
+    }
+    if (otherClausesPull.social_support) {
+        let middle_ind = 1;
+        let text = ` виплатити грошову допомогу для вирішення соціально-побутових питань за ${(new Date()).getFullYear()} рік згідно з ` +
+            `наказом Міністерства оборони України від 07.06.2018 № 260 "Про затвердження Порядку виплати грошового забезпечення` +
+            ` військовослужбовцям Збройних Сил України та деяким іншим особам" у розмірі місячного грошового забезпечення`;
+        if (otherClausesPull.social_support.length > 1) {
+            directive += starting_index + ". Нижчепойменованим військовослужбовцям " + text + ":\n\n";
+            for (let servant of otherClausesPull.social_support) {
+                let currentServant = GenerateServantRankNameAndTitle(servant.servant_id, "dative", "full");
+                directive += `${starting_index}.${middle_ind++}. ` + currentServant[0].toLocaleUpperCase() +
+                    currentServant.slice(1) + ".\n\n" + "Підстава: рапорт " +
+                    GenerateRankAndName(servant.servant_id, "genitive") + " (вх. № " + servant.certificate +
+                    " від " + formatDate(new Date(servant.certificate_issue_date)) + ").\n\n";
+            }
+        } else {
+            let servant = GenerateServantRankNameAndTitle(otherClausesPull.financial_support[0]["servant_id"], "dative", "full");
+            directive += `${starting_index}. ` + servant[0].toLocaleUpperCase() + servant.slice(1) + " " + text + ".\n\n" + "Підстава: рапорт " +
+                GenerateRankAndName(otherClausesPull.social_support[0].servant_id, "genitive") +
+                " (вх. № " + otherClausesPull.social_support[0].certificate + " від " +
+                formatDate(new Date(otherClausesPull.social_support[0].certificate_issue_date)) + ").\n\n";
+        }
+        starting_index++;
     }
 
     return directive;

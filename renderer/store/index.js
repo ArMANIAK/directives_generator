@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import dictionaryReducer from './slices/dictionarySlice';
 import recordSlice from "./slices/recordSlice";
 import pullReducer from './slices/pullSlice';
-import { setTitles, setDepartments, setServants } from "./slices/dictionarySlice";
+import { setRoles, setTitles, setDepartments, setServants } from "./slices/dictionarySlice";
 import { setRecord, resetRecord, setRecordArray, addServantRecord, deleteServantRecord } from "./slices/recordSlice";
 import { addRow, removeRow, resetPull, clearTempBookRecords } from "./slices/pullSlice";
 
@@ -16,6 +16,7 @@ const store = configureStore({
 
 export {
     store,
+    setRoles,
     setTitles,
     setDepartments,
     setServants,
