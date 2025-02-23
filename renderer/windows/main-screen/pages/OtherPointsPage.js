@@ -3,9 +3,10 @@ import { FormControl, MenuItem, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import FinancialSupport from "./FinancialSupport";
 import ReassignmentPage from "./ReassignmentPage";
-import {useDispatch, useSelector} from "react-redux";
-import {GenerateFullTitle} from "../../../utilities/ServantsGenerators";
-import {setServants, setTitles} from "../../../store";
+import AssignmentPage from "./AssignmentPage";
+import { useDispatch, useSelector } from "react-redux";
+import { GenerateFullTitle } from "../../../utilities/ServantsGenerators";
+import { setServants, setTitles } from "../../../store";
 
 export default function OtherPointsPage({ handleOtherPointChange, record }) {
 
@@ -43,6 +44,10 @@ export default function OtherPointsPage({ handleOtherPointChange, record }) {
     };
 
     const otherPoints = [
+        {
+            label: "Призначення",
+            value: "assignment"
+        },
         {
             label: "Грошова допомога на оздоровлення",
             value: "financial_support"
@@ -121,6 +126,14 @@ export default function OtherPointsPage({ handleOtherPointChange, record }) {
             }
             { record.sectionType === "reassignment" &&
                 <ReassignmentPage
+                    record={ record }
+                    handleMultipleValueChange={ handleMultipleValueChange }
+                    handleOtherPointChange={ handleOtherPointChange }
+                    titlesList={ titlesList }
+                />
+            }
+            { record.sectionType === "assignment" &&
+                <AssignmentPage
                     record={ record }
                     handleMultipleValueChange={ handleMultipleValueChange }
                     handleOtherPointChange={ handleOtherPointChange }

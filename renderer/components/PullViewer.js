@@ -1,5 +1,5 @@
 import { Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Button } from "@mui/material";
-import { GenerateRankAndName } from "../utilities/ServantsGenerators";
+import { GenerateRankAndName, GenerateRankName } from "../utilities/ServantsGenerators";
 import { useDispatch, useSelector } from "react-redux";
 import { removeRow, setRecord } from "../store";
 import { formatDate } from "../utilities/DateUtilities";
@@ -48,13 +48,17 @@ export default function PullViewer({ deleteFromTempbook }) {
                 activity = "ГДО";
             else if (el.sectionType === 'social_support')
                 activity = "Соціально-побутова допомога"
+            else if (el.sectionType === 'assignment')
+                activity = "Призначення"
             else if (el.sectionType === 'reassignment')
                 activity = "Перепризначення"
             else
                 activity = 'інші пункти'
         }
 
-        const servant = GenerateRankAndName(el.servant_id, 'nominative');
+        const servant = el.servant_id ?
+            GenerateRankAndName(el.servant_id, 'nominative') :
+            GenerateRankName(el.settings.rank, el.settings.speciality, "nominative") + ` ${el.settings.last_name_nominative} ${el.settings.first_name_short}`;
         const destination = !el.destination ? 'Не релевантно' : el.destination;
         const absence = el.orderSection === "other_points" ? ""
             : (absence_type.find(item => item.value.toLowerCase() === el.absence_type.toLowerCase())?.label ?? 'Не релевантно');

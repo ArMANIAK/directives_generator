@@ -266,9 +266,11 @@ export default function MainScreen() {
     }
 
     const submitOtherPoints = () => {
+        let updatedServants;
         let records = record.servants.map((el, ind) => {
             const newPoint = {
                 orderSection: record.orderSection,
+                order_date: record.order_date,
                 sectionType: record.sectionType,
                 servant_id: el,
                 certificate: record.certificate[ind],
@@ -278,23 +280,47 @@ export default function MainScreen() {
             if (record.sectionType === "reassignment") {
                 const servant = getServantById(el)
                 newPoint.settings.old_title_index = servant?.title_index;
-                let updatedServants = servants.map(el => {
+                updatedServants = servants.map(el => {
                     if (el.id === record.servants[0]) {
                         return { ...el, title_index: record.settings.title_index };
                     } else return el;
                 })
-                const ipcRenderer = window.electron.ipcRenderer;
-                ipcRenderer.invoke("save-dict", { dictionaryType: SERVANTS_VAR, dictionary: updatedServants })
-                    .then(() => {
-                        dispatch(setServants(updatedServants));
-                        setServantsState([ ...updatedServants ]);
-                    })
-                    .catch((err) => {
-                        console.error(`Error saving ${SERVANTS_SHEET} dictionary:`, err);
-                    });
+            }
+            if (record.sectionType === "assignment") {
+                let lastID = servants.at(-1).id;
+                const servant = {
+                    "id": parseInt(lastID) + 1,
+                    "first_name_nominative": record.settings.first_name_nominative,
+                    "first_name_genitive": record.settings.first_name_genitive,
+                    "first_name_dative": record.settings.first_name_dative,
+                    "first_name_accusative": record.settings.first_name_accusative,
+                    "first_name_short": record.settings.first_name_short,
+                    "last_name_nominative": record.settings.last_name_nominative,
+                    "last_name_genitive": record.settings.last_name_genitive,
+                    "last_name_dative": record.settings.last_name_dative,
+                    "last_name_accusative": record.settings.last_name_accusative,
+                    "rank": record.settings.rank,
+                    "speciality": record.settings.speciality,
+                    "gender": record.settings.gender,
+                    "supplied_by": record.settings.supplied_by,
+                    "title_index": record.settings.title_index,
+                    "retired": "ні"
+                }
+                updatedServants = [ ...servants, servant ]
             }
             return newPoint;
         });
+        if (updatedServants) {
+            const ipcRenderer = window.electron.ipcRenderer;
+            ipcRenderer.invoke("save-dict", { dictionaryType: SERVANTS_VAR, dictionary: updatedServants })
+                .then(() => {
+                    dispatch(setServants(updatedServants));
+                    setServantsState([ ...updatedServants ]);
+                })
+                .catch((err) => {
+                    console.error(`Error saving ${SERVANTS_SHEET} dictionary:`, err);
+                });
+        }
         if (records.length > 0) return records;
         return [];
     }

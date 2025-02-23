@@ -5,6 +5,7 @@ import {formatDate, dateMath, dateStartToEndFormat, dayEnding} from "./DateUtili
 import {
     GenerateFullTitleByTitleIndex,
     GenerateRankAndName,
+    GenerateRankName,
     GenerateServantRankNameAndTitle
 } from "./ServantsGenerators";
 
@@ -100,6 +101,10 @@ console.dir(groupedPull);
     let arrive = groupedPull['arrive'];
     let depart = groupedPull['depart'];
     let other = groupedPull['other_points'];
+    if (other?.assignment) {
+        directive += GenerateAssignmentClauses(other, starting_index)
+        starting_index += other.assignment.length
+    }
     if (arrive) directive += GenerateArriveClauses(arrive, starting_index++);
     if (depart) directive += GenerateDepartureClauses(depart, starting_index++);
     if (other) directive += GenerateOtherClauses(other, starting_index++);
@@ -226,6 +231,47 @@ const withoutDestination = [
     "sick_leave",
     "sick_employee"
 ]
+
+function GenerateAssignmentClauses(otherPullSection, starting_index = 1) {
+    if (!otherPullSection.assignment) return "";
+    let directive = "";
+    for (let servant of otherPullSection.assignment) {
+        let settings = servant.settings;
+        const tomorrow = dateMath(servant.order_date ? new Date(servant.order_date) : new Date(), 1);
+        const formattedTomorrow = formatDate(tomorrow, false);
+        let servantRankAccusative = GenerateRankName(settings.rank, settings.speciality, "accusative");
+        let servantRankGenitive = GenerateRankName(settings.rank, settings.speciality, "genitive");
+        directive += `${starting_index++}. ${servantRankAccusative[0].toLocaleUpperCase() + servantRankAccusative.slice(1)} ${settings.last_name_accusative} ${settings.first_name_accusative}, ` +
+            `, призначен${settings.gender === "ж" ? "у" : "ого"} наказом ${settings.nomenclature} (по особовому складу) від ` +
+            `${formatDate(settings.order_date, false)} № ${settings.order_no} на посаду ` +
+            `${GenerateFullTitleByTitleIndex(settings.title_index)}, ВОС-${settings.MOS}, як${settings.gender === "ж" ? "а" : "ий"} ` +
+            `прибу${settings.gender === "ж" ? "ла" : "в"} з ${settings.arrived_from}, з ${formatDate(settings.arrival_date, false)} ` +
+            `зарахувати до списків особового складу частини на всі види забезпечення `;
+        if (settings.assigned_date)
+            directive += `та вважати так${settings.gender === "ж" ? "ою" : "им"}, що з ${formatDate(settings.assigned_date, false)} ` +
+            `справи та посаду прийня${isFemale(servant.servant_id) ? "ла" : "в"} ` +
+            `і приступи${isFemale(servant.servant_id) ? "ла" : "в"} до виконання службових обов’язків за посадою`;
+        directive += `.\nЗарахувати ${servantRankAccusative} ${settings.last_name_accusative} ${settings.first_name_short} на котлове забезпечення при ` +
+            `${settings.supplied_by} за каталогом продуктів – зі сніданку ${formattedTomorrow}.\n`;
+        directive += `Встановити посадовий оклад згідно з тарифним розрядом ${settings.tarif} у сумі ${settings.amount} ` +
+            `(${convertAmountIntoWords(settings.amount)} 00 копійок на місяць.\n` +
+            `Виплачувати щомісячну премію за особистий внесок у загальні результати служби в розмірі ` +
+            `${settings.bonus} %${!settings.state_secret ? " та" : ","} надбавку за особливе проходження служби у розмірі ` +
+            `${settings.NOPS}% посадового окладу з урахуванням окладу за військовим званням`;
+        if (settings.state_secret)
+            directive += ` та надбавку за роботу в умовах режимних обмежень у розмірі ${settings.state_secret} % до посадового окладу ` +
+                `з ${formatDate(settings.reassigned_date, false)}`;
+        directive += `.\nВступний інструктаж з охорони праці пройшов ${formatDate(settings.arrival_date, false)}.\n\n` +
+            `Підстава: припис ${settings.prescription_issuer} від ${formatDate(settings.prescription_date)} № ${settings.prescription_no} ` +
+            `(вх. № ${settings.registry_prescription_no} від ${formatDate(settings.registry_prescription_date)}), витяг із наказу ` +
+            `${settings.nomenclature} (по особовому складу) від ${formatDate(settings.order_date, false)} № ${settings.order_no}`;
+        if (settings.ration_certificate_no)
+            directive += `, продовольчий атестат від ${formatDate(settings.ration_certificate_date)} № ${settings.ration_certificate_no}`;
+        directive += `, рапорт ${servantRankGenitive} ${settings.last_name_genitive} ` +
+            `${settings.first_name_short} (вх. № ${servant.certificate} від ${formatDate(servant.certificate_issue_date)}).\n\n`;
+    }
+    return directive;
+}
 
 function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
     if (!Object.keys(arrivePullSection)) return "";
