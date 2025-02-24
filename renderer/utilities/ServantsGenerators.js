@@ -21,6 +21,10 @@ export function GenerateRankNameByServantId(id, rankCase = "accusative") {
     return GenerateRankName(servant.rank, servant.speciality, rankCase);
 }
 
+export function GetTitleByIndex(title_index) {
+    return getTitles().find(el => "" + el.title_index === "" + title_index);
+}
+
 export function GetTitleIndex(servant_id) {
     const servant = getServantById(servant_id);
     if (!servant) return "";

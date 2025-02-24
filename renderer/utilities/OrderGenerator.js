@@ -169,7 +169,7 @@ const addArriveClauseToPull = (groupedPull, record) => {
 
 const addDepartureClauseToPull = (groupedPull, record) => {
     let groupDate = record.date_start;
-    if (record.absence_type === "mission" || record.absence_type === "sick_leave")
+    if (["mission", "sick_leave", "health_circumstances"].includes(record.absence_type))
         groupDate = dateStartToEndFormat(record.date_start, record.planned_date_end);
     if (record.absence_type === "mission" && !record.planned_date_end)
         groupDate += " до окремого розпорядження";
@@ -242,7 +242,7 @@ function GenerateAssignmentClauses(otherPullSection, starting_index = 1) {
         let servantRankAccusative = GenerateRankName(settings.rank, settings.speciality, "accusative");
         let servantRankGenitive = GenerateRankName(settings.rank, settings.speciality, "genitive");
         directive += `${starting_index++}. ${servantRankAccusative[0].toLocaleUpperCase() + servantRankAccusative.slice(1)} ${settings.last_name_accusative} ${settings.first_name_accusative}, ` +
-            `, призначен${settings.gender === "ж" ? "у" : "ого"} наказом ${settings.nomenclature} (по особовому складу) від ` +
+            `призначен${settings.gender === "ж" ? "у" : "ого"} наказом ${settings.nomenclature} (по особовому складу) від ` +
             `${formatDate(settings.order_date, false)} № ${settings.order_no} на посаду ` +
             `${GenerateFullTitleByTitleIndex(settings.title_index)}, ВОС-${settings.MOS}, як${settings.gender === "ж" ? "а" : "ий"} ` +
             `прибу${settings.gender === "ж" ? "ла" : "в"} з ${settings.arrived_from}, з ${formatDate(settings.arrival_date, false)} ` +
@@ -257,7 +257,7 @@ function GenerateAssignmentClauses(otherPullSection, starting_index = 1) {
             `(${convertAmountIntoWords(settings.amount)} 00 копійок на місяць.\n` +
             `Виплачувати щомісячну премію за особистий внесок у загальні результати служби в розмірі ` +
             `${settings.bonus} %${!settings.state_secret ? " та" : ","} надбавку за особливе проходження служби у розмірі ` +
-            `${settings.NOPS}% посадового окладу з урахуванням окладу за військовим званням`;
+            `${settings.NOPS} % посадового окладу з урахуванням окладу за військовим званням`;
         if (settings.state_secret)
             directive += ` та надбавку за роботу в умовах режимних обмежень у розмірі ${settings.state_secret} % до посадового окладу ` +
                 `з ${formatDate(settings.reassigned_date, false)}`;
