@@ -539,7 +539,7 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
                 `згідно з тарифним розрядом ${settings.tarif} у сумі ${settings.amount} (${convertAmountIntoWords(settings.amount)} 00 копійок, ` +
                 `шпк “${settings.position_category}”.\nВиплачувати щомісячну премію за особистий внесок у загальні результати служби в розмірі ` +
                 `${settings.bonus} %${!settings.state_secret ? " та" : ","} надбавку за особливе проходження служби у розмірі ` +
-                `${settings.NOPS}% посадового окладу з урахуванням окладу за військовим званням`;
+                `${settings.NOPS} % посадового окладу з урахуванням окладу за військовим званням`;
             if (settings.state_secret)
                 directive += ` та надбавку за роботу в умовах режимних обмежень у розмірі ${settings.state_secret} % до посадового окладу ` +
                     `з ${formatDate(settings.reassigned_date, false)}`;
@@ -585,7 +585,7 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
                     " від " + formatDate(new Date(servant.certificate_issue_date)) + ").\n\n";
             }
         } else {
-            let servant = GenerateServantRankNameAndTitle(otherClausesPull.financial_support[0]["servant_id"], "dative", "full");
+            let servant = GenerateServantRankNameAndTitle(otherClausesPull.social_support[0]["servant_id"], "dative", "full");
             directive += `${starting_index}. ` + servant[0].toLocaleUpperCase() + servant.slice(1) + " " + text + ".\n\n" + "Підстава: рапорт " +
                 GenerateRankAndName(otherClausesPull.social_support[0].servant_id, "genitive") +
                 " (вх. № " + otherClausesPull.social_support[0].certificate + " від " +
