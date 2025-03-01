@@ -118,8 +118,8 @@ export default function MainScreen() {
                     || "" + row.arrive_order_no === "" + record.order_no
                     || shouldReturn(row, record.order_date))) {
                 row.id = index;
-                row.order_no = record.order_no;
-                row.order_date = record.order_date;
+                row.arrive_order_no = record.order_no;
+                row.arrive_order_date = record.order_date;
                 if (row.orderSection === "arrive" && !row.fact_date_end) {
                     if (dateStringCompare(row.planned_date_end, record.order_date) === -1)
                         row.fact_date_end = dateToDatepickerString(
@@ -245,8 +245,13 @@ export default function MainScreen() {
                     order_date: record.order_date,
                 } : { ...record };
             result.servant_id = el;
-            result.certificate = record.certificate[ind];
-            result.certificate_issue_date = record.certificate_issue_date[ind];
+            //  Don't want to add new columns though can't see a way to keep both prescription and certificate after arriving
+            //  so, as for now will comment this piece of code
+            //
+            // if (!["medical_care", "medical_board"].includes(record.absence_type)) {
+            //     result.certificate = record.certificate[ind];
+            //     result.certificate_issue_date = record.certificate_issue_date[ind];
+            // }
             if (result.orderSection === "arrive") result.fact_date_end = record.fact_date_end;
             let newRecord = convertPullToTempBook(result);
             if (result.id || result.id === 0) {
@@ -334,9 +339,14 @@ export default function MainScreen() {
     }
 
     const SaveClauses = () => {
+        const updatedTempBook = [ ...tempBook ];
+        pull.forEach(el => {
+            if (el.from_temp_book)
+                updatedTempBook[el.id] = el;
+        })
         const ipcRenderer = window.electron.ipcRenderer;
-        ipcRenderer.invoke('save-temp-book', tempBook.filter(el => el)).then(() => {
-            setTempBook([ ...tempBook ]);
+        ipcRenderer.invoke('save-temp-book', updatedTempBook.filter(el => el)).then(() => {
+            setTempBook(updatedTempBook);
         }).catch((err) => {
             console.error('Error saving temporal book:', err);
         });
