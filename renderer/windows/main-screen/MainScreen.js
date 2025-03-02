@@ -215,8 +215,11 @@ export default function MainScreen() {
     }
 
     const deleteFromTempbook = id => {
-        tempBook.splice(id, 1)
-        setTempBook(tempBook)
+        setTempBook(state => {
+            let updatedTempBook = [ ...state ];
+            updatedTempBook.splice(id, 1)
+            return updatedTempBook
+        })
     }
 
     const handleOtherPointChange = otherPoint => dispatch(setRecord({
@@ -252,12 +255,10 @@ export default function MainScreen() {
             result.stop_substituting = !!record.stop_substituting[ind];
             result.substituting_servants = record.substituting_servants[ind];
             //  Don't want to add new columns though can't see a way to keep both prescription and certificate after arriving
-            //  so, as for now will comment this piece of code
-            //
-            // if (!["medical_care", "medical_board"].includes(record.absence_type)) {
-            //     result.certificate = record.certificate[ind];
-            //     result.certificate_issue_date = record.certificate_issue_date[ind];
-            // }
+            if (!["medical_care", "medical_board"].includes(record.absence_type) || record.orderSection === "depart") {
+                result.certificate = record.certificate[ind];
+                result.certificate_issue_date = record.certificate_issue_date[ind];
+            }
             if (result.orderSection === "arrive") result.fact_date_end = record.fact_date_end;
             else result.fact_date_end = "";
             let newRecord = convertPullToTempBook(result);
@@ -268,6 +269,7 @@ export default function MainScreen() {
                     return newTempbookState;
                 })
             } else {
+                result.id = tempBook.length + ind;
                 newRecord.id = tempBook.length + ind;
                 setTempBook(state => [ ...state, newRecord ]);
             }
@@ -347,7 +349,7 @@ export default function MainScreen() {
         const updatedTempBook = [ ...tempBook ];
         pull.forEach(el => {
             if (el.from_temp_book)
-                updatedTempBook[el.id] = el;
+                updatedTempBook[el.id] = convertPullToTempBook(el);
         })
         const tempBookForSave = updatedTempBook.map(el => {
             const cleansedEl = {}

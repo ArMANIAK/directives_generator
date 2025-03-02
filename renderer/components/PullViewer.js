@@ -28,9 +28,12 @@ export default function PullViewer({ deleteFromTempbook }) {
         record.servants = [ record.servant_id ];
         record.certificate = [ record.certificate ];
         record.certificate_issue_date = [ record.certificate_issue_date ];
+        record.start_substituting = [ record.start_substituting ];
+        record.stop_substituting = [ record.stop_substituting ];
+        record.substituting_servants = [ record.substituting_servants ];
         dispatch(setRecord(record));
         dispatch(removeRow(id));
-        deleteFromTempbook(id);
+        deleteFromTempbook(pull[id].id);
     }
 
     console.log(" PULL VIEWER", pull)

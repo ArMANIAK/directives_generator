@@ -54,12 +54,18 @@ export const recordSlice = createSlice({
             state.servants.push("");
             state.certificate.push("");
             state.certificate_issue_date.push("");
+            state.start_substituting.push("");
+            state.stop_substituting.push("");
+            state.substituting_servants.push("");
         },
         deleteServantRecord: (state, action) => {
             let index = action.payload
             state.servants.splice(index, 1);
             state.certificate.splice(index, 1);
             state.certificate_issue_date.splice(index, 1);
+            state.start_substituting.splice(index, 1);
+            state.stop_substituting.splice(index, 1);
+            state.substituting_servants.splice(index, 1);
         }
     }
 })

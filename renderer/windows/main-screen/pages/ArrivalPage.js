@@ -1,5 +1,5 @@
 import Grid from "@mui/material/Grid2";
-import {Checkbox, FormControl, FormControlLabel, MenuItem, TextField} from "@mui/material";
+import { Checkbox, FormControl, FormControlLabel, MenuItem, Paper, TextField } from "@mui/material";
 import absence_types from "../../../dictionaries/absence_types.json";
 import ServantSelector from "../../../components/ServantSelector";
 import { IoIosAddCircleOutline, IoIosTrash } from "react-icons/io";
@@ -98,75 +98,77 @@ export default function ArrivalPage({
             </Grid>
             { Array.isArray(record.servants) && record.servants.map((el, ind) => {
                 return (
-                    <Grid direction={'column'} container spacing={2} key={`servant-selector-${ind}`}>
-                        <Grid container spacing={4} alignItems="center" >
-                            <Grid size={6}>
-                                <ServantSelector
-                                    value={el}
-                                    handleChange={ handleServantSelectorChange(ind) }
-                                />
-                            </Grid>
-                            { record.absence_type === "mission" &&
-                                <>
-                                    <Grid size={1}>
-                                        <IoIosAddCircleOutline
-                                            size={30}
-                                            onClick={addServant}
-                                        />
-                                    </Grid>
-                                    <Grid size={1}>
-                                        <IoIosTrash
-                                            size={30}
-                                            color={ record.servants.length > 1 ? "black" : "lightgray" }
-                                            onClick={record.servants.length > 1 ? deleteServant(ind) : null}
-                                        />
-                                    </Grid>
-                                </>
-                            }
-                        </Grid>
-                        <Grid container alignItems="center">
-                            <FormControlLabel
-                                control={ <Checkbox
-                                    name="stop_substituting"
-                                    checked={ !!record.stop_substituting[ind] }
-                                /> }
-                                label="Повернутися до виконання обовʼязків"
-                                onChange={ handleMultipleValueChange(ind) }
-                            />
-                            { !!record.stop_substituting[ind] &&
+                    <Paper style={{padding: "24px"}} key={`servant-selector-${ind}`}>
+                        <Grid direction={'column'} container spacing={ !!record.stop_substituting[ind] ? 0 : 5.5 }>
+                            <Grid container spacing={4} alignItems="center" >
                                 <Grid size={6}>
                                     <ServantSelector
-                                        name="substituting_servants"
-                                        value={record.substituting_servants[ind] }
-                                        handleChange={ handleMultipleValueChange(ind) }
+                                        value={el}
+                                        handleChange={ handleServantSelectorChange(ind) }
                                     />
                                 </Grid>
-                            }
-                        </Grid>
-                        <Grid container>
-                            <Grid size={5}>
-                                <TextField
-                                    fullWidth
-                                    label={ reasonLabel }
-                                    name="certificate"
-                                    value={record.certificate[ind]}
-                                    onChange={ handleMultipleValueChange(ind) }
-                                    slotProps={ { inputLabel: { shrink: true } } }
-                                />
+                                { record.absence_type === "mission" &&
+                                    <>
+                                        <Grid size={1}>
+                                            <IoIosAddCircleOutline
+                                                size={30}
+                                                onClick={addServant}
+                                            />
+                                        </Grid>
+                                        <Grid size={1}>
+                                            <IoIosTrash
+                                                size={30}
+                                                color={ record.servants.length > 1 ? "black" : "lightgray" }
+                                                onClick={record.servants.length > 1 ? deleteServant(ind) : null}
+                                            />
+                                        </Grid>
+                                    </>
+                                }
                             </Grid>
-                            <Grid size={3}>
-                                <TextField
-                                    fullWidth
-                                    type="date"
-                                    label="від"
-                                    name="certificate_issue_date"
-                                    value={record.certificate_issue_date[ind]}
+                            <Grid container spacing={4} alignItems="center">
+                                <FormControlLabel
+                                    control={ <Checkbox
+                                        name="stop_substituting"
+                                        checked={ !!record.stop_substituting[ind] || false }
+                                    /> }
+                                    label="Повернутися до виконання обовʼязків"
                                     onChange={ handleMultipleValueChange(ind) }
-                                    slotProps={ { inputLabel: { shrink: true } } }
                                 />
+                                { !!record.stop_substituting[ind] &&
+                                    <Grid size={6}>
+                                        <ServantSelector
+                                            name="substituting_servants"
+                                            value={ record.substituting_servants[ind] || "" }
+                                            handleChange={ handleMultipleValueChange(ind) }
+                                        />
+                                    </Grid>
+                                }
+                            </Grid>
+                            <Grid container spacing={2}>
+                                <Grid size={5}>
+                                    <TextField
+                                        fullWidth
+                                        label={ reasonLabel }
+                                        name="certificate"
+                                        value={record.certificate[ind]}
+                                        onChange={ handleMultipleValueChange(ind) }
+                                        slotProps={ { inputLabel: { shrink: true } } }
+                                    />
+                                </Grid>
+                                <Grid size={3}>
+                                    <TextField
+                                        fullWidth
+                                        type="date"
+                                        label="від"
+                                        name="certificate_issue_date"
+                                        value={record.certificate_issue_date[ind]}
+                                        onChange={ handleMultipleValueChange(ind) }
+                                        slotProps={ { inputLabel: { shrink: true } } }
+                                    />
+                                </Grid>
                             </Grid>
                         </Grid>
-                    </Grid>
+                    </Paper>
                 )
             })}
             <Grid container>
