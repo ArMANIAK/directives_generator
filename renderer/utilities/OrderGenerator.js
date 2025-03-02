@@ -6,7 +6,8 @@ import {
     GenerateFullTitleByTitleIndex,
     GenerateRankAndName,
     GenerateRankName,
-    GenerateServantRankNameAndTitle
+    GenerateServantRankNameAndTitle,
+    GetTitleIndex
 } from "./ServantsGenerators";
 
 function GenerateAddToRation(servant_id, order_date = null) {
@@ -31,15 +32,29 @@ function GenerateRemoveFromRation(servant_id, order_date, with_ration_certificat
 }
 
 function GenerateServantBlock(
-    servant_id,
-    start_date,
-    order_date,
+    {
+        servant_id,
+        start_date,
+        order_date,
+        with_ration_certificate,
+        start_substituting,
+        stop_substituting,
+        substituting_servants
+  },
     addOrRemove = "add",
-    with_ration_certificate = false,
     isCapitalised = false
 ) {
     let servant = `${GenerateServantRankNameAndTitle(servant_id)}.\n\n`;
     let block = isCapitalised ? servant[0].toLocaleUpperCase() + servant.slice(1) : servant;
+    if (start_substituting && substituting_servants)
+        block += `Тимчасове виконання обовʼязків за посадою ${GenerateFullTitleByTitleIndex(GetTitleIndex(servant_id))} ` +
+            `покласти на ${GenerateServantRankNameAndTitle(substituting_servants)}.\n\n`;
+    else if (stop_substituting && substituting_servants) {
+        let subst_servant = GenerateRankAndName(substituting_servants, "dative");
+        if (subst_servant)
+            block += `${subst_servant[0].toLocaleUpperCase() + subst_servant.slice(1)} повернутися до виконання обовʼязків ` +
+                `за посадою ${GenerateFullTitleByTitleIndex(GetTitleIndex(substituting_servants))}.\n\n`;
+    }
     if (!isEmployee(servant_id) && addOrRemove === "add")
         block += GenerateAddToRation(servant_id, order_date);
     if (!isEmployee(servant_id) && addOrRemove === "remove") {
@@ -290,7 +305,7 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                 if (arrivePullSection.mission[destination][date].length > 0) {
                     directive += `${formatDate(new Date(date), false)}:\n\n`;
                     for (let servant of arrivePullSection.mission[destination][date]) {
-                        directive += GenerateServantBlock(servant.servant_id, servant.date_start, servant.order_date);
+                        directive += GenerateServantBlock(servant);
                     }
                     directive += `${GenerateJustification(arrivePullSection.mission[destination][date])}`;
                 }
@@ -316,8 +331,7 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                                 withSubClauses = true;
                                 directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                             }
-                            directive += GenerateServantBlock(servant.servant_id, servant.date_start, servant.order_date,
-                                "add", servant.with_ration_certificate, withSubClauses);
+                            directive += GenerateServantBlock(servant, "add", withSubClauses);
                         }
                         directive += `${GenerateJustification(arrivePullSection[absence_type][destination][date])}`;
                     }
@@ -361,8 +375,7 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                             withSubClauses = true;
                             directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                         }
-                        directive += GenerateServantBlock(servant.servant_id, servant.date_start, servant.order_date,
-                            "add", servant.with_ration_certificate, withSubClauses);
+                        directive += GenerateServantBlock(servant, "add", withSubClauses);
                     }
                     directive += `${GenerateJustification(arrivePullSection[absence_type][date])}`;
                 }
@@ -391,7 +404,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                 for (let purpose in departurePullSection.mission[destination][date]) {
                     directive += `${purpose}:\n\n`;
                     for (let servant of departurePullSection.mission[destination][date][purpose]) {
-                        directive += GenerateServantBlock(servant.servant_id, servant.date_start, servant.order_date, "remove", servant.with_ration_certificate);
+                        directive += GenerateServantBlock(servant, "remove");
                     }
                     directive += `${GenerateJustification(departurePullSection.mission[destination][date][purpose])}`;
                 }
@@ -418,8 +431,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                                 withSubClauses = true;
                                 directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                             }
-                            directive += GenerateServantBlock(servant.servant_id, servant.date_start, servant.order_date,
-                                "remove", servant.with_ration_certificate, withSubClauses);
+                            directive += GenerateServantBlock(servant, "remove", withSubClauses);
                             directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
                                 " (вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
                                 " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
@@ -507,7 +519,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                             directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                         }
                         directive += GenerateTripDays(servant.trip_days);
-                        directive += GenerateServantBlock(servant.servant_id, servant.date_start, servant.order_date, "remove", servant.with_ration_certificate, withSubClauses);
+                        directive += GenerateServantBlock(servant, "remove", withSubClauses);
 
                         directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
                             " (вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +

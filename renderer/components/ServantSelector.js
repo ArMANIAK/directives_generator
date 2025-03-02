@@ -5,7 +5,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { getActiveServants } from "../services/ServantsService"
 
-export default function ServantSelector({ value, handleChange }) {
+export default function ServantSelector({ name, value, handleChange }) {
     const servants = getActiveServants();
 
     let chosenServant = { label: "", id: "" };
@@ -22,7 +22,7 @@ export default function ServantSelector({ value, handleChange }) {
 
     const autocompleteChangeHandler = (event, value)  => {
         let id = value ? value.id : undefined;
-        handleChange({ ...event, target: { name: "servants", value: id } });
+        handleChange({ ...event, target: { name: name ?? "servants", value: id } });
     }
 
     return (

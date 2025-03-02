@@ -106,19 +106,42 @@ export default function ArrivalPage({
                                     handleChange={ handleServantSelectorChange(ind) }
                                 />
                             </Grid>
-                            <Grid size={1}>
-                                <IoIosAddCircleOutline
-                                    size={30}
-                                    onClick={addServant}
-                                />
-                            </Grid>
-                            <Grid size={1}>
-                                <IoIosTrash
-                                    size={30}
-                                    color={ record.servants.length > 1 ? "black" : "lightgray" }
-                                    onClick={record.servants.length > 1 ? deleteServant(ind) : null}
-                                />
-                            </Grid>
+                            { record.absence_type === "mission" &&
+                                <>
+                                    <Grid size={1}>
+                                        <IoIosAddCircleOutline
+                                            size={30}
+                                            onClick={addServant}
+                                        />
+                                    </Grid>
+                                    <Grid size={1}>
+                                        <IoIosTrash
+                                            size={30}
+                                            color={ record.servants.length > 1 ? "black" : "lightgray" }
+                                            onClick={record.servants.length > 1 ? deleteServant(ind) : null}
+                                        />
+                                    </Grid>
+                                </>
+                            }
+                        </Grid>
+                        <Grid container alignItems="center">
+                            <FormControlLabel
+                                control={ <Checkbox
+                                    name="stop_substituting"
+                                    checked={ !!record.stop_substituting[ind] }
+                                /> }
+                                label="Повернутися до виконання обовʼязків"
+                                onChange={ handleMultipleValueChange(ind) }
+                            />
+                            { !!record.stop_substituting[ind] &&
+                                <Grid size={6}>
+                                    <ServantSelector
+                                        name="substituting_servants"
+                                        value={record.substituting_servants[ind] }
+                                        handleChange={ handleMultipleValueChange(ind) }
+                                    />
+                                </Grid>
+                            }
                         </Grid>
                         <Grid container>
                             <Grid size={5}>

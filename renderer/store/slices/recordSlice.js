@@ -23,7 +23,10 @@ const initialState = {
     "with_ration_certificate": false,
     "ration_certificate": "",
     "ration_certificate_issue_date": "",
-    "settings": {}
+    "settings": {},
+    "start_substituting": [""],
+    "stop_substituting": [""],
+    "substituting_servants": [""]
 }
 
 export const recordSlice = createSlice({
@@ -37,7 +40,11 @@ export const recordSlice = createSlice({
             return newState
         },
         resetRecord: (state) => {
-            return { ...initialState, order_no: state.order_no, order_date: state.order_date };
+            return { ...initialState,
+                orderSection: state.orderSection,
+                order_no: state.order_no,
+                order_date: state.order_date
+            };
         },
         setRecordArray: (state, action) => {
             const { field, index, value } = action.payload;

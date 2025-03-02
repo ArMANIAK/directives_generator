@@ -39,6 +39,7 @@ import DeparturePage from "./pages/DeparturePage";
 import OtherPointsPage from "./pages/OtherPointsPage";
 import { SERVANTS_SHEET, SERVANTS_VAR } from "../../dictionaries/constants";
 import { getServantById } from "../../services/ServantsService";
+import { tempBookHeadersMapToRaw } from "../../services/ExcelActions";
 
 export default function MainScreen() {
 
@@ -114,8 +115,8 @@ export default function MainScreen() {
             else
                 row.orderSection = "arrive";
             if (!existInPull(row)
-                && ("" + row.depart_order_no === "" + record.order_no
-                    || "" + row.arrive_order_no === "" + record.order_no
+                && (row.depart_order_no && "" + row.depart_order_no === "" + record.order_no
+                    || row.arrive_order_no && "" + row.arrive_order_no === "" + record.order_no
                     || shouldReturn(row, record.order_date))) {
                 row.id = index;
                 row.arrive_order_no = record.order_no;
@@ -196,10 +197,12 @@ export default function MainScreen() {
     }
 
     const handleMultipleValueChange = ind => event => {
+        const field = event.target.name;
+        const value = ["start_substituting", "stop_substituting"].includes(field) ? event.target.checked : event.target.value
         dispatch(setRecordArray({
-            field: event.target.name,
+            field,
             index: ind,
-            value: event.target.value
+            value
         }))
     }
 
@@ -245,6 +248,9 @@ export default function MainScreen() {
                     order_date: record.order_date,
                 } : { ...record };
             result.servant_id = el;
+            result.start_substituting = !!record.start_substituting[ind];
+            result.stop_substituting = !!record.stop_substituting[ind];
+            result.substituting_servants = record.substituting_servants[ind];
             //  Don't want to add new columns though can't see a way to keep both prescription and certificate after arriving
             //  so, as for now will comment this piece of code
             //
@@ -253,6 +259,7 @@ export default function MainScreen() {
             //     result.certificate_issue_date = record.certificate_issue_date[ind];
             // }
             if (result.orderSection === "arrive") result.fact_date_end = record.fact_date_end;
+            else result.fact_date_end = "";
             let newRecord = convertPullToTempBook(result);
             if (result.id || result.id === 0) {
                 setTempBook(state => {
@@ -331,9 +338,7 @@ export default function MainScreen() {
     }
 
     const onSubmit = () => {
-        let records;
-        if (record.orderSection === "arrive" || record.orderSection === "depart") records = submitMovementPoint();
-        else records = submitOtherPoints()
+        let records = ["arrive", "depart"].includes(record.orderSection) ? submitMovementPoint() : submitOtherPoints()
         dispatch(addRow(records));
         dispatch(resetRecord())
     }
@@ -344,9 +349,16 @@ export default function MainScreen() {
             if (el.from_temp_book)
                 updatedTempBook[el.id] = el;
         })
+        const tempBookForSave = updatedTempBook.map(el => {
+            const cleansedEl = {}
+            for (let prop in tempBookHeadersMapToRaw) {
+                cleansedEl[prop] = el[prop]
+            }
+            return cleansedEl;
+        })
         const ipcRenderer = window.electron.ipcRenderer;
-        ipcRenderer.invoke('save-temp-book', updatedTempBook.filter(el => el)).then(() => {
-            setTempBook(updatedTempBook);
+        ipcRenderer.invoke('save-temp-book', tempBookForSave.filter(el => el)).then(() => {
+            setTempBook(tempBookForSave);
         }).catch((err) => {
             console.error('Error saving temporal book:', err);
         });

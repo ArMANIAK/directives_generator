@@ -206,4 +206,4 @@ const saveDictionary = (dictionaryFilePath, dictionaryType, data) => {
     XLSX.writeFile(workbook, dictionaryFilePath);
 }
 
-module.exports = { loadDictionaries, loadTemporalBook, saveTemporalBook, saveDictionary };
+module.exports = { loadDictionaries, loadTemporalBook, saveTemporalBook, saveDictionary, tempBookHeadersMapToRaw };

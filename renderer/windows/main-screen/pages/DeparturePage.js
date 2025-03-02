@@ -30,7 +30,7 @@ export default function DeparturePage({
     const [ isDepartAbsentWarningOpen, setDepartWarningState ] = useState(false);
     const [ currentServantState, setCurrentServantState]  = useState("");
 
-    const handleCloseWarning = event => {
+    const handleCloseWarning = () => {
         setDepartWarningState(false);
         setCurrentServantState("");
     }
@@ -231,19 +231,42 @@ export default function DeparturePage({
                                     absentServants={ absentServants }
                                 />
                             </Grid>
-                            <Grid size={1}>
-                                <IoIosAddCircleOutline
-                                    size={30}
-                                    onClick={addServant}
-                                />
-                            </Grid>
-                            <Grid size={1}>
-                                <IoIosTrash
-                                    size={30}
-                                    color={ record.servants.length > 1 ? "black" : "lightgray" }
-                                    onClick={record.servants.length > 1 ? deleteServant(ind) : null}
-                                />
-                            </Grid>
+                            { record.absence_type === "mission" &&
+                                <>
+                                    <Grid size={1}>
+                                        <IoIosAddCircleOutline
+                                            size={30}
+                                            onClick={addServant}
+                                        />
+                                    </Grid>
+                                    <Grid size={1}>
+                                        <IoIosTrash
+                                            size={30}
+                                            color={ record.servants.length > 1 ? "black" : "lightgray" }
+                                            onClick={record.servants.length > 1 ? deleteServant(ind) : null}
+                                        />
+                                    </Grid>
+                                </>
+                            }
+                        </Grid>
+                        <Grid container alignItems="center">
+                            <FormControlLabel
+                                control={ <Checkbox
+                                    name="start_substituting"
+                                    checked={ !!record.start_substituting[ind] }
+                                /> }
+                                label="ТВО покласти на..."
+                                onChange={ handleMultipleValueChange(ind) }
+                            />
+                            { !!record.start_substituting[ind] &&
+                                <Grid size={6}>
+                                    <ServantSelector
+                                        name="substituting_servants"
+                                        value={record.substituting_servants[ind] }
+                                        handleChange={ handleMultipleValueChange(ind) }
+                                    />
+                                </Grid>
+                            }
                         </Grid>
                         <Grid container>
                             <Grid size={5}>
