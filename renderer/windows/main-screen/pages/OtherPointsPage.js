@@ -7,6 +7,7 @@ import AssignmentPage from "./AssignmentPage";
 import { useDispatch, useSelector } from "react-redux";
 import { GenerateFullTitle } from "../../../utilities/ServantsGenerators";
 import { setServants, setTitles } from "../../../store";
+import SubstitutionPage from "./SubstitutionPage";
 
 export default function OtherPointsPage({ handleOtherPointChange, record }) {
 
@@ -59,6 +60,10 @@ export default function OtherPointsPage({ handleOtherPointChange, record }) {
         {
             label: "Перепризначення",
             value: "reassignment"
+        },
+        {
+            label: "Допуск до ТВО за посадою",
+            value: "payed_substitution"
         },
     ];
 
@@ -116,6 +121,14 @@ export default function OtherPointsPage({ handleOtherPointChange, record }) {
                     </FormControl>
                 </Grid>
             </Grid>
+            { record.sectionType === "assignment" &&
+                <AssignmentPage
+                    record={ record }
+                    handleMultipleValueChange={ handleMultipleValueChange }
+                    handleOtherPointChange={ handleOtherPointChange }
+                    titlesList={ titlesList }
+                />
+            }
             { (record.sectionType === "financial_support" || record.sectionType === "social_support") &&
                 <FinancialSupport
                     record={ record }
@@ -132,8 +145,8 @@ export default function OtherPointsPage({ handleOtherPointChange, record }) {
                     titlesList={ titlesList }
                 />
             }
-            { record.sectionType === "assignment" &&
-                <AssignmentPage
+            { record.sectionType === "payed_substitution" &&
+                <SubstitutionPage
                     record={ record }
                     handleMultipleValueChange={ handleMultipleValueChange }
                     handleOtherPointChange={ handleOtherPointChange }

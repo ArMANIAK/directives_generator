@@ -571,6 +571,26 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
                 `№ ${settings.order_no}, рапорт ${GenerateRankAndName(servant.servant_id, "genitive")} (вх. № ${servant.certificate} від ${servant.certificate_issue_date}).\n\n`;
         }
     }
+    if (otherClausesPull.payed_substitution) {
+        for (let servant of otherClausesPull.payed_substitution) {
+            let settings = servant.settings;
+            let currentServant = GenerateServantRankNameAndTitle(servant.servant_id, "accusative", "full");
+            directive += `${starting_index++}. ${currentServant[0].toLocaleUpperCase() + currentServant.slice(1)}, ` +
+                `допустити до тимчасового виконання обовʼязків за посадою ${GenerateFullTitleByTitleIndex(settings.title_index)}, ` +
+                `ВОС-${settings.MOS}.\nВважати так${isFemale(servant.servant_id) ? "ою" : "им"}, ` +
+                `що з ${formatDate(settings.assigned_date, false)} справи та посаду прийня${isFemale(servant.servant_id) ? "ла" : "в"} ` +
+                `і приступи${isFemale(servant.servant_id) ? "ла" : "в"} до тимчасового виконання службових обов’язків за посадою. \n` +
+                `Встановити розряд за посадою ${settings.tarif}, оклад за посадою у розмірі ${settings.amount} ` +
+                `(${convertAmountIntoWords(settings.amount)} 00 копійок на місяць.\nВиплачувати щомісячну премію за особистий внесок ` +
+                `у загальні результати служби в розмірі ${settings.bonus} %${!settings.state_secret ? " та" : ","} надбавку за особливе ` +
+                `проходження служби у розмірі ${settings.NOPS} % посадового окладу з урахуванням окладу за військовим званням`;
+            if (settings.state_secret)
+                directive += ` та надбавку за роботу в умовах режимних обмежень у розмірі ${settings.state_secret} % від посадового окладу ` +
+                    `за посадою, до якої допускається`;
+            directive += `.\n\nПідстава: ${settings.reason}, рапорт ${GenerateRankAndName(servant.servant_id, "genitive")} ` +
+                `(вх. № ${servant.certificate} від ${servant.certificate_issue_date}).\n\n`;
+        }
+    }
     if (otherClausesPull.financial_support) {
         let middle_ind = 1;
         directive = `виплатити грошову допомогу на оздоровлення за ${(new Date()).getFullYear()} рік згідно з ` +
