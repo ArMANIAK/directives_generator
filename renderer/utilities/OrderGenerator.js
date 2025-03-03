@@ -214,7 +214,6 @@ const addDepartureClauseToPull = (groupedPull, record) => {
             break;
         case "sick_leave":
             if (isEmployee(record.servant_id)) break;
-        case "health_circumstances":
             if (!groupedPull.depart[record.absence_type])
                 groupedPull.depart[record.absence_type] = {};
             if (!groupedPull.depart[record.absence_type][groupDate])
@@ -223,6 +222,7 @@ const addDepartureClauseToPull = (groupedPull, record) => {
             break;
         case "vacation":
         case "family_circumstances":
+        case "health_circumstances":
             if (!groupedPull.depart[record.absence_type])
                 groupedPull.depart[record.absence_type] = [];
             groupedPull.depart[record.absence_type].push(record);
@@ -442,7 +442,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
             }
         }
     }
-    for (let absence_type of ['vacation', 'family_circumstances']) {
+    for (let absence_type of ['vacation', 'family_circumstances', 'health_circumstances']) {
         if (departurePullSection.hasOwnProperty(absence_type)) {
             let innerCount = 1;
             let header = "";
@@ -453,6 +453,9 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                 case "family_circumstances":
                     header = `У відпустку за сімейними обставинами та з інших поважних причин відповідно до Закону ` +
                         `України “Про соціальний і правовий захист військовослужбовців та членів їх сімей”:\n\n`
+                    break;
+                case "health_circumstances":
+                    header = "У відпустку для лікування у звʼязку з хворобою або для лікування після поранення (контузії, травми або каліцтва):\n\n"
                     break;
             }
             directive += `${starting_index}.${middleCount}. ${header}`;
@@ -470,6 +473,11 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                         vacationTerm = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id), false);
                         block += " в " + servant.destination + " на " + (parseInt(servant.day_count) < 10 ? "0" : "") + servant.day_count +
                             " " + dayEnding(servant.day_count) + " у частину щорічної відпустки " + vacationTerm + ".\n\n";
+                        break;
+                    case "health_circumstances":
+                        vacationTerm = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id), false);
+                        block += " в " + servant.destination + " на " + (parseInt(servant.day_count) < 10 ? "0" : "") + servant.day_count +
+                            " " + dayEnding(servant.day_count) + " " + vacationTerm + ".\n\n";
                         break;
                     case "family_circumstances":
                         vacationTerm = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id));
@@ -494,41 +502,30 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
             middleCount++;
         }
     }
-    for (let absence_type of ['health_circumstances', 'sick_leave']) {
-        if (departurePullSection.hasOwnProperty(absence_type)) {
-            let innerCount = 1;
-            let header = "";
-            switch (absence_type) {
-                case "sick_leave":
-                    header = "Нижчепойменованих військовослужбовців звільнити від виконання службових обов'язків у зв'язку з хворобою";
-                    break;
-                case "health_circumstances":
-                    header = "У відпустку для лікування у звʼязку з хворобою або для лікування після поранення (контузії, травми або каліцтва)"
-                    break;
-            }
-            directive += `${starting_index}.${middleCount}. ${header}`;
+    if (departurePullSection.sick_leave) {
+        let innerCount = 1;
+        directive += `${starting_index}.${middleCount}. Нижчепойменованих військовослужбовців звільнити від виконання службових обов'язків у зв'язку з хворобою`;
 
-            directive += Object.keys(departurePullSection[absence_type]).length === 1 ? " " : ":\n\n";
-            for (let date in departurePullSection[absence_type]) {
-                if (departurePullSection[absence_type][date].length > 0) {
-                    directive += `${date}:\n\n`;
-                    for (let servant of departurePullSection[absence_type][date]) {
-                        let withSubClauses = false
-                        if (departurePullSection[absence_type][date].length > 1) {
-                            withSubClauses = true;
-                            directive += `${starting_index}.${middleCount}.${innerCount++}. `;
-                        }
-                        directive += GenerateTripDays(servant.trip_days);
-                        directive += GenerateServantBlock(servant, "remove", withSubClauses);
+        directive += Object.keys(departurePullSection.sick_leave).length === 1 ? " " : ":\n\n";
+        let withSubClauses = false
+        if (Object.keys(departurePullSection.sick_leave).length > 1
+            || Object.values(departurePullSection.sick_leave).flat().length > 1)
+                withSubClauses = true;
+        for (let date in departurePullSection.sick_leave) {
+            if (departurePullSection.sick_leave[date].length > 0) {
+                directive += `${date}:\n\n`;
+                for (let servant of departurePullSection.sick_leave[date]) {
+                    if (withSubClauses)
+                        directive += `${starting_index}.${middleCount}.${innerCount++}. `;
+                    directive += GenerateServantBlock(servant, "remove", withSubClauses);
 
-                        directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
-                            " (вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
-                            " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
-                    }
+                    directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
+                        " (вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
+                        " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
                 }
             }
-            middleCount++;
         }
+        middleCount++;
     }
 
     return directive;
@@ -584,7 +581,7 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
     }
     if (otherClausesPull.social_support) {
         let middle_ind = 1;
-        let text = ` виплатити грошову допомогу для вирішення соціально-побутових питань за ${(new Date()).getFullYear()} рік згідно з ` +
+        let text = ` виплатити матеріальну допомогу для вирішення соціально-побутових питань за ${(new Date()).getFullYear()} рік згідно з ` +
             `наказом Міністерства оборони України від 07.06.2018 № 260 "Про затвердження Порядку виплати грошового забезпечення` +
             ` військовослужбовцям Збройних Сил України та деяким іншим особам" у розмірі місячного грошового забезпечення`;
         if (otherClausesPull.social_support.length > 1) {

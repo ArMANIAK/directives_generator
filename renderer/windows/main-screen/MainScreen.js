@@ -119,8 +119,8 @@ export default function MainScreen() {
                     || row.arrive_order_no && "" + row.arrive_order_no === "" + record.order_no
                     || shouldReturn(row, record.order_date))) {
                 row.id = index;
-                row.arrive_order_no = record.order_no;
-                row.arrive_order_date = record.order_date;
+                row.order_no = record.order_no;
+                row.order_date = record.order_date;
                 if (row.orderSection === "arrive" && !row.fact_date_end) {
                     if (dateStringCompare(row.planned_date_end, record.order_date) === -1)
                         row.fact_date_end = dateToDatepickerString(

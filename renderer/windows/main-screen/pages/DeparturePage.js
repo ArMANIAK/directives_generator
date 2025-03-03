@@ -118,7 +118,7 @@ export default function DeparturePage({
                 </Grid>
             </Grid>
             <Grid container>
-                { !["sick_leave", "health_circumstances"].includes(record.absence_type) &&
+                { record.absence_type !== "sick_leave" &&
                     <Grid size={7}>
                         <TextField
                             fullWidth
@@ -183,7 +183,7 @@ export default function DeparturePage({
                         />
                     </Grid>
                 </> }
-                { ['vacation', 'family_circumstances'].includes(record.absence_type) &&
+                { ['vacation', 'family_circumstances', 'health_circumstances'].includes(record.absence_type) &&
                     <Grid size={2}>
                         <TextField
                             type='number'
