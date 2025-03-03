@@ -139,6 +139,13 @@ export default function MainScreen() {
 
     const handleChange = event => dispatch(setRecord({ [event.target.name]: event.target.value }))
 
+    const handleSettingsChange = event => {
+        const field = event.target.name;
+        const value = ["financial_support"].includes(field) ? event.target.checked : event.target.value
+        dispatch(setRecord({ settings: {[field]: value} }))
+    }
+
+
     const handleCheckBoxChange = event => {
         const { target: { name, checked } } = event;
         const changedValues = {
@@ -431,6 +438,7 @@ export default function MainScreen() {
             { record.orderSection === "depart" && <DeparturePage
                 record={ record }
                 handleChange={ handleChange }
+                handleSettingsChange={ handleSettingsChange }
                 handleCheckBoxChange={ handleCheckBoxChange }
                 handleMultipleValueChange={ handleMultipleValueChange }
                 handleDateChange={ handleDateChange }

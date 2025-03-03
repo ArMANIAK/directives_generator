@@ -46,15 +46,8 @@ function GenerateServantBlock(
 ) {
     let servant = `${GenerateServantRankNameAndTitle(servant_id)}.\n\n`;
     let block = isCapitalised ? servant[0].toLocaleUpperCase() + servant.slice(1) : servant;
-    if (start_substituting && substituting_servants)
-        block += `Тимчасове виконання обовʼязків за посадою ${GenerateFullTitleByTitleIndex(GetTitleIndex(servant_id))} ` +
-            `покласти на ${GenerateServantRankNameAndTitle(substituting_servants)}.\n\n`;
-    else if (stop_substituting && substituting_servants) {
-        let subst_servant = GenerateRankAndName(substituting_servants, "dative");
-        if (subst_servant)
-            block += `${subst_servant[0].toLocaleUpperCase() + subst_servant.slice(1)} повернутися до виконання обовʼязків ` +
-                `за посадою ${GenerateFullTitleByTitleIndex(GetTitleIndex(substituting_servants))}.\n\n`;
-    }
+
+    block += GenerateSubstitutionBlock(servant_id, start_substituting, stop_substituting, substituting_servants)
     if (!isEmployee(servant_id) && addOrRemove === "add")
         block += GenerateAddToRation(servant_id, order_date);
     if (!isEmployee(servant_id) && addOrRemove === "remove") {
@@ -67,6 +60,20 @@ function GenerateServantBlock(
         block += GenerateRemoveFromRation(servant_id, formatDate(dateToRemove, false), with_ration_certificate);
     }
     return block
+}
+
+function GenerateSubstitutionBlock(servant_id, start_substituting, stop_substituting, substituting_servants) {
+    let block = "";
+    if (start_substituting && substituting_servants)
+        block += `Тимчасове виконання обовʼязків за посадою ${GenerateFullTitleByTitleIndex(GetTitleIndex(servant_id))} ` +
+            `покласти на ${GenerateServantRankNameAndTitle(substituting_servants)}.\n\n`;
+    else if (stop_substituting && substituting_servants) {
+        let subst_servant = GenerateRankAndName(substituting_servants, "dative");
+        if (subst_servant)
+            block += `${subst_servant[0].toLocaleUpperCase() + subst_servant.slice(1)} повернутися до виконання обовʼязків ` +
+                `за посадою ${GenerateFullTitleByTitleIndex(GetTitleIndex(substituting_servants))}.\n\n`;
+    }
+    return block;
 }
 
 function GenerateCertificatesRange(records) {
@@ -473,6 +480,10 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                         vacationTerm = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id), false);
                         block += " в " + servant.destination + " на " + (parseInt(servant.day_count) < 10 ? "0" : "") + servant.day_count +
                             " " + dayEnding(servant.day_count) + " у частину щорічної відпустки " + vacationTerm + ".\n\n";
+                        if (servant.settings.financial_support)
+                            block += `Виплатити ${GenerateRankAndName(servant.servant_id, "dative", "full")} ` +
+                                `грошову допомогу на оздоровлення за ${(new Date()).getFullYear()} рік у розмірі місячного ` +
+                                `грошового забезпечення.\n\n`
                         break;
                     case "health_circumstances":
                         vacationTerm = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id), false);
@@ -486,6 +497,10 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                 }
 
                 directive += block;
+                directive += GenerateSubstitutionBlock(servant.servant_id,
+                    servant.start_substituting,
+                    servant.stop_substituting,
+                    servant.substituting_servants);
                 directive += GenerateTripDays(servant.trip_days);
                 let dateToRemove;
                 if (servant.date_start > servant.order_date) {

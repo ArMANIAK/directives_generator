@@ -19,6 +19,7 @@ const modalStyle = {
 export default function DeparturePage({
                                         record,
                                         handleChange,
+                                        handleSettingsChange,
                                         handleCheckBoxChange,
                                         handleDateChange,
                                         handleMultipleValueChange,
@@ -247,6 +248,18 @@ export default function DeparturePage({
                                             />
                                         </Grid>
                                     </>
+                                }
+                                { record.absence_type === "vacation" &&
+                                    <Grid size={6}>
+                                        <FormControlLabel
+                                            control={ <Checkbox
+                                                name="financial_support"
+                                                checked={ record.settings.financial_support || false }
+                                            /> }
+                                            label="Виплатити ГДО"
+                                            onChange={ handleSettingsChange }
+                                        />
+                                    </Grid>
                                 }
                             </Grid>
                             <Grid container spacing={4} alignItems="center">
