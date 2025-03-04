@@ -66,9 +66,10 @@ export default function MainScreen() {
 
             ipcRenderer.invoke('get-temp-book').then((result) => {
                 console.log("ТИМЧАСОВКА", result);
-                setTempBook(result);
+                setTempBook(result.filter(el => el.absence_type));
                 setAbsentServants(result
                     .reduce((acc, el, ind)  => {
+                        if (!el.absence_type) return acc;
                         if (el.arrive_order_no && "" + el.arrive_order_no !== "" + record.order_no) return acc;
                         let rec = convertTempBookToPull(el)
                         rec.id = ind;
