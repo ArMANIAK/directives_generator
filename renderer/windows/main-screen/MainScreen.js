@@ -111,10 +111,13 @@ export default function MainScreen() {
         console.log(tempBook)
         let autoPull = tempBook.reduce((acc, el, index) => {
             let row = convertTempBookToPull(el);
-            if (row.depart_order_no && "" + row.depart_order_no === "" + record.order_no)
+            if (row.depart_order_no && "" + row.depart_order_no === "" + record.order_no) {
                 row.orderSection = "depart";
-            else
+                row.start_substituting = !!row.substituting_servants;
+            } else {
                 row.orderSection = "arrive";
+                row.stop_substituting = !!row.substituting_servants;
+            }
             if (!existInPull(row)
                 && (row.depart_order_no && "" + row.depart_order_no === "" + record.order_no
                     || row.arrive_order_no && "" + row.arrive_order_no === "" + record.order_no

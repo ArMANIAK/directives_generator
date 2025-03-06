@@ -17,7 +17,8 @@ const convertPullToTempBook = row => {
         "servant_id": row.servant_id,
         "with_ration_certificate": row.with_ration_certificate ? "так" : "ні",
         "purpose": row.purpose || "",
-        "reason": row.reason || ""
+        "reason": row.reason || "",
+        "substituting_servant_id": row.substituting_servants
     }
     result.day_count = row.day_count
         ? (row.trip_days ? `${row.day_count}+${row.trip_days}` : row.day_count)
@@ -62,7 +63,8 @@ const convertTempBookToPull = record => {
         "depart_order_no": record.depart_order_no,
         "arrive_order_no": record.arrive_order_no,
         "purpose": record.purpose || "",
-        "reason": record.reason || ""
+        "reason": record.reason || "",
+        "substituting_servants": record.substituting_servant_id
     }
     if ((String (record.day_count)).indexOf("+") !== -1) {
         [ result.day_count, result.trip_days ] = record.day_count.split("+")

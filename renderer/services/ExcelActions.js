@@ -114,7 +114,8 @@ const tempBookRawMapToHeaders = {
     "Ідентифікатор військовослужбовця (відповідно до ідентифікатора в словнику)": "servant_id",
     "З продовольчим атестатом (так/ні)": "with_ration_certificate",
     "Мета": "purpose",
-    "Підстава": "reason"
+    "Підстава": "reason",
+    "ТВО": "substituting_servant_id"
 }
 
 const tempBookHeadersMapToRaw = {
@@ -136,7 +137,8 @@ const tempBookHeadersMapToRaw = {
     "servant_id": "Ідентифікатор військовослужбовця (відповідно до ідентифікатора в словнику)",
     "with_ration_certificate": "З продовольчим атестатом (так/ні)",
     "purpose": "Мета",
-    "reason": "Підстава"
+    "reason": "Підстава",
+    "substituting_servant_id": "ТВО"
 }
 
 const convertHeaders = (data, headerDictionary) => {
