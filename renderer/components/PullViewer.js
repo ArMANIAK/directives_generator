@@ -55,6 +55,8 @@ export default function PullViewer({ deleteFromTempbook }) {
                 activity = "Призначення"
             else if (el.sectionType === 'reassignment')
                 activity = "Перепризначення"
+            else if (el.sectionType === 'payed_substitution')
+                activity = "Допуск до ТВО за посадою"
             else
                 activity = 'інші пункти'
         }

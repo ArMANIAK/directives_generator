@@ -60,7 +60,7 @@ export default function SubstitutionPage({ handleMultipleValueChange, handleOthe
                         type="date"
                         label="коли прийняв справи та посаду"
                         name="assigned_date"
-                        value={ record.settings.reassigned_date || "" }
+                        value={ record.settings.assigned_date || "" }
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />

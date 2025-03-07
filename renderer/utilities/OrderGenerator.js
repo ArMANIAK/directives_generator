@@ -586,7 +586,7 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
                 `проходження служби у розмірі ${settings.NOPS} % посадового окладу з урахуванням окладу за військовим званням`;
             if (settings.state_secret)
                 directive += ` та надбавку за роботу в умовах режимних обмежень у розмірі ${settings.state_secret} % від посадового окладу ` +
-                    `за посадою, до якої допускається`;
+                    `за посадою, до якої допускається з ${formatDate(settings.assigned_date, false)}`;
             directive += `.\n\nПідстава: ${settings.reason}, рапорт ${GenerateRankAndName(servant.servant_id, "genitive")} ` +
                 `(вх. № ${servant.certificate} від ${servant.certificate_issue_date}).\n\n`;
         }
