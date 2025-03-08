@@ -24,7 +24,7 @@ export default function PullViewer({ deleteFromTempbook }) {
     }
 
     const editRow = id => () => {
-        const record = { ...pull[id] };
+        const record = { ...pull.find(el => el.id === id) };
         record.servants = [ record.servant_id ];
         record.certificate = [ record.certificate ];
         record.certificate_issue_date = [ record.certificate_issue_date ];
@@ -33,7 +33,7 @@ export default function PullViewer({ deleteFromTempbook }) {
         record.substituting_servants = [ record.substituting_servants ];
         dispatch(setRecord(record));
         dispatch(removeRow(id));
-        deleteFromTempbook(pull[id].id);
+        deleteFromTempbook(id);
     }
 
     console.log(" PULL VIEWER", pull)
@@ -67,7 +67,7 @@ export default function PullViewer({ deleteFromTempbook }) {
         const destination = !el.destination ? 'Не релевантно' : el.destination;
         const absence = el.orderSection === "other_points" ? ""
             : (absence_type.find(item => item.value.toLowerCase() === el.absence_type.toLowerCase())?.label ?? 'Не релевантно');
-        return { activity, servant, destination, absence, date }
+        return { id: el.id, activity, servant, destination, absence, date }
     })
 
     return (
@@ -97,8 +97,8 @@ export default function PullViewer({ deleteFromTempbook }) {
                             <TableCell>{ row.destination }</TableCell>
                             <TableCell>{ row.date }</TableCell>
                             <TableCell>
-                                <Button onClick={editRow(ind)}>Редагувати</Button>
-                                <Button onClick={removeFromPull(ind)}>Видалити</Button>
+                                <Button onClick={editRow(row.id)}>Редагувати</Button>
+                                <Button onClick={removeFromPull(row.id)}>Видалити</Button>
                             </TableCell>
                         </TableRow>
                     ))}

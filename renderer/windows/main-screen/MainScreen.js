@@ -66,7 +66,13 @@ export default function MainScreen() {
 
             ipcRenderer.invoke('get-temp-book').then((result) => {
                 console.log("ТИМЧАСОВКА", result);
-                setTempBook(result.filter(el => el.absence_type));
+                let newTempBookState = result
+                    .filter(el => el.absence_type)
+                    .map((el, ind) => {
+                        el.id = ind;
+                        return el;
+                    });
+                setTempBook(newTempBookState);
                 setAbsentServants(result
                     .reduce((acc, el, ind)  => {
                         if (!el.absence_type) return acc;
@@ -226,11 +232,7 @@ export default function MainScreen() {
     }
 
     const deleteFromTempbook = id => {
-        setTempBook(state => {
-            let updatedTempBook = [ ...state ];
-            updatedTempBook.splice(id, 1)
-            return updatedTempBook
-        })
+        setTempBook(state => state.filter(el => el.id !== id))
     }
 
     const handleOtherPointChange = otherPoint => dispatch(setRecord({
@@ -252,6 +254,7 @@ export default function MainScreen() {
     }
 
     const submitMovementPoint = () => {
+        console.log("TEMP", tempBook)
         let records = record.servants.map((el, ind) => {
             let similarActivities = getSimilarActivities(absentServants, record, record.certificate[ind]);
             let result = (similarActivities.length > 0)
@@ -265,6 +268,8 @@ export default function MainScreen() {
             result.start_substituting = !!record.start_substituting[ind];
             result.stop_substituting = !!record.stop_substituting[ind];
             result.substituting_servants = record.substituting_servants[ind];
+            result.ration_certificate = record.ration_certificate;
+            result.ration_certificate_issue_date = record.ration_certificate_issue_date;
             //  Don't want to add new columns though can't see a way to keep both prescription and certificate after arriving
             if (!["medical_care", "medical_board"].includes(record.absence_type) || record.orderSection === "depart") {
                 result.certificate = record.certificate[ind];
@@ -273,17 +278,13 @@ export default function MainScreen() {
             if (result.orderSection === "arrive") result.fact_date_end = record.fact_date_end;
             else result.fact_date_end = "";
             let newRecord = convertPullToTempBook(result);
-            if (result.id || result.id === 0) {
-                setTempBook(state => {
-                    let newTempbookState = [...state];
-                    newTempbookState[result.id] = newRecord;
-                    return newTempbookState;
-                })
-            } else {
+            if (!result.id && result.id !== 0) {
                 result.id = tempBook.length + ind;
                 newRecord.id = tempBook.length + ind;
-                setTempBook(state => [ ...state, newRecord ]);
+            } else {
+                newRecord.id = result.id
             }
+            setTempBook(state => [ ...state, newRecord ]);
             return result;
         });
         if (records.length > 0) return records;
@@ -358,10 +359,6 @@ export default function MainScreen() {
 
     const SaveClauses = () => {
         const updatedTempBook = [ ...tempBook ];
-        pull.forEach(el => {
-            if (el.from_temp_book)
-                updatedTempBook[el.id] = convertPullToTempBook(el);
-        })
         const tempBookForSave = updatedTempBook.map(el => {
             const cleansedEl = {}
             for (let prop in tempBookHeadersMapToRaw) {

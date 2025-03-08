@@ -6,7 +6,7 @@ export const pullSlice = createSlice({
     reducers: {
         addRow: (state, action) =>  [ ...state, ...action.payload ],
         removeRow: (state, action) => {
-            state.splice(action.payload, 1)
+            return state.filter(el => el.id !== action.payload)
         },
         resetPull: () => [],
         clearTempBookRecords: (state) =>  [ ...state.filter(el => !el.from_temp_book) ],
