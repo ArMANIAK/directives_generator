@@ -65,13 +65,13 @@ export default function MainScreen() {
             });
 
             ipcRenderer.invoke('get-temp-book').then((result) => {
-                console.log("ТИМЧАСОВКА", result);
                 let newTempBookState = result
                     .filter(el => el.absence_type)
                     .map((el, ind) => {
                         el.id = ind;
                         return el;
                     });
+                console.log("ТИМЧАСОВКА", { result, newTempBookState });
                 setTempBook(newTempBookState);
                 setAbsentServants(result
                     .reduce((acc, el, ind)  => {
@@ -254,7 +254,6 @@ export default function MainScreen() {
     }
 
     const submitMovementPoint = () => {
-        console.log("TEMP", tempBook)
         let records = record.servants.map((el, ind) => {
             let similarActivities = getSimilarActivities(absentServants, record, record.certificate[ind]);
             let result = (similarActivities.length > 0)
