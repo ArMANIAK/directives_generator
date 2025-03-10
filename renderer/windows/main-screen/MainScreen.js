@@ -71,7 +71,7 @@ export default function MainScreen() {
                         el.id = ind;
                         return el;
                     });
-                console.log("ТИМЧАСОВКА", { result, newTempBookState });
+                console.log("ТИМЧАСОВКА", newTempBookState);
                 setTempBook(newTempBookState);
                 setAbsentServants(result
                     .reduce((acc, el, ind)  => {
@@ -154,7 +154,6 @@ export default function MainScreen() {
         const value = ["financial_support"].includes(field) ? event.target.checked : event.target.value
         dispatch(setRecord({ settings: {[field]: value} }))
     }
-
 
     const handleCheckBoxChange = event => {
         const { target: { name, checked } } = event;
@@ -241,12 +240,12 @@ export default function MainScreen() {
         settings: { ...otherPoint.settings }
     }))
 
-    const getSimilarActivities = (absentServants, record, certificate) => {
+    const getSimilarActivities = (absentServants, servant_id, record, certificate) => {
         if (record.orderSection === "depart") return [];
         return absentServants.filter(absentServant => {
             return (
             absentServant.absence_type === record.absence_type
-                && absentServant.servant_id === record.servant_id
+                && absentServant.servant_id === servant_id
                 && (record.destination && absentServant.destination === record.destination)
                     || (!["medical_care", "medical_board"].includes(record.absence_type) &&
                         certificate && "" + absentServant.certificate === "" + certificate)
@@ -255,7 +254,7 @@ export default function MainScreen() {
 
     const submitMovementPoint = () => {
         let records = record.servants.map((el, ind) => {
-            let similarActivities = getSimilarActivities(absentServants, record, record.certificate[ind]);
+            let similarActivities = getSimilarActivities(absentServants, el, record, record.certificate[ind]);
             let result = (similarActivities.length > 0)
                 ? {
                     ...similarActivities[0],
@@ -280,10 +279,14 @@ export default function MainScreen() {
             if (!result.id && result.id !== 0) {
                 result.id = tempBook.length + ind;
                 newRecord.id = tempBook.length + ind;
+                setTempBook(state => [ ...state, newRecord ]);
             } else {
                 newRecord.id = result.id
+                setTempBook(state => state.map(tempBookRecord => tempBookRecord.id === newRecord.id
+                    ? newRecord
+                    : tempBookRecord)
+                );
             }
-            setTempBook(state => [ ...state, newRecord ]);
             return result;
         });
         if (records.length > 0) return records;
@@ -358,6 +361,12 @@ export default function MainScreen() {
 
     const SaveClauses = () => {
         const updatedTempBook = [ ...tempBook ];
+        pull.forEach(el => {
+            if (el.from_temp_book) {
+                let existing = updatedTempBook.findIndex(tempBookRecord => tempBookRecord.id === el.id)
+                if (existing !== -1)  updatedTempBook[existing] = convertPullToTempBook(el);
+            }
+        })
         const tempBookForSave = updatedTempBook.map(el => {
             const cleansedEl = {}
             for (let prop in tempBookHeadersMapToRaw) {
@@ -380,7 +389,7 @@ export default function MainScreen() {
         window.electron.sendToClipboard(text);
     }
 
-    console.log(record)
+    console.log({ record, tempBook })
 
     return (
         <Grid padding="30px" direction={'column'} container spacing={2}>

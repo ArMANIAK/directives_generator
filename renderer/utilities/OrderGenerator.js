@@ -34,13 +34,13 @@ function GenerateRemoveFromRation(servant_id, order_date, with_ration_certificat
 function GenerateServantBlock(
     {
         servant_id,
-        start_date,
+        date_start,
         order_date,
         with_ration_certificate,
         start_substituting,
         stop_substituting,
         substituting_servants
-  },
+    },
     addOrRemove = "add",
     isCapitalised = false
 ) {
@@ -52,8 +52,8 @@ function GenerateServantBlock(
         block += GenerateAddToRation(servant_id, order_date);
     if (!isEmployee(servant_id) && addOrRemove === "remove") {
         let dateToRemove;
-        if (start_date > order_date) {
-            dateToRemove = new Date(start_date);
+        if (date_start > order_date) {
+            dateToRemove = new Date(date_start);
         } else {
             dateToRemove = dateMath(new Date(order_date), 1);
         }
