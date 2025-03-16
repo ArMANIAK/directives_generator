@@ -9,7 +9,7 @@ export function GenerateRankAndName(id, servantCase = "accusative", form = "shor
 }
 
 export function GenerateRankName(id, speciality = "", rankCase = "accusative") {
-    const rank = ranks.find(el => el.id === id);
+    const rank = ranks.find(el => "" + el.id === "" + id);
     let result = !!rank ? rank["name_" + rankCase] : "";
     if (speciality) result += ` ${speciality}`;
     return result;

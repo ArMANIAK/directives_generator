@@ -1,7 +1,7 @@
-import {convertAmountIntoWords, getServantById, isEmployee, isFemale} from "../services/ServantsService";
+import { convertAmountIntoWords, getServantById, isEmployee, isFemale } from "../services/ServantsService";
 const certificate = require("../dictionaries/certificates.json");
 
-import {formatDate, dateMath, dateStartToEndFormat, dayEnding} from "./DateUtilities";
+import { formatDate, dateMath, dateStartToEndFormat, dayEnding } from "./DateUtilities";
 import {
     GenerateFullTitleByTitleIndex,
     GenerateRankAndName,
@@ -17,7 +17,7 @@ function GenerateAddToRation(servant_id, order_date = null) {
     if (!servant?.supplied_by || !servant?.rank) return "";
     const tomorrow = dateMath(order_date ? new Date(order_date) : new Date(), 1);
     const formattedTomorrow = formatDate(tomorrow, false);
-    return `Зарахувати ${GenerateRankAndName(servant_id)} на котлове забезпечення при ${servant.supplied_by} за каталогом продуктів - зі сніданку ${formattedTomorrow}.\n\n`
+    return `Зарахувати ${GenerateRankAndName(servant_id)} на котлове забезпечення при ${servant.supplied_by} за каталогом продуктів – зі сніданку ${formattedTomorrow}.\n\n`
 }
 
 function GenerateRemoveFromRation(servant_id, order_date, with_ration_certificate = false) {
@@ -25,7 +25,7 @@ function GenerateRemoveFromRation(servant_id, order_date, with_ration_certificat
     // If supplier is not set up or a servant is an employee no add to ration is added
     // Якщо для військовослужбовця не встановлено частину забезпечення котловим або він працівник ЗСУ, зняття з котлового не відбувається
     if (!servant?.supplied_by || !servant?.rank) return "";
-    let paragraph = `Зняти ${GenerateRankAndName(servant_id)} з котлового забезпечення при ${servant.supplied_by} за каталогом продуктів - зі сніданку ${order_date}`;
+    let paragraph = `Зняти ${GenerateRankAndName(servant_id)} з котлового забезпечення при ${servant.supplied_by} за каталогом продуктів – зі сніданку ${order_date}`;
     if (with_ration_certificate) paragraph += " та видати продовольчий атестат";
     paragraph += ".\n\n";
     return paragraph;
