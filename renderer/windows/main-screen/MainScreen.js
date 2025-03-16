@@ -261,11 +261,14 @@ export default function MainScreen() {
                     orderSection: record.orderSection,
                     order_no: record.order_no,
                     order_date: record.order_date,
+                    stop_substituting: !!similarActivities[0].substituting_servants && similarActivities[0].substituting_servants !== 0
                 } : { ...record };
             result.servant_id = el;
-            result.start_substituting = !!record.start_substituting[ind];
-            result.stop_substituting = !!record.stop_substituting[ind];
-            result.substituting_servants = record.substituting_servants[ind];
+            if (record.substituting_servants[ind]) {
+                result.start_substituting = !!record.start_substituting[ind];
+                result.stop_substituting = !!record.stop_substituting[ind];
+                result.substituting_servants = record.substituting_servants[ind];
+            }
             result.ration_certificate = record.ration_certificate;
             result.ration_certificate_issue_date = record.ration_certificate_issue_date;
             //  Don't want to add new columns though can't see a way to keep both prescription and certificate after arriving
