@@ -268,6 +268,10 @@ export default function MainScreen() {
                 result.start_substituting = !!record.start_substituting[ind];
                 result.stop_substituting = !!record.stop_substituting[ind];
                 result.substituting_servants = record.substituting_servants[ind];
+            } else {
+                result.start_substituting = undefined;
+                result.stop_substituting = undefined;
+                result.substituting_servants = undefined;
             }
             result.ration_certificate = record.ration_certificate;
             result.ration_certificate_issue_date = record.ration_certificate_issue_date;
