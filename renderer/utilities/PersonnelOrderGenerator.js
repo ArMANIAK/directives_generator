@@ -1,4 +1,5 @@
 import {
+    GenerateFullTitleByTitleIndex,
     GenerateName,
     GenerateRankName,
     GenerateServantRankNameAndTitle,
@@ -16,7 +17,7 @@ const groupPull = pull => {
             }
             default:
                 if (!acc[record.clause_type]) acc[record.clause_type] = [];
-                acc.clause_type.push(record);
+                acc[record.clause_type].push(record);
                 break;
         }
         return acc;
@@ -24,11 +25,12 @@ const groupPull = pull => {
 }
 
 export default function generatePersonnelOrder(pull) {
+    let text_block = "";
     let paragraph_no = 1;
     let clause_no = 1;
-    let text_block = `§ ${ paragraph_no++ }\n`;
     const groupedPull = groupPull(pull);
     if (groupedPull.rank_change) {
+        text_block = `§ ${ paragraph_no++ }\n`;
         let newRanks = Object.keys(groupedPull.rank_change);
         newRanks.sort();
         let isMultipleClauses = groupedPull.rank_change[newRanks[0]][0].clauses_no.indexOf(" ") !== -1;
@@ -60,6 +62,41 @@ export default function generatePersonnelOrder(pull) {
             }
         }
         text_block += "\n";
+    }
+    else if (groupedPull.reassignment) {
+        let isPlural = groupedPull.reassignment.length > 1;
+        text_block = `§ ${ paragraph_no++ }\n${ isPlural ? "" : clause_no++ + ". " }Відповідно до пункту ___ Положення про ` +
+            `проходження громадянами України військової служби у Збройних Силах України ${ isPlural 
+                ? "нижчепойменованих осіб сержантського, старшинського та рядового складу" 
+                : GenerateServantRankNameAndTitle(groupedPull.reassignment[0].servant_id, "accusative", "full") }` +
+            ` ЗВІЛЬНИТИ з займан${isPlural ? "их" : "ої"} посад${isPlural ? "" : "и"} і ПРИЗНАЧИТИ${ isPlural 
+                ? ":\n"
+                : " " + GenerateFullTitleByTitleIndex(groupedPull.reassignment[0].new_title_index, "instrumental").toUpperCase() + ".\n"}`;
+
+        const generateReassignmentDetailsBlock = servantRecord => {
+            let result = `${servantRecord.year_of_birth} р.н., освіта: ${servantRecord.education}, ` +
+                `у ЗС – з ${servantRecord.service_period}.\n${servantRecord.VAT}.\nПризначається на `;
+            if (servantRecord.position_category < servantRecord.new_position_category)
+                result += "вищу";
+            else if (servantRecord.position_category > servantRecord.new_position_category)
+                result += "нижчу";
+            else result += "рівнозначну";
+            result += ` посаду у зв’язку із проведенням організаційних заходів з шпк «` +
+                GenerateRankName(servantRecord.position_category, "", "nominative") + `» на шпк «` +
+                `${GenerateRankName(servantRecord.new_position_category, "", "nominative")}».\n`;
+            return result;
+        }
+
+        if (!isPlural)
+            text_block += generateReassignmentDetailsBlock(groupedPull.reassignment[0]);
+        else {
+            for (let servant of groupedPull.reassignment) {
+                let fullServant = GenerateServantRankNameAndTitle(servant.servant_id, "accusative", "full");
+                text_block += clause_no++ + ". " + fullServant[0].toLocaleUpperCase() + fullServant.slice(1) + " – " +
+                    GenerateFullTitleByTitleIndex(servant.new_title_index, "instrumental").toUpperCase() + ".\n";
+                text_block += generateReassignmentDetailsBlock(servant);
+            }
+        }
     }
     return text_block;
 }

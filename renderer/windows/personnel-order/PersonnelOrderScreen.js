@@ -22,6 +22,8 @@ import {
 } from "../../store";
 import RankChangePage from "./pages/RankChangePage";
 import generatePersonnelOrder from "../../utilities/PersonnelOrderGenerator";
+import PersonnelReassignmentPage from "./pages/PersonnelReassignmentPage";
+import {GenerateFullTitle} from "../../utilities/ServantsGenerators";
 const ranks = require("../../dictionaries/ranks.json");
 
 const clauses = [
@@ -57,8 +59,14 @@ export default function PersonnelOrderScreen() {
 
     const dispatch = useDispatch();
     const record = useSelector(state => state.personnelRecord)
-    const [ dictionaries, setDictionaries ] = useState({});
+    const [ , setDictionaries ] = useState({});
     const [ pull, setPull ] = useState([]);
+
+    const titles = useSelector(state => state.dictionaries.titles);
+    const titlesList = titles.map(el => ({
+        label: `${el.title_index} - ${GenerateFullTitle(el, "nominative")}`,
+        value: el.title_index
+    }));
 
     useEffect(() => {
         getDictionaries();
@@ -151,6 +159,12 @@ export default function PersonnelOrderScreen() {
                 handleMultipleValueChange={ handleMultipleValueChange }
                 rankList={ rankList }
             />}
+            { record.clause_type === "reassignment" &&
+                <PersonnelReassignmentPage
+                    handleChange={ handleChange }
+                    rankList={ rankList }
+                    titlesList={ titlesList }
+                />}
             <Grid container spacing={2}>
                 <Button
                     variant="contained"

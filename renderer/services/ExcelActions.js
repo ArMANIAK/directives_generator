@@ -67,14 +67,16 @@ const rolesRawMapToHeaders = {
     "Ідентифікатор": "id",
     "Назва ролі в називному відмінку": "name_nominative",
     "Назва ролі в давальному відмінку": "name_dative",
-    "Назва ролі в знахідному відмінку": "name_accusative"
+    "Назва ролі в знахідному відмінку": "name_accusative",
+    "Назва ролі в орудному відмінку": "name_instrumental"
 }
 
 const rolesHeadersMapToRaw = {
     "id": "Ідентифікатор",
     "name_nominative": "Назва ролі в називному відмінку",
     "name_dative": "Назва ролі в давальному відмінку",
-    "name_accusative": "Назва ролі в знахідному відмінку"
+    "name_accusative": "Назва ролі в знахідному відмінку",
+    "name_instrumental": "Назва ролі в орудному відмінку"
 }
 
 const titlesRawMapToHeaders = {
