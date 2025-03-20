@@ -80,7 +80,7 @@ export default function RankChangePage({
                                     <TextField
                                         fullWidth
                                         type='number'
-                                        label="РНКОПП"
+                                        label="РНОКПП"
                                         name="VATs"
                                         value={ record.VATs[ind] || ""}
                                         onChange={ handleMultipleValueChange(ind) }

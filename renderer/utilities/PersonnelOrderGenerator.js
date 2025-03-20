@@ -71,7 +71,8 @@ export default function generatePersonnelOrder(pull) {
                 : GenerateServantRankNameAndTitle(groupedPull.reassignment[0].servant_id, "accusative", "full") }` +
             ` ЗВІЛЬНИТИ з займан${isPlural ? "их" : "ої"} посад${isPlural ? "" : "и"} і ПРИЗНАЧИТИ${ isPlural 
                 ? ":\n"
-                : " " + GenerateFullTitleByTitleIndex(groupedPull.reassignment[0].new_title_index, "instrumental").toUpperCase() + ".\n"}`;
+                : " " + GenerateFullTitleByTitleIndex(groupedPull.reassignment[0].new_title_index, "instrumental").toUpperCase() + 
+                    ", ВОС – " + groupedPull.reassignment[0].MOS + ".\n"}`;
 
         const generateReassignmentDetailsBlock = servantRecord => {
             let result = `${servantRecord.year_of_birth} р.н., освіта: ${servantRecord.education}, ` +
@@ -93,7 +94,8 @@ export default function generatePersonnelOrder(pull) {
             for (let servant of groupedPull.reassignment) {
                 let fullServant = GenerateServantRankNameAndTitle(servant.servant_id, "accusative", "full");
                 text_block += clause_no++ + ". " + fullServant[0].toLocaleUpperCase() + fullServant.slice(1) + " – " +
-                    GenerateFullTitleByTitleIndex(servant.new_title_index, "instrumental").toUpperCase() + ".\n";
+                    GenerateFullTitleByTitleIndex(servant.new_title_index, "instrumental").toUpperCase() +
+                    ", ВОС – " + servant.MOS + ".\n";
                 text_block += generateReassignmentDetailsBlock(servant);
             }
         }

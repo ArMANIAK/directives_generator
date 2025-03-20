@@ -12,6 +12,7 @@ const initialState = {
     "new_position_category": "",
     "year_of_birth": "",
     "years_of_birth": [""],
+    "MOS": "",
     "education": "",
     "service_period": "",
     "service_periods": [""],

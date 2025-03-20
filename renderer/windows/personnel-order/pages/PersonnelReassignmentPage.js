@@ -47,7 +47,7 @@ export default function PersonnelReassignmentPage({
                         <TextField
                             fullWidth
                             type='number'
-                            label="РНКОПП"
+                            label="РНОКПП"
                             name="VAT"
                             value={ record.VAT || ""}
                             onChange={ handleChange }
@@ -67,7 +67,7 @@ export default function PersonnelReassignmentPage({
                     <Grid size={4}>
                         <TextField
                             fullWidth
-                            label="Вислуга у званні"
+                            label="у Збройних Силах з..."
                             name="service_period"
                             value={ record.service_period || ""}
                             onChange={ handleChange }
@@ -87,7 +87,7 @@ export default function PersonnelReassignmentPage({
                 />
             </Grid>
             <Grid container size={12}>
-                <Grid size={5}>
+                <Grid size={4}>
                     <FormControl fullWidth>
                         <TextField
                             fullWidth
@@ -102,7 +102,7 @@ export default function PersonnelReassignmentPage({
                         </TextField>
                     </FormControl>
                 </Grid>
-                <Grid size={5}>
+                <Grid size={4}>
                     <FormControl fullWidth>
                         <TextField
                             fullWidth
@@ -116,6 +116,16 @@ export default function PersonnelReassignmentPage({
                             { rankList }
                         </TextField>
                     </FormControl>
+                </Grid>
+                <Grid size={2}>
+                    <TextField
+                        fullWidth
+                        label="ВОС"
+                        name="MOS"
+                        value={ record.MOS || ""}
+                        onChange={ handleChange }
+                        slotProps={ { inputLabel: { shrink: true } } }
+                    />
                 </Grid>
             </Grid>
         </Grid>
