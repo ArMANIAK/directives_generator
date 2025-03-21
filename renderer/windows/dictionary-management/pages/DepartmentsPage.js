@@ -47,6 +47,7 @@ export default function DepartmentsPage({ saveRecord, removeRecord }) {
                     fullWidth
                     label="Назва підрозділу в називному відмінку"
                     name="name_nominative"
+                    placeholder="стрілецька рота"
                     value={ department.name_nominative }
                     onChange={ handleChange }
                     slotProps={ { inputLabel: { shrink: true } } }
@@ -57,6 +58,7 @@ export default function DepartmentsPage({ saveRecord, removeRecord }) {
                     fullWidth
                     label="Назва підрозділу в родовому відмінку"
                     name="name_genitive"
+                    placeholder="стрілецької роти"
                     value={ department.name_genitive }
                     onChange={ handleChange }
                     slotProps={ { inputLabel: { shrink: true } } }

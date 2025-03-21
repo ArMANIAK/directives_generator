@@ -189,8 +189,9 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                 <Grid size={2}>
                     <TextField
                         fullWidth
-                        label="Гендер"
+                        label="Стать"
                         name="gender"
+                        placeholder="ж / ч"
                         value={ servant.gender }
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }

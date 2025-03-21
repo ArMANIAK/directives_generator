@@ -10,7 +10,8 @@ export default function RolesPage({ saveRecord, removeRecord }) {
         id: undefined,
         name_nominative: "",
         name_dative: "",
-        name_accusative: ""
+        name_accusative: "",
+        name_instrumental: ""
     }
 
     const [ role, setRole ] = useState(initState);
@@ -44,6 +45,7 @@ export default function RolesPage({ saveRecord, removeRecord }) {
                     fullWidth
                     label="Назва ролі в називному відмінку"
                     name="name_nominative"
+                    placeholder="водій"
                     value={ role.name_nominative }
                     onChange={ handleChange }
                     slotProps={ { inputLabel: { shrink: true } } }
@@ -54,6 +56,7 @@ export default function RolesPage({ saveRecord, removeRecord }) {
                     fullWidth
                     label="Назва ролі в давальному відмінку"
                     name="name_dative"
+                    placeholder="водію"
                     value={ role.name_dative }
                     onChange={ handleChange }
                     slotProps={ { inputLabel: { shrink: true } } }
@@ -64,7 +67,19 @@ export default function RolesPage({ saveRecord, removeRecord }) {
                     fullWidth
                     label="Назва ролі в знахідному відмінку"
                     name="name_accusative"
+                    placeholder="водія"
                     value={ role.name_accusative }
+                    onChange={ handleChange }
+                    slotProps={ { inputLabel: { shrink: true } } }
+                />
+            </Grid>
+            <Grid>
+                <TextField
+                    fullWidth
+                    label="Назва ролі в орудному відмінку"
+                    name="name_instrumental"
+                    placeholder="водієм"
+                    value={ role.name_instrumental }
                     onChange={ handleChange }
                     slotProps={ { inputLabel: { shrink: true } } }
                 />
