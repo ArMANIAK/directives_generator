@@ -19,11 +19,13 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
         "first_name_genitive": "",
         "first_name_dative": "",
         "first_name_accusative": "",
+        "first_name_instrumental": "",
         "first_name_short": "",
         "last_name_nominative": "",
         "last_name_genitive": "",
         "last_name_dative": "",
         "last_name_accusative": "",
+        "last_name_instrumental": "",
         "rank": "",
         "speciality": "",
         "gender": "",
@@ -127,6 +129,19 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
                 </Grid>
+            </Grid>
+            <Grid container>
+                <Grid size={5}>
+                    <TextField
+                        fullWidth
+                        label="Імʼя та по батькові в давальному відмінку"
+                        name="first_name_instrumental"
+                        placeholder="Ігорем Петровичем"
+                        value={ servant.first_name_instrumental }
+                        onChange={ handleChange }
+                        slotProps={ { inputLabel: { shrink: true } } }
+                    />
+                </Grid>
                 <Grid size={2}>
                     <TextField
                         fullWidth
@@ -182,6 +197,19 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         name="last_name_accusative"
                         placeholder="ТІТІКАКУ"
                         value={ servant.last_name_accusative }
+                        onChange={ handleChange }
+                        slotProps={ { inputLabel: { shrink: true } } }
+                    />
+                </Grid>
+            </Grid>
+            <Grid container>
+                <Grid size={5}>
+                    <TextField
+                        fullWidth
+                        label="Прізвище в орудному відмінку"
+                        name="last_name_instrumental"
+                        placeholder="ТІТІКАКОЮ"
+                        value={ servant.last_name_instrumental }
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />

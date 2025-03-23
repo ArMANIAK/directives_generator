@@ -4,293 +4,335 @@
     "name_nominative": "працівник Збройних Сил України",
     "name_genitive": "працівника Збройних Сил України",
     "name_accusative": "працівника Збройних Сил України",
-    "name_dative": "працівнику Збройних Сил України"
+    "name_dative": "працівнику Збройних Сил України",
+    "name_instrumental": "працівником Збройних Сил України"
   },
   {
     "id": 1,
     "name_nominative": "курсант",
     "name_genitive": "курсанта",
     "name_accusative": "курсанта",
-    "name_dative": "курсанту"
+    "name_dative": "курсанту",
+    "name_instrumental": "курсантом"
   },
   {
     "id": 2,
     "name_nominative": "рекрут",
     "name_genitive": "рекрута",
     "name_accusative": "рекрута",
-    "name_dative": "рекруту"
+    "name_dative": "рекруту",
+    "name_instrumental": "рекрутом"
   },
   {
     "id": 3,
     "name_nominative": "солдат",
     "name_genitive": "солдата",
     "name_accusative": "солдата",
-    "name_dative": "солдату"
+    "name_dative": "солдату",
+    "name_instrumental": "солдатом"
   },
   {
     "id": 4,
     "name_nominative": "матрос",
     "name_genitive": "матроса",
     "name_accusative": "матроса",
-    "name_dative": "матросу"
+    "name_dative": "матросу",
+    "name_instrumental": "матросом"
   },
   {
     "id": 5,
     "name_nominative": "старший солдат",
     "name_genitive": "старшого солдата",
     "name_accusative": "старшого солдата",
-    "name_dative": "старшому солдату"
+    "name_dative": "старшому солдату",
+    "name_instrumental": "старшим солдатом"
   },
   {
     "id": 6,
     "name_nominative": "старший матрос",
     "name_genitive": "старшого матроса",
     "name_accusative": "старшого матроса",
-    "name_dative": "старшому матросу"
+    "name_dative": "старшому матросу",
+    "name_instrumental": "старшим матросом"
   },
   {
     "id": 7,
     "name_nominative": "молодший сержант",
     "name_genitive": "молодшого сержанта",
     "name_accusative": "молодшого сержанта",
-    "name_dative": "молодшому сержанту"
+    "name_dative": "молодшому сержанту",
+    "name_instrumental": "молодшим сержантом"
   },
   {
     "id": 8,
     "name_nominative": "старшина 2 статті",
     "name_genitive": "старшини 2 статті",
     "name_accusative": "старшину 2 статті",
-    "name_dative": "старшині 2 статті"
+    "name_dative": "старшині 2 статті",
+    "name_instrumental": "старшиною 2 статті"
   },
   {
     "id": 9,
     "name_nominative": "сержант",
     "name_genitive": "сержанта",
     "name_accusative": "сержанта",
-    "name_dative": "сержанту"
+    "name_dative": "сержанту",
+    "name_instrumental": "сержантом"
   },
   {
     "id": 10,
     "name_nominative": "старшина 1 статті",
     "name_genitive": "старшини 1 статті",
     "name_accusative": "старшину 1 статті",
-    "name_dative": "старшині 1 статті"
+    "name_dative": "старшині 1 статті",
+    "name_instrumental": "старшиною 1 статті"
   },
   {
     "id": 11,
     "name_nominative": "старший сержант",
     "name_genitive": "старшого сержанта",
     "name_accusative": "старшого сержанта",
-    "name_dative": "старшому сержанту"
+    "name_dative": "старшому сержанту",
+    "name_instrumental": "старшим сержантом"
   },
   {
     "id": 12,
     "name_nominative": "головний старшина",
     "name_genitive": "головного старшини",
     "name_accusative": "головного старшину",
-    "name_dative": "головному старшині"
+    "name_dative": "головному старшині",
+    "name_instrumental": "головним старшиною"
   },
   {
     "id": 13,
     "name_nominative": "головний сержант",
     "name_genitive": "головного сержанта",
     "name_accusative": "головного сержанта",
-    "name_dative": "головному сержанту"
+    "name_dative": "головному сержанту",
+    "name_instrumental": "головним сержантом"
   },
   {
     "id": 14,
     "name_nominative": "головний корабельний старшина",
     "name_genitive": "головного корабельного старшини",
     "name_accusative": "головного корабельного старшину",
-    "name_dative": "головному корабельному старшині"
+    "name_dative": "головному корабельному старшині",
+    "name_instrumental": "головним корабельним старшиною"
   },
   {
     "id": 15,
     "name_nominative": "штаб-сержант",
     "name_genitive": "штаб-сержанта",
     "name_accusative": "штаб-сержанта",
-    "name_dative": "штаб-сержанту"
+    "name_dative": "штаб-сержанту",
+    "name_instrumental": "штаб-сержантом"
   },
   {
     "id": 16,
     "name_nominative": "штаб-старшина",
     "name_genitive": "штаб-старшини",
     "name_accusative": "штаб-старшину",
-    "name_dative": "штаб-старшині"
+    "name_dative": "штаб-старшині",
+    "name_instrumental": "штаб-старшиною"
   },
   {
     "id": 17,
     "name_nominative": "майстер-сержант",
     "name_genitive": "майстер-сержанта",
     "name_accusative": "майстер-сержанта",
-    "name_dative": "майстер-сержанту"
+    "name_dative": "майстер-сержанту",
+    "name_instrumental": "майстер-сержантом"
   },
   {
     "id": 18,
     "name_nominative": "майстер-старшина",
     "name_genitive": "майстер-старшини",
     "name_accusative": "майстер-старшину",
-    "name_dative": "майстер-старшині"
+    "name_dative": "майстер-старшині",
+    "name_instrumental": "майстер-старшиною"
   },
   {
     "id": 19,
     "name_nominative": "старший майстер-сержант",
     "name_genitive": "старшого майстер-сержанта",
     "name_accusative": "старшого майстер-сержанта",
-    "name_dative": "старшому майстер-сержанту"
+    "name_dative": "старшому майстер-сержанту",
+    "name_instrumental": "старшим майстер-сержантом"
   },
   {
     "id": 20,
     "name_nominative": "старший майстер-старшина",
     "name_genitive": "старшого майстер-старшини",
     "name_accusative": "старшого майстер-старшину",
-    "name_dative": "старшому майстер-старшині"
+    "name_dative": "старшому майстер-старшині",
+    "name_instrumental": "старшим майстер-старшиною"
   },
   {
     "id": 21,
     "name_nominative": "головний майстер-сержант",
     "name_genitive": "головного майстер-сержанта",
     "name_accusative": "головного майстер-сержанта",
-    "name_dative": "головному майстер-сержанту"
+    "name_dative": "головному майстер-сержанту",
+    "name_instrumental": "головним майстер-сержантом"
   },
   {
     "id": 22,
     "name_nominative": "головний майстер-старшина",
     "name_genitive": "головного майстер-старшини",
     "name_accusative": "головного майстер-старшину",
-    "name_dative": "головному майстер-старшині"
+    "name_dative": "головному майстер-старшині",
+    "name_instrumental": "головним майстер-старшиною"
   },
   {
     "id": 23,
     "name_nominative": "молодший лейтенант",
     "name_genitive": "молодшого лейтенанта",
     "name_accusative": "молодшого лейтенанта",
-    "name_dative": "молодшому лейтенанту"
+    "name_dative": "молодшому лейтенанту",
+    "name_instrumental": "молодшим лейтенантом"
   },
   {
     "id": 24,
     "name_nominative": "лейтенант",
     "name_genitive": "лейтенанта",
     "name_accusative": "лейтенанта",
-    "name_dative": "лейтенанту"
+    "name_dative": "лейтенанту",
+    "name_instrumental": "лейтенантом"
   },
   {
     "id": 25,
     "name_nominative": "старший лейтенант",
     "name_genitive": "старшого лейтенанта",
     "name_accusative": "старшого лейтенанта",
-    "name_dative": "старшому лейтенанту"
+    "name_dative": "старшому лейтенанту",
+    "name_instrumental": "старшим лейтенантом"
   },
   {
     "id": 26,
     "name_nominative": "капітан",
     "name_genitive": "капітана",
     "name_accusative": "капітана",
-    "name_dative": "капітану"
+    "name_dative": "капітану",
+    "name_instrumental": "капітаном"
   },
   {
     "id": 27,
     "name_nominative": "капітан-лейтенант",
     "name_genitive": "капітан-лейтенанта",
     "name_accusative": "капітан-лейтенанта",
-    "name_dative": "капітан-лейтенанту"
+    "name_dative": "капітан-лейтенанту",
+    "name_instrumental": "капітан-лейтенантом"
   },
   {
     "id": 28,
     "name_nominative": "майор",
     "name_genitive": "майора",
     "name_accusative": "майора",
-    "name_dative": "майору"
+    "name_dative": "майору",
+    "name_instrumental": "майором"
   },
   {
     "id": 29,
     "name_nominative": "капітан 3 рангу",
     "name_genitive": "капітана 3 рангу",
     "name_accusative": "капітана 3 рангу",
-    "name_dative": "капітану 3 рангу"
+    "name_dative": "капітану 3 рангу",
+    "name_instrumental": "капітаном 3 рангу"
   },
   {
     "id": 30,
     "name_nominative": "підполковник",
     "name_genitive": "підполковника",
     "name_accusative": "підполковника",
-    "name_dative": "підполковнику"
+    "name_dative": "підполковнику",
+    "name_instrumental": "підполковником"
   },
   {
     "id": 31,
     "name_nominative": "капітан 2 рангу",
     "name_genitive": "капітана 2 рангу",
     "name_accusative": "капітана 2 рангу",
-    "name_dative": "капітану 2 рангу"
+    "name_dative": "капітану 2 рангу",
+    "name_instrumental": "капітаном 2 рангу"
   },
   {
     "id": 32,
     "name_nominative": "полковник",
     "name_genitive": "полковника",
     "name_accusative": "полковника",
-    "name_dative": "полковнику"
+    "name_dative": "полковнику",
+    "name_instrumental": "полковником"
   },
   {
     "id": 33,
     "name_nominative": "капітан 1 рангу",
     "name_genitive": "капітана 1 рангу",
     "name_accusative": "капітана 1 рангу",
-    "name_dative": "капітану 1 рангу"
+    "name_dative": "капітану 1 рангу",
+    "name_instrumental": "капітаном 1 рангу"
   },
   {
     "id": 34,
     "name_nominative": "бригадний генерал",
     "name_genitive": "бригадного генерала",
     "name_accusative": "бригадного генерала",
-    "name_dative": "бригадному генералу"
+    "name_dative": "бригадному генералу",
+    "name_instrumental": "бригадним генералом"
   },
   {
     "id": 35,
     "name_nominative": "коммодор",
     "name_genitive": "коммодора",
     "name_accusative": "коммодора",
-    "name_dative": "коммодору"
+    "name_dative": "коммодору",
+    "name_instrumental": "коммодором"
   },
   {
     "id": 36,
     "name_nominative": "генерал-майор",
     "name_genitive": "генерал-майора",
     "name_accusative": "генерал-майора",
-    "name_dative": "генерал-майору"
+    "name_dative": "генерал-майору",
+    "name_instrumental": "генерал-майором"
   },
   {
     "id": 37,
     "name_nominative": "контрадмірал",
     "name_genitive": "контрадмірала",
     "name_accusative": "контрадмірала",
-    "name_dative": "контрадміралу"
+    "name_dative": "контрадміралу",
+    "name_instrumental": "контрадміралом"
   },
   {
     "id": 38,
     "name_nominative": "генерал-лейтенант",
     "name_genitive": "генерал-лейтенанта",
     "name_accusative": "генерал-лейтенанта",
-    "name_dative": "генерал-лейтенанту"
+    "name_dative": "генерал-лейтенанту",
+    "name_instrumental": "генерал-лейтенантом"
   },
   {
     "id": 39,
     "name_nominative": "віцеадмірал",
     "name_genitive": "віцеадмірала",
     "name_accusative": "віцеадмірала",
-    "name_dative": "віцеадміралу"
+    "name_dative": "віцеадміралу",
+    "name_instrumental": "віцеадміралом"
   },
   {
     "id": 40,
     "name_nominative": "генерал",
     "name_genitive": "генерала",
     "name_accusative": "генерала",
-    "name_dative": "генералу"
+    "name_dative": "генералу",
+    "name_instrumental": "генералом"
   },
   {
     "id": 41,
     "name_nominative": "адмірал",
     "name_genitive": "адмірала",
     "name_accusative": "адмірала",
-    "name_dative": "адміралу"
+    "name_dative": "адміралу",
+    "name_instrumental": "адміралом"
   }
 ]

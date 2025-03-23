@@ -15,6 +15,12 @@ const groupPull = pull => {
                 acc[record.clause_type][record.new_rank].push(record);
                 break;
             }
+            case "contract": {
+                if (!acc[record.clause_type]) acc[record.clause_type] = {};
+                if (!acc[record.clause_type][record.reason]) acc[record.clause_type][record.reason] = [];
+                acc[record.clause_type][record.reason].push(record);
+                break;
+            }
             default:
                 if (!acc[record.clause_type]) acc[record.clause_type] = [];
                 acc[record.clause_type].push(record);
@@ -63,7 +69,7 @@ export default function generatePersonnelOrder(pull) {
         }
         text_block += "\n";
     }
-    else if (groupedPull.reassignment) {
+    if (groupedPull.reassignment) {
         let isPlural = groupedPull.reassignment.length > 1;
         text_block = `§ ${ paragraph_no++ }\n${ isPlural ? "" : clause_no++ + ". " }Відповідно до пункту ___ Положення про ` +
             `проходження громадянами України військової служби у Збройних Силах України ${ isPlural 
@@ -97,6 +103,51 @@ export default function generatePersonnelOrder(pull) {
                     GenerateFullTitleByTitleIndex(servant.new_title_index, "instrumental").toUpperCase() +
                     ", ВОС – " + servant.MOS + ".\n";
                 text_block += generateReassignmentDetailsBlock(servant);
+            }
+        }
+    }
+    if (groupedPull.contract) {
+        if (groupedPull.contract.new_contract) {
+            text_block += `§ ${ paragraph_no++ }\n`;
+            if (groupedPull.contract.new_contract.length > 1) {
+                text_block += `Відповідно до частини ___ статті ___ Закону України «Про військовий ` +
+                    `обов’язок і військову службу» з нижчепойменованими особами рядового, сержантського і старшинського складу` +
+                    ` УКЛАСТИ новий контракт про проходження громадянами України військової служби у Збройних Силах України на ` +
+                    `посадах осіб рядового, сержантського і старшинського складу:\n`;
+                for (let servant of groupedPull.contract.new_contract) {
+                    let fullServant = GenerateServantRankNameAndTitle(servant.servant_id, "instrumental", "full");
+                    text_block += `${clause_no++}. ${ fullServant[0].toLocaleUpperCase() + fullServant.slice(1) }.\n` +
+                        `${ servant.year_of_birth } р.н.\t${ servant.VAT },\n${ servant.service_period }.\n`;
+                }
+            } else {
+                let servant = groupedPull.contract.new_contract[0];
+                let fullServant = GenerateServantRankNameAndTitle(servant.servant_id, "instrumental", "full");
+                text_block += `${clause_no++}. Відповідно до частини ___ статті ___ Закону України «Про військовий обов’язок і ` +
+                    `військову службу» з ${ fullServant }, УКЛАСТИ новий контракт про проходження громадянами України ` +
+                    `військової служби у Збройних Силах України на посадах осіб рядового, сержантського і старшинського складу` +
+                    ` ${ servant.service_period }.\n${ servant.year_of_birth } р.н.\t${ servant.VAT }.\n`;
+            }
+
+        }
+        if (groupedPull.contract.prolongation) {
+            text_block += `§ ${ paragraph_no++ }\n`;
+            if (groupedPull.contract.prolongation.length > 1) {
+                text_block += `Відповідно до частини ___ статті ___ Закону України «Про військовий ` +
+                    `обов’язок і військову службу» з нижчепойменованими особами рядового, сержантського і старшинського складу` +
+                    ` ПРОДОВЖИТИ строк попереднього контракту про проходження громадянами України військової служби у Збройних ` +
+                    `Силах України на посадах осіб рядового, сержантського і старшинського складу:\n`;
+                for (let servant of groupedPull.contract.prolongation) {
+                    let fullServant = GenerateServantRankNameAndTitle(servant.servant_id, "instrumental", "full");
+                    text_block += `${clause_no++}. ${ fullServant[0].toLocaleUpperCase() + fullServant.slice(1) }.\n` +
+                        `${ servant.year_of_birth } р.н.\t${ servant.VAT },\n${ servant.service_period }.\n`;
+                }
+            } else {
+                let servant = groupedPull.contract.prolongation[0];
+                let fullServant = GenerateServantRankNameAndTitle(servant.servant_id, "instrumental", "full");
+                text_block += `${clause_no++}. Відповідно до частини ___ статті ___ Закону України «Про військовий обов’язок і ` +
+                    `військову службу» з ${ fullServant }, ПРОДОВЖИТИ строк попереднього контракту про проходження громадянами України ` +
+                    `військової служби у Збройних Силах України на посадах осіб рядового, сержантського і старшинського складу` +
+                    ` ${ servant.service_period }.\n${ servant.year_of_birth } р.н.\t${ servant.VAT }.\n`;
             }
         }
     }

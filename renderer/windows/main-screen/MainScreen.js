@@ -9,7 +9,8 @@ import {
     FormControl,
     FormControlLabel,
     Radio,
-    RadioGroup, TextField
+    RadioGroup,
+    TextField
 } from "@mui/material";
 import {  GenerateServantRankNameAndTitle } from "../../utilities/ServantsGenerators";
 import { GenerateOrder } from "../../utilities/OrderGenerator";

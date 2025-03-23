@@ -16,7 +16,7 @@ const initialState = {
     "education": "",
     "service_period": "",
     "service_periods": [""],
-    "reassignment_reason": "",
+    "reason": "new_contract",
     "subordinate": "",
     "justification": "",
     "articles_no": "",

@@ -24,6 +24,7 @@ import RankChangePage from "./pages/RankChangePage";
 import generatePersonnelOrder from "../../utilities/PersonnelOrderGenerator";
 import PersonnelReassignmentPage from "./pages/PersonnelReassignmentPage";
 import {GenerateFullTitle} from "../../utilities/ServantsGenerators";
+import PersonnelContractPage from "./pages/PersonnelContractPage";
 const ranks = require("../../dictionaries/ranks.json");
 
 const clauses = [
@@ -152,19 +153,26 @@ export default function PersonnelOrderScreen() {
                 </Grid>
             </Grid>
             { record.clause_type === "rank_change" &&
-            <RankChangePage
-                handleChange={ handleChange }
-                addServant={ addServant }
-                deleteServant={ deleteServant }
-                handleMultipleValueChange={ handleMultipleValueChange }
-                rankList={ rankList }
-            />}
+                <RankChangePage
+                    handleChange={ handleChange }
+                    addServant={ addServant }
+                    deleteServant={ deleteServant }
+                    handleMultipleValueChange={ handleMultipleValueChange }
+                    rankList={ rankList }
+                />
+            }
             { record.clause_type === "reassignment" &&
                 <PersonnelReassignmentPage
                     handleChange={ handleChange }
                     rankList={ rankList }
                     titlesList={ titlesList }
-                />}
+                />
+            }
+            { record.clause_type === "contract" &&
+                <PersonnelContractPage
+                    handleChange={ handleChange }
+                />
+            }
             <Grid container spacing={2}>
                 <Button
                     variant="contained"
