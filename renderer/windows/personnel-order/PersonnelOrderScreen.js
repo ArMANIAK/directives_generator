@@ -23,8 +23,9 @@ import {
 import RankChangePage from "./pages/RankChangePage";
 import generatePersonnelOrder from "../../utilities/PersonnelOrderGenerator";
 import PersonnelReassignmentPage from "./pages/PersonnelReassignmentPage";
-import {GenerateFullTitle} from "../../utilities/ServantsGenerators";
+import { GenerateFullTitle, GenerateRankAndName } from "../../utilities/ServantsGenerators";
 import PersonnelContractPage from "./pages/PersonnelContractPage";
+import Viewer from "../../components/Viewer";
 const ranks = require("../../dictionaries/ranks.json");
 
 const clauses = [
@@ -134,6 +135,53 @@ export default function PersonnelOrderScreen() {
         window.electron.sendToClipboard(text);
     }
 
+    const editRecord = ind => () => {
+        const newRecord = pull[ind];
+        if (newRecord.clause_type === "rank_change") {
+            newRecord.VATs = [ newRecord.VAT ];
+            newRecord.servants = [ newRecord.servant_id ];
+            newRecord.years_of_birth = [ newRecord.year_of_birth ];
+            newRecord.service_periods = [ newRecord.service_period ];
+        }
+        dispatch(setPersonnelRecord(newRecord));
+        setPull(state => {
+            state.splice(ind, 1);
+            return [ ...state ];
+        })
+    }
+
+    const removeRecord = ind => {
+        setPull(state => {
+            state.splice(ind, 1);
+            return [ ...state ];
+        })
+    }
+
+    const headers = [
+        { label: "Пункт наказу", eval: row => {
+                switch (row.clause_type) {
+                    case "rank_change":
+                        return "Присвоєння звання";
+                    case "reassignment":
+                        return "Перепризначення";
+                    case "subordinate":
+                        return "В розпорядження";
+                    case "contract":
+                        if (row.reason === "new_contract") return "Укладення контракту";
+                        if (row.reason === "prolongation") return "Продовження контракту";
+                        return "Припинення контракту";
+                    case "hire":
+                        return "Прийняття на службу";
+                    case "retire":
+                        return "Звільнення зі служби";
+                    default:
+                        return "Помилка";
+                }
+            }
+        },
+        { label: "Військовослужбовець / працівник ЗСУ", eval: row => GenerateRankAndName(row.servant_id, "nominative") }
+    ];
+
     return (
         <Grid container flexDirection="column" padding="30px" spacing={4} >
             <Grid marginBottom="30px">
@@ -185,6 +233,12 @@ export default function PersonnelOrderScreen() {
                     Згенерувати наказ
                 </Button>
             </Grid>
+            <Viewer
+                recordList={ pull }
+                headers={ headers }
+                editRecord={ editRecord }
+                removeRecord={ removeRecord }
+            />
         </Grid>
     )
 }

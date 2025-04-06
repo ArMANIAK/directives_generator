@@ -1,4 +1,4 @@
-import { Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Button, Typography, Box } from "@mui/material";
+import { Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Button, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import Modal from "@mui/material/Modal";
@@ -28,7 +28,7 @@ export default function DictionaryViewer({ dictionaryType, headers, editRecord, 
     const dictionary = useSelector(state => state.dictionaries[dictionaryType])
     const [ isDeleteModalVisible, setModalVisibility ] = useState(false);
     const [ deletedInd, setDeletedInd ] = useState(null)
-    const closeDeleteWarning = event => {
+    const closeDeleteWarning = () => {
         setModalVisibility(false)
         setDeletedInd(null)
     }
@@ -37,14 +37,14 @@ export default function DictionaryViewer({ dictionaryType, headers, editRecord, 
         setModalVisibility(true)
     }
 
-    const onDelete = ind => event => {
+    const onDelete = ind => () => {
         setDeletedInd(ind);
         openDeleteWarning();
     }
 
     const confirmDelete = event => {
         console.log(deletedInd)
-        if (deletedInd) removeRecord(deletedInd);
+        if (deletedInd || deletedInd === 0) removeRecord(deletedInd);
         closeDeleteWarning(event)
     }
 
@@ -91,20 +91,24 @@ export default function DictionaryViewer({ dictionaryType, headers, editRecord, 
                                 Ви точно хочете видалити запис?
                             </Typography>
                         </Grid>
-                        <Grid container flexDirection="row" justifyContent="space-around">
-                            <Button
-                                variant="contained"
-                                onClick={ closeDeleteWarning }
-                            >
-                                Скасувати
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="error"
-                                onClick={ confirmDelete }
-                            >
-                                Підтверджую видалення
-                            </Button>
+                        <Grid container flexDirection="row" justifyContent="space-between">
+                            <Grid size={5}>
+                                <Button
+                                    variant="contained"
+                                    onClick={ closeDeleteWarning }
+                                >
+                                    Скасувати
+                                </Button>
+                            </Grid>
+                            <Grid size={5}>
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    onClick={ confirmDelete }
+                                >
+                                    Видалити
+                                </Button>
+                            </Grid>
                         </Grid>
                     </Grid>
             </Modal>

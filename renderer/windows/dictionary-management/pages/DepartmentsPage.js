@@ -5,7 +5,7 @@ import DictionaryViewer from "../../../components/DictionaryViewer";
 import { DEPARTMENTS_VAR } from "../../../dictionaries/constants";
 import { GenerateFullDepartment } from "../../../utilities/ServantsGenerators";
 import Selector from "../../../components/Selector";
-import {useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 
 export default function DepartmentsPage({ saveRecord, removeRecord }) {
 
