@@ -36,7 +36,7 @@ export default function generatePersonnelOrder(pull) {
     let clause_no = 1;
     const groupedPull = groupPull(pull);
     if (groupedPull.rank_change) {
-        text_block = `§ ${ paragraph_no++ }\n`;
+        text_block += `§ ${ paragraph_no++ }\n`;
         let newRanks = Object.keys(groupedPull.rank_change);
         newRanks.sort();
         let isMultipleClauses = groupedPull.rank_change[newRanks[0]][0].clauses_no.indexOf(" ") !== -1;
@@ -71,7 +71,7 @@ export default function generatePersonnelOrder(pull) {
     }
     if (groupedPull.reassignment) {
         let isPlural = groupedPull.reassignment.length > 1;
-        text_block = `§ ${ paragraph_no++ }\n${ isPlural ? "" : clause_no++ + ". " }Відповідно до пункту ___ Положення про ` +
+        text_block += `§ ${ paragraph_no++ }\n${ isPlural ? "" : clause_no++ + ". " }Відповідно до пункту ___ Положення про ` +
             `проходження громадянами України військової служби у Збройних Силах України ${ isPlural 
                 ? "нижчепойменованих осіб сержантського, старшинського та рядового складу" 
                 : GenerateServantRankNameAndTitle(groupedPull.reassignment[0].servant_id, "accusative", "full") }` +
