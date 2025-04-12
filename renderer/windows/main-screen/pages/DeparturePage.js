@@ -6,6 +6,7 @@ import ServantSelector from "../../../components/ServantSelector";
 import { IoIosAddCircleOutline, IoIosTrash } from "react-icons/io";
 import { useState } from "react";
 import { GenerateRankAndName } from "../../../utilities/ServantsGenerators";
+import {formatDate} from "../../../utilities/DateUtilities";
 
 const modalStyle = {
     width: "30%",
@@ -36,30 +37,12 @@ export default function DeparturePage({
         setCurrentServantState("");
     }
 
-    let certificateLabel = '';
-    let reasonLabel = '';
+    let absence_type = absence_types.find(absence => absence.value === record.absence_type);
 
-    switch (record.absence_type) {
-        case 'mission':
-            certificateLabel = "Посвідчення про відрядження №";
-            reasonLabel = "Підстава для відрядження"
-            break;
-        case 'sick_leave':
-        case 'health_circumstances':
-            certificateLabel = "Довідка №";
-            reasonLabel = "Вхідний номер та дата рапорта/заяви"
-            break;
-        case 'medical_care':
-        case 'medical_board':
-            certificateLabel = "Направлення №";
-            reasonLabel = "Вхідний номер та дата рапорта/заяви"
-            break;
-        case 'vacation':
-        case 'family_circumstances':
-            certificateLabel = "Відпускний квиток №";
-            reasonLabel = "Вхідний номер та дата рапорта/заяви"
-            break;
-    }
+    let certificateLabel = absence_type.certificate ?? "";
+    let reasonLabel = record.absence_type === "mission" ?
+        "Підстава для відрядження" :
+        "Вхідний номер та дата рапорта/заяви";
 
     const handleAbsenceTypeChange = event => {
         if (["medical_care", "health_circumstances", "medical_board"].includes(event.target.value)) {
@@ -78,10 +61,13 @@ export default function DeparturePage({
         if (currentDuties.length > 0) {
             setDepartWarningState(true)
             let message = currentDuties.reduce((text, el) => {
+                let absence_type = absence_types.find(absence => absence.value === el.absence_type);
                 text += `${GenerateRankAndName(el.servant_id, "nominative")} тимчасово відсутній.` + "\n" +
-                    `Тип зайнятості: ${absence_types.find(absence => absence.value === el.absence_type)?.label}.` + "\n";
+                    `Тип зайнятості: ${absence_type?.label}.` + "\n";
                 if (el.destination) text += `Вибув до ${el.destination}\n`;
-                if (el.planned_date_end)text += `Запланована дата повернення ${el.planned_date_end}\n`
+                if (el.planned_date_end) text += `Запланована дата повернення ${formatDate(el.planned_date_end)}\n`
+                if (el.certificate)
+                    text += `${absence_type?.certificate} № ${el.certificate} від ${formatDate(el.certificate_issue_date)}\n`
                 return text;
             }, "");
             setCurrentServantState(message)
@@ -285,7 +271,7 @@ export default function DeparturePage({
                                 <Grid size={5}>
                                     <TextField
                                         fullWidth
-                                        label={ certificateLabel }
+                                        label={ certificateLabel + " №" }
                                         name="certificate"
                                         value={record.certificate[ind]}
                                         onChange={ handleMultipleValueChange(ind) }

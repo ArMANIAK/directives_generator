@@ -1,30 +1,37 @@
 [
   {
     "label": "Відрядження",
-    "value": "mission"
+    "value": "mission",
+    "certificate": "Посвідчення про відрядження"
   },
   {
     "label": "Лікарняний",
-    "value": "sick_leave"
+    "value": "sick_leave",
+    "certificate": "Довідка"
   },
   {
     "label": "Стаціонар",
-    "value": "medical_care"
+    "value": "medical_care",
+    "certificate": "Направлення"
   },
   {
     "label": "Відпустка основна",
-    "value": "vacation"
+    "value": "vacation",
+    "certificate": "Відпускний квиток"
   },
   {
     "label": "Відпустка за сімейними обставинами",
-    "value": "family_circumstances"
+    "value": "family_circumstances",
+    "certificate": "Відпускний квиток"
   },
   {
     "label": "Відпустка за станом здоров'я",
-    "value": "health_circumstances"
+    "value": "health_circumstances",
+    "certificate": "Довідка ВЛК"
   },
   {
     "label": "ВЛК",
-    "value": "medical_board"
+    "value": "medical_board",
+    "certificate": "Направлення"
   }
 ]

@@ -2,9 +2,8 @@ import Grid from "@mui/material/Grid2";
 import { TextField } from "@mui/material";
 import { useEffect } from "react";
 import Selector from "../../../components/Selector";
-import { useSelector } from "react-redux";
 
-export default function AssignmentPage({ handleMultipleValueChange, handleOtherPointChange, titlesList }) {
+export default function AssignmentPage({ record, handleMultipleValueChange, handleOtherPointChange, titlesList }) {
 
     const initialState = {
         first_name_nominative: "",
@@ -43,8 +42,6 @@ export default function AssignmentPage({ handleMultipleValueChange, handleOtherP
         ration_certificate_date: "",
     };
 
-    const record = useSelector(state => state.record)
-
     const ranks = require("../../../dictionaries/ranks.json");
     const ranksList = ranks.map(el => ({ label: el.name_nominative, value: el.id }))
 
@@ -58,7 +55,10 @@ export default function AssignmentPage({ handleMultipleValueChange, handleOtherP
     }
 
     useEffect(() => {
-        handleOtherPointChange({ ...record, settings: { ...initialState } })
+        const newRecord = { ...record };
+        if (!record.settings)
+            newRecord.settings = { ...initialState };
+        handleOtherPointChange(newRecord)
     }, []);
 
     return (

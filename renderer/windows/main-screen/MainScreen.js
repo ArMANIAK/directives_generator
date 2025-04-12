@@ -413,12 +413,15 @@ export default function MainScreen() {
 
     const editRecord = id => () => {
         const record = { ...pull[id] };
-        record.servants = [ record.servant_id ];
-        record.certificate = [ record.certificate ];
-        record.certificate_issue_date = [ record.certificate_issue_date ];
-        record.start_substituting = [ record.start_substituting ];
-        record.stop_substituting = [ record.stop_substituting ];
-        record.substituting_servants = [ record.substituting_servants ];
+        console.log(record)
+        if (record.sectionType !== "other_points") {
+            record.servants = [ record.servant_id ];
+            record.certificate = [ record.certificate ];
+            record.certificate_issue_date = [ record.certificate_issue_date ];
+            record.start_substituting = [ record.start_substituting ];
+            record.stop_substituting = [ record.stop_substituting ];
+            record.substituting_servants = [ record.substituting_servants ];
+        }
         dispatch(setRecord(record));
         dispatch(removeRow(record.id));
         deleteFromTempbook(record.id);

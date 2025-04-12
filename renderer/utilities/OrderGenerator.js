@@ -271,8 +271,8 @@ function GenerateAssignmentClauses(otherPullSection, starting_index = 1) {
             `зарахувати до списків особового складу частини на всі види забезпечення `;
         if (settings.assigned_date)
             directive += `та вважати так${settings.gender === "ж" ? "ою" : "им"}, що з ${formatDate(settings.assigned_date, false)} ` +
-            `справи та посаду прийня${isFemale(servant.servant_id) ? "ла" : "в"} ` +
-            `і приступи${isFemale(servant.servant_id) ? "ла" : "в"} до виконання службових обов’язків за посадою`;
+            `справи та посаду прийня${settings.gender === "ж" ? "ла" : "в"} ` +
+            `і приступи${settings.gender === "ж" ? "ла" : "в"} до виконання службових обов’язків за посадою`;
         directive += `.\nЗарахувати ${servantRankAccusative} ${settings.last_name_accusative} ${settings.first_name_short} на котлове забезпечення при ` +
             `${settings.supplied_by} за каталогом продуктів – зі сніданку ${formattedTomorrow}.\n`;
         directive += `Встановити посадовий оклад згідно з тарифним розрядом ${settings.tarif} у сумі ${settings.amount} ` +
@@ -439,7 +439,8 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                                 directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                             }
                             directive += GenerateServantBlock(servant, "remove", withSubClauses);
-                            directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
+                            directive += "Підстава: " + isEmployee(servant.servant_id) ? "заява " : " рапорт " +
+                                GenerateRankAndName(servant.servant_id, "genitive") +
                                 " (вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
                                 " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
                         }
@@ -534,7 +535,8 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                         directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                     directive += GenerateServantBlock(servant, "remove", withSubClauses);
 
-                    directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
+                    directive += "Підстава: " + isEmployee(servant.servant_id) ? "заява " : " рапорт " +
+                        GenerateRankAndName(servant.servant_id, "genitive") +
                         " (вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
                         " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
                 }
@@ -568,7 +570,8 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
                 directive += ` та надбавку за роботу в умовах режимних обмежень у розмірі ${settings.state_secret} % до посадового окладу ` +
                     `з ${formatDate(settings.reassigned_date, false)}`;
             directive += `.\n\nПідстава: витяг із наказу ${settings.nomenclature} (по особовому складу) від ${formatDate(settings.order_date, false)} ` +
-                `№ ${settings.order_no}, рапорт ${GenerateRankAndName(servant.servant_id, "genitive")} (вх. № ${servant.certificate} від ${servant.certificate_issue_date}).\n\n`;
+                `№ ${settings.order_no}, рапорт ${GenerateRankAndName(servant.servant_id, "genitive")}` +
+                ` (вх. № ${servant.certificate} від ${formatDate(servant.certificate_issue_date)}).\n\n`;
         }
     }
     if (otherClausesPull.payed_substitution) {
@@ -588,7 +591,7 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
                 directive += ` та надбавку за роботу в умовах режимних обмежень у розмірі ${settings.state_secret} % від посадового окладу ` +
                     `за посадою, до якої допускається з ${formatDate(settings.assigned_date, false)}`;
             directive += `.\n\nПідстава: ${settings.reason}, рапорт ${GenerateRankAndName(servant.servant_id, "genitive")} ` +
-                `(вх. № ${servant.certificate} від ${servant.certificate_issue_date}).\n\n`;
+                `(вх. № ${servant.certificate} від ${formatDate(servant.certificate_issue_date)}).\n\n`;
         }
     }
     if (otherClausesPull.financial_support) {
