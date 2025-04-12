@@ -41,7 +41,7 @@ const modalStyle = {
 export default function Viewer({ recordList, headers, editRecord, removeRecord }) {
     const [ isDeleteModalVisible, setModalVisibility ] = useState(false);
     const [ deletedInd, setDeletedInd ] = useState(null);
-    const [ list, setList ] = useState(recordList.map((el, ind) => { return { ...el, id: ind }}));
+    const [ list, setList ] = useState(recordList.map((el, ind) => { return { ...el, index: ind }}));
     const [ sortOrder, setSortOrder ] = useState();
     const [ sortColumn, setSortColumn ] = useState();
     const [ evalFunc, setEvalFunc ] = useState(null);

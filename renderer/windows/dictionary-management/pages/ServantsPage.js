@@ -1,40 +1,10 @@
 import Grid from "@mui/material/Grid2";
-import { TextField, Button, Checkbox, FormControlLabel } from "@mui/material";
-import { useState } from "react";
-import DictionaryViewer from "../../../components/DictionaryViewer";
-import { SERVANTS_VAR } from "../../../dictionaries/constants";
-import {
-    GenerateFullDepartment,
-    GenerateFullTitle,
-    GenerateRankAndName
-} from "../../../utilities/ServantsGenerators";
+import { TextField, Checkbox, FormControlLabel } from "@mui/material";
+import { GenerateFullTitle } from "../../../utilities/ServantsGenerators";
 import Selector from "../../../components/Selector";
 import { useSelector } from "react-redux";
 
-export default function ServantsPage({ saveRecord, removeRecord }) {
-
-    const initState = {
-        "id": undefined,
-        "first_name_nominative": "",
-        "first_name_genitive": "",
-        "first_name_dative": "",
-        "first_name_accusative": "",
-        "first_name_instrumental": "",
-        "first_name_short": "",
-        "last_name_nominative": "",
-        "last_name_genitive": "",
-        "last_name_dative": "",
-        "last_name_accusative": "",
-        "last_name_instrumental": "",
-        "rank": "",
-        "speciality": "",
-        "gender": "",
-        "supplied_by": "",
-        "title_index": "",
-        "retired": "ні"
-    };
-
-    const [ servant, setServant ] = useState(initState);
+export default function ServantsPage({ record, handleChange }) {
 
     const ranks = require("../../../dictionaries/ranks.json");
     const ranksList = ranks.map(el => ({ label: el.name_nominative, value: el.id }))
@@ -45,40 +15,16 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
         value: el.title_index
     }))
 
-    const handleChange = event => {
-        let updated = { ...servant, [event.target.name]: event.target.value };
-        setServant(updated);
-    }
-
     const handleCheckBoxChange = event => {
         const { target: { name, checked } } = event;
-        const updatedRecord = {
-            ...servant,
-            [name]: checked ? "так" : "ні"
-        }
-        setServant(updatedRecord);
-    }
-    const handleSubmit = () => {
-        let updatedRecord = { ...servant }
-        saveRecord(updatedRecord)
-        setServant(initState)
-    }
-
-    const editRecord = record => {
-        setServant({ ...record })
-    }
-
-    const headers = [
-        { label: "Військовослужбовець / працівник ЗСУ", eval: row => GenerateRankAndName(row.id, "nominative") },
-        { label: "Індекс посади", value: "title_index"},
-        { label: "Підрозділ", eval: row => {
-                let titleByIndex = titles.find(el => el.title_index === row.title_index);
-                if (titleByIndex)
-                    return GenerateFullDepartment(titleByIndex.primary_department || titleByIndex.secondary_department, "nominative", true)
-                return "";
+        const updatedEvent = {
+            target: {
+                name,
+                value: checked ? "так" : "ні"
             }
         }
-    ];
+        handleChange(updatedEvent);
+    }
 
     return (
         <Grid direction={'column'} container spacing={2}>
@@ -89,7 +35,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Імʼя та по батькові в називному відмінку"
                         name="first_name_nominative"
                         placeholder="Ігор Петрович"
-                        value={ servant.first_name_nominative }
+                        value={ record.first_name_nominative || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -100,7 +46,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Імʼя та по батькові в родовому відмінку"
                         name="first_name_genitive"
                         placeholder="Ігоря Петровича"
-                        value={ servant.first_name_genitive }
+                        value={ record.first_name_genitive || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -113,7 +59,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Імʼя та по батькові в давальному відмінку"
                         name="first_name_dative"
                         placeholder="Ігорю Петровичу"
-                        value={ servant.first_name_dative }
+                        value={ record.first_name_dative || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -124,7 +70,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Імʼя та по батькові в знахідному відмінку"
                         name="first_name_accusative"
                         placeholder="Ігоря Петровича"
-                        value={ servant.first_name_accusative }
+                        value={ record.first_name_accusative || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -137,7 +83,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Імʼя та по батькові в давальному відмінку"
                         name="first_name_instrumental"
                         placeholder="Ігорем Петровичем"
-                        value={ servant.first_name_instrumental }
+                        value={ record.first_name_instrumental || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -148,7 +94,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Ініціали"
                         name="first_name_short"
                         placeholder="І.П."
-                        value={ servant.first_name_short }
+                        value={ record.first_name_short || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -161,7 +107,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Прізвище в називному відмінку"
                         name="last_name_nominative"
                         placeholder="ТІТІКАКА"
-                        value={ servant.last_name_nominative }
+                        value={ record.last_name_nominative || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -172,7 +118,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Прізвище в родовому відмінку"
                         name="last_name_genitive"
                         placeholder="ТІТІКАКИ"
-                        value={ servant.last_name_genitive }
+                        value={ record.last_name_genitive || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -185,7 +131,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Прізвище в давальному відмінку"
                         name="last_name_dative"
                         placeholder="ТІТІКАЦІ"
-                        value={ servant.last_name_dative }
+                        value={ record.last_name_dative || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -196,7 +142,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Прізвище в знахідному відмінку"
                         name="last_name_accusative"
                         placeholder="ТІТІКАКУ"
-                        value={ servant.last_name_accusative }
+                        value={ record.last_name_accusative || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -209,7 +155,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Прізвище в орудному відмінку"
                         name="last_name_instrumental"
                         placeholder="ТІТІКАКОЮ"
-                        value={ servant.last_name_instrumental }
+                        value={ record.last_name_instrumental || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -220,7 +166,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Стать"
                         name="gender"
                         placeholder="ж / ч"
-                        value={ servant.gender }
+                        value={ record.gender || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -233,7 +179,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Військове звання / працівник ЗСУ"
                         list={ ranksList }
                         name="rank"
-                        value={ servant.rank }
+                        value={ record.rank || ""}
                     />
                 </Grid>
                 <Grid size={5}>
@@ -242,7 +188,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Спеціальне звання в родовому відмінку"
                         placeholder="медичної служби, юстиції, тощо"
                         name="speciality"
-                        value={ servant.speciality }
+                        value={ record.speciality || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -255,7 +201,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="На котловому забезпеченні при..."
                         name="supplied_by"
                         placeholder="військовій частині А0232"
-                        value={ servant.supplied_by }
+                        value={ record.supplied_by || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -264,7 +210,7 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                     <FormControlLabel
                         control={ <Checkbox
                             name="retired"
-                            checked={ (servant.retired === "так") }
+                            checked={ (record.retired === "так") }
                         /> }
                         label="Звільнено / переведено"
                         onChange={ handleCheckBoxChange }
@@ -279,23 +225,10 @@ export default function ServantsPage({ saveRecord, removeRecord }) {
                         label="Індекс поточної посади"
                         list={ titlesList }
                         name="title_index"
-                        value={ servant.title_index }
+                        value={ record.title_index || ""}
                     />
                 </Grid>
             </Grid>
-            <Grid>
-                <Button
-                    variant="contained"
-                    onClick={ handleSubmit }>
-                    Зберегти військовослужбовця / працівника ЗСУ
-                </Button>
-            </Grid>
-            <DictionaryViewer
-                dictionaryType={ SERVANTS_VAR }
-                editRecord={ editRecord }
-                removeRecord={ removeRecord }
-                headers={ headers }
-            />
         </Grid>
     )
 }

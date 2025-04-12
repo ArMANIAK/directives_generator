@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch } from "react-redux";
 import Grid from '@mui/material/Grid2';
 import {
+    Button,
     FormControl,
     FormControlLabel,
     Radio,
@@ -24,12 +25,101 @@ import RolesPage from "./pages/RolesPage";
 import TitlesPage from "./pages/TitlesPage";
 import DepartmentsPage from "./pages/DepartmentsPage";
 import ServantsPage from "./pages/ServantsPage";
+import Viewer from "../../components/Viewer";
+import { GenerateFullDepartment, GenerateFullTitle, GenerateRankAndName } from "../../utilities/ServantsGenerators";
 
 export default function DictionaryManagementScreen() {
 
+    const initState = {
+        roles: {
+            id: "",
+            name_nominative: "",
+            name_dative: "",
+            name_accusative: "",
+            name_instrumental: ""
+        },
+        titles: {
+            id: "",
+            "title_index": "",
+            "primary_role": "",
+            "primary_department": "",
+            "secondary_role": "",
+            "secondary_department": "",
+        },
+        departments: {
+            id: "",
+            name_nominative: "",
+            name_genitive: "",
+            parent_id: ""
+        },
+        servants: {
+            "id": "",
+            "first_name_nominative": "",
+            "first_name_genitive": "",
+            "first_name_dative": "",
+            "first_name_accusative": "",
+            "first_name_instrumental": "",
+            "first_name_short": "",
+            "last_name_nominative": "",
+            "last_name_genitive": "",
+            "last_name_dative": "",
+            "last_name_accusative": "",
+            "last_name_instrumental": "",
+            "rank": "",
+            "speciality": "",
+            "gender": "",
+            "supplied_by": "",
+            "title_index": "",
+            "retired": "ні"
+        }
+    }
+
+    const headers = {
+        roles: [
+            {
+                label: "Назва ролі",
+                eval: row => row.name_nominative,
+            }
+        ],
+        departments: [
+            { label: "Назва підрозділу", eval: row => row.name_nominative },
+            { label: "Керівний підрозділ", eval: row => GenerateFullDepartment(row.parent_id, "nominative", true) },
+        ],
+        titles: [
+            {
+                label: "Індекс посади",
+                eval: row => row.title_index
+            },
+            {
+                label: "Назва посади",
+                eval: row => GenerateFullTitle(row, "nominative"),
+            },
+            {
+                label: "Підрозділ",
+                eval: row => {
+                    return GenerateFullDepartment(row.primary_department || row.secondary_department, "nominative", true)
+                }
+            }
+        ],
+        servants: [
+            { label: "Військовослужбовець / працівник ЗСУ", eval: row => GenerateRankAndName(row.id, "nominative") },
+            { label: "Індекс посади", eval: row => row.title_index },
+            {
+                label: "Підрозділ",
+                eval: row => {
+                    let titleByIndex = dictionaries.titles.find(el => el.title_index === row.title_index);
+                    if (titleByIndex)
+                        return GenerateFullDepartment(titleByIndex.primary_department || titleByIndex.secondary_department, "nominative", true)
+                    return "";
+                }
+            }
+        ]
+    }
+
     const dispatch = useDispatch();
-    const [ dictionaryType, setDictionaryType ] = useState();
-    const [ dictionaries, setDictionaries ] = useState({});
+    const [ dictionaryType, setDictionaryType ] = useState(ROLES_VAR);
+    const [ record, setRecord ] = useState(initState[dictionaryType]);
+    const [ dictionaries, setDictionaries ] = useState({roles: []});
 
     useEffect(() => {
         getDictionaries();
@@ -50,10 +140,6 @@ export default function DictionaryManagementScreen() {
         }
     }
 
-    useEffect(() => {
-        setDictionaryType(ROLES_VAR);
-    }, [])
-
     const dispatcher = dictionary => {
         const ipcRenderer = window.electron.ipcRenderer;
         ipcRenderer.invoke("save-dict", { dictionaryType, dictionary })
@@ -67,7 +153,13 @@ export default function DictionaryManagementScreen() {
                 console.error(`Error saving ${dictionaryType} dictionary:`, err);
             });
     }
-    const saveRecord = record => {
+
+    const handleChange = event => {
+        let updated = { ...record, [event.target.name]: event.target.value };
+        setRecord(updated);
+    }
+
+    const saveRecord = () => {
         let dictionary = [ ...dictionaries[dictionaryType] ];
         if (!record.id) {
             let lastID = dictionary.at(-1).id;
@@ -81,6 +173,11 @@ export default function DictionaryManagementScreen() {
         }
         dispatcher(dictionary);
         getDictionaries();
+        setRecord(initState[dictionaryType]);
+    }
+
+    const editRecord = index => () => {
+        setRecord({ ...dictionaries[dictionaryType][index] })
     }
 
     const removeRecord = id => {
@@ -123,28 +220,41 @@ export default function DictionaryManagementScreen() {
             </Grid>
             {dictionaryType === ROLES_VAR &&
                 <RolesPage
-                    saveRecord={ saveRecord }
-                    removeRecord={ removeRecord }
+                    record={ record }
+                    handleChange={ handleChange }
                 />
             }
             {dictionaryType === TITLES_VAR &&
                 <TitlesPage
-                    saveRecord={ saveRecord }
-                    removeRecord={ removeRecord }
+                    record={ record }
+                    handleChange={ handleChange }
                 />
             }
             {dictionaryType === DEPARTMENTS_VAR &&
                 <DepartmentsPage
-                    saveRecord={ saveRecord }
-                    removeRecord={ removeRecord }
+                    record={ record }
+                    handleChange={ handleChange }
                 />
             }
             {dictionaryType === SERVANTS_VAR &&
                 <ServantsPage
-                    saveRecord={ saveRecord }
-                    removeRecord={ removeRecord }
+                    record={ record }
+                    handleChange={ handleChange }
                 />
             }
+            <Grid marginTop="20px">
+                <Button
+                    variant="contained"
+                    onClick={ saveRecord }>
+                    Зберегти запис
+                </Button>
+            </Grid>
+            <Viewer
+                recordList={ dictionaries[dictionaryType] }
+                editRecord={ editRecord }
+                removeRecord={ removeRecord }
+                headers={ headers[dictionaryType] }
+            />
         </Grid>
     )
 }

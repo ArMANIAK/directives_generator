@@ -1,42 +1,7 @@
 import Grid from "@mui/material/Grid2";
-import { TextField, Button } from "@mui/material";
-import { useState } from "react";
-import DictionaryViewer from "../../../components/DictionaryViewer";
-import { ROLES_VAR } from "../../../dictionaries/constants";
+import { TextField } from "@mui/material";
 
-export default function RolesPage({ saveRecord, removeRecord }) {
-
-    const initState = {
-        id: undefined,
-        name_nominative: "",
-        name_dative: "",
-        name_accusative: "",
-        name_instrumental: ""
-    }
-
-    const [ role, setRole ] = useState(initState);
-
-    const handleChange = event => {
-        let updated = { ...role, [event.target.name]: event.target.value };
-        setRole(updated);
-    }
-
-    const handleSubmit = () => {
-        let updatedRecord = { ... role }
-        saveRecord(updatedRecord)
-        setRole(initState)
-    }
-
-    const editRecord = record => {
-        setRole({ ...record })
-    }
-
-    const headers = [
-        {
-            label: "Назва ролі",
-            value: "name_nominative"
-        }
-    ]
+export default function RolesPage({ record, handleChange }) {
 
     return (
         <Grid direction={'column'} container spacing={2}>
@@ -46,7 +11,7 @@ export default function RolesPage({ saveRecord, removeRecord }) {
                     label="Назва ролі в називному відмінку"
                     name="name_nominative"
                     placeholder="водій"
-                    value={ role.name_nominative }
+                    value={ record.name_nominative }
                     onChange={ handleChange }
                     slotProps={ { inputLabel: { shrink: true } } }
                 />
@@ -57,7 +22,7 @@ export default function RolesPage({ saveRecord, removeRecord }) {
                     label="Назва ролі в давальному відмінку"
                     name="name_dative"
                     placeholder="водію"
-                    value={ role.name_dative }
+                    value={ record.name_dative }
                     onChange={ handleChange }
                     slotProps={ { inputLabel: { shrink: true } } }
                 />
@@ -68,7 +33,7 @@ export default function RolesPage({ saveRecord, removeRecord }) {
                     label="Назва ролі в знахідному відмінку"
                     name="name_accusative"
                     placeholder="водія"
-                    value={ role.name_accusative }
+                    value={ record.name_accusative }
                     onChange={ handleChange }
                     slotProps={ { inputLabel: { shrink: true } } }
                 />
@@ -79,24 +44,11 @@ export default function RolesPage({ saveRecord, removeRecord }) {
                     label="Назва ролі в орудному відмінку"
                     name="name_instrumental"
                     placeholder="водієм"
-                    value={ role.name_instrumental }
+                    value={ record.name_instrumental }
                     onChange={ handleChange }
                     slotProps={ { inputLabel: { shrink: true } } }
                 />
             </Grid>
-            <Grid>
-                <Button
-                    variant="contained"
-                    onClick={ handleSubmit }>
-                    Зберегти роль
-                </Button>
-            </Grid>
-            <DictionaryViewer
-                dictionaryType={ ROLES_VAR }
-                editRecord={ editRecord }
-                removeRecord={ removeRecord }
-                headers={ headers }
-            />
         </Grid>
     )
 }
