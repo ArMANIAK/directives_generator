@@ -19,6 +19,7 @@ import { IoMdArrowDropdown, IoMdArrowDropup, IoIosCloseCircleOutline } from "rea
 
 const viewerStyle = {
     flexDirection: "column",
+    flexWrap: "nowrap",
     height: "500px",
     marginTop: "10px",
     paddingTop: "10px",
@@ -47,7 +48,7 @@ export default function Viewer({ recordList, headers, editRecord, removeRecord }
     const [ filterTerm, setFilterTerm ] = useState("")
 
     useEffect(() => {
-        let newList = recordList.map((el, ind) => { return { ...el, id: ind }});
+        let newList = recordList.map((el, ind) => { return { ...el, index: ind }});
         if (filterTerm) newList = filterList();
         if (sortColumn) newList = sortList(newList);
         setList(newList);
@@ -64,7 +65,7 @@ export default function Viewer({ recordList, headers, editRecord, removeRecord }
     const filterList = () => {
         let term = filterTerm.toLowerCase();
         return recordList
-            .map((el, ind) => { return { ...el, id: ind }})
+            .map((el, ind) => { return { ...el, index: ind }})
             .filter(el => headers.some(header => header.eval
                 ? header.eval(el).toLowerCase().indexOf(term) !== -1
                 : el[header.value].toLowerCase().indexOf(term) !== -1));
@@ -178,8 +179,14 @@ export default function Viewer({ recordList, headers, editRecord, removeRecord }
                                             }
                                         </TableCell>)) }
                                     <TableCell>
-                                        <Button onClick={ editRecord(row.id) }>Редагувати</Button>
-                                        <Button onClick={ onDelete(row.id) }>Видалити</Button>
+                                        <Grid
+                                            container
+                                            flexDirection="column"
+                                            spacing={0}
+                                        >
+                                            <Button onClick={ editRecord(row.index) }>Редагувати</Button>
+                                            <Button onClick={ onDelete(row.index) }>Видалити</Button>
+                                        </Grid>
                                     </TableCell>
                                 </TableRow>
                             ))}

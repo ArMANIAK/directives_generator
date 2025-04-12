@@ -1,6 +1,5 @@
 "use client";
 
-import PullViewer from "../../components/PullViewer";
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import Grid from '@mui/material/Grid2';
@@ -12,13 +11,17 @@ import {
     RadioGroup,
     TextField
 } from "@mui/material";
-import {  GenerateServantRankNameAndTitle } from "../../utilities/ServantsGenerators";
+import {
+    GenerateRankAndName,
+    GenerateRankName,
+    GenerateServantRankNameAndTitle
+} from "../../utilities/ServantsGenerators";
 import { GenerateOrder } from "../../utilities/OrderGenerator";
 import {
     dateToDatepickerString,
     dateMath,
     dateStringCompare,
-    getDateDifference
+    getDateDifference, formatDate
 } from "../../utilities/DateUtilities";
 import {convertPullToTempBook, convertTempBookToPull} from "../../utilities/PullToTempBookConverter"
 import {
@@ -32,7 +35,7 @@ import {
     addServantRecord,
     deleteServantRecord,
     addRow,
-    clearTempBookRecords,
+    clearTempBookRecords, removeRow,
 } from "../../store"
 
 import ArrivalPage from "./pages/ArrivalPage";
@@ -41,6 +44,8 @@ import OtherPointsPage from "./pages/OtherPointsPage";
 import { SERVANTS_SHEET, SERVANTS_VAR } from "../../dictionaries/constants";
 import { getServantById } from "../../services/ServantsService";
 import { tempBookHeadersMapToRaw } from "../../services/ExcelActions";
+import Viewer from "../../components/Viewer";
+import absence_type from "../../dictionaries/absence_types.json";
 
 export default function MainScreen() {
 
@@ -397,6 +402,66 @@ export default function MainScreen() {
         window.electron.sendToClipboard(text);
     }
 
+    const removeRecord = ind => {
+        let record = pull[ind]
+        if (record) {
+            let id = record.id;
+            dispatch(removeRow(id));
+            deleteFromTempbook(id);
+        }
+    }
+
+    const editRecord = id => () => {
+        const record = { ...pull[id] };
+        record.servants = [ record.servant_id ];
+        record.certificate = [ record.certificate ];
+        record.certificate_issue_date = [ record.certificate_issue_date ];
+        record.start_substituting = [ record.start_substituting ];
+        record.stop_substituting = [ record.stop_substituting ];
+        record.substituting_servants = [ record.substituting_servants ];
+        dispatch(setRecord(record));
+        dispatch(removeRow(record.id));
+        deleteFromTempbook(record.id);
+    }
+
+    const headers = [
+        {
+            label: "Пункти, що стосуються",
+            eval: row => {
+                if (row.orderSection === "arrive") return "прибуття";
+                else if (row.orderSection === 'depart') return 'вибуття';
+                else {
+                    if (row.sectionType === 'financial_support') return "ГДО";
+                    else if (row.sectionType === 'social_support') return "Соціально-побутова допомога";
+                    else if (row.sectionType === 'assignment') return "Призначення";
+                    else if (row.sectionType === 'reassignment') return "Перепризначення";
+                    else if (row.sectionType === 'payed_substitution') return "Допуск до ТВО за посадою";
+                    else return 'інші пункти';
+                }
+            }
+        }, {
+            label: "Військовослужбовець/працівник ЗСУ",
+            eval: row => row.servant_id ?
+                    GenerateRankAndName(row.servant_id, 'nominative') :
+                    (GenerateRankName(row.settings.rank, row.settings.speciality, "nominative") +
+                        ` ${row.settings.last_name_nominative} ${row.settings.first_name_short}`)
+        }, {
+            label: "Тип відсутності",
+            eval: row => row.orderSection === "other_points"
+                    ? ""
+                    : (absence_type.find(item => item.value.toLowerCase() === row.absence_type.toLowerCase())?.label
+                        ?? 'Не релевантно')
+        }, {
+            label: "Куди",
+            eval: row => row.destination ? row.destination : 'Не релевантно'
+        }, {
+            label: "з/по",
+            eval: row => row.orderSection === "other_points"
+                ? ""
+                : (row.orderSection === "arrive" ? formatDate(row.fact_date_end) : formatDate(row.date_start))
+        }
+    ]
+
     console.log({ record, tempBook })
 
     return (
@@ -484,9 +549,12 @@ export default function MainScreen() {
                     Згенерувати наказ
                 </Button>
             </Grid>
-            <Grid container>
-                <PullViewer deleteFromTempbook={ deleteFromTempbook }/>
-            </Grid>
+            <Viewer
+                recordList={ pull }
+                headers={ headers }
+                editRecord={ editRecord }
+                removeRecord={ removeRecord }
+            />
         </Grid>
     )
 }
