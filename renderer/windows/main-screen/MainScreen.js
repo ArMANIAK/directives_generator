@@ -446,8 +446,8 @@ export default function MainScreen() {
             label: "Військовослужбовець/працівник ЗСУ",
             eval: row => row.servant_id ?
                     GenerateRankAndName(row.servant_id, 'nominative') :
-                    (GenerateRankName(row.settings.rank, row.settings.speciality, "nominative") +
-                        ` ${row.settings.last_name_nominative} ${row.settings.first_name_short}`)
+                    row.settings ? (GenerateRankName(row.settings.rank, row.settings.speciality, "nominative") +
+                        ` ${row.settings.last_name_nominative} ${row.settings.first_name_short}`) : ""
         }, {
             label: "Тип відсутності",
             eval: row => row.orderSection === "other_points"
