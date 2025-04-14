@@ -373,15 +373,16 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
             // If there are more than one returning date from one destination point will generate separate dates within the clause
             // У випадку якщо з одного місця поверталися в різні дати, створює окремі підпункти під кожну дату
             directive += Object.keys(arrivePullSection[absence_type]).length === 1 ? " " : ":\n\n";
+            let withSubClauses = false
+            if (Object.keys(arrivePullSection[absence_type]).length > 1
+                || Object.values(arrivePullSection[absence_type]).flat().length > 1)
+                withSubClauses = true;
             for (let date in arrivePullSection[absence_type]) {
                 if (arrivePullSection[absence_type][date].length > 0) {
                     directive += `${formatDate(new Date(date), false)}:\n\n`;
                     for (let servant of arrivePullSection[absence_type][date]) {
-                        let withSubClauses = false
-                        if (arrivePullSection[absence_type][date].length > 1) {
-                            withSubClauses = true;
+                        if (withSubClauses)
                             directive += `${starting_index}.${middleCount}.${innerCount++}. `;
-                        }
                         directive += GenerateServantBlock(servant, "add", withSubClauses);
                     }
                     directive += `${GenerateJustification(arrivePullSection[absence_type][date])}`;
@@ -510,8 +511,9 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                     dateToRemove = dateMath(new Date(servant.order_date), 1);
                 }
                 directive += GenerateRemoveFromRation(servant.servant_id, formatDate(dateToRemove, false));
-                directive += "Підстава: рапорт " + GenerateRankAndName(servant.servant_id, "genitive") +
-                    " (вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
+                directive += "Підстава: " + (isEmployee(servant.servant_id) ? "заява " : " рапорт ") +
+                    GenerateRankAndName(servant.servant_id, "genitive") + " (вх. № " + servant.reason + "), " +
+                    certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
                     " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
 
             }
@@ -535,7 +537,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                         directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                     directive += GenerateServantBlock(servant, "remove", withSubClauses);
 
-                    directive += "Підстава: " + isEmployee(servant.servant_id) ? "заява " : " рапорт " +
+                    directive += "Підстава: " + (isEmployee(servant.servant_id) ? "заява " : " рапорт ") +
                         GenerateRankAndName(servant.servant_id, "genitive") +
                         " (вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
                         " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
