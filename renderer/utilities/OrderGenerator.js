@@ -283,10 +283,11 @@ function GenerateAssignmentClauses(otherPullSection, starting_index = 1) {
         if (settings.state_secret)
             directive += ` та надбавку за роботу в умовах режимних обмежень у розмірі ${settings.state_secret} % до посадового окладу ` +
                 `з ${formatDate(settings.reassigned_date, false)}`;
-        directive += `.\nВступний інструктаж з охорони праці пройшов ${formatDate(settings.arrival_date, false)}.\n\n` +
-            `Підстава: припис ${settings.prescription_issuer} від ${formatDate(settings.prescription_date)} № ${settings.prescription_no} ` +
-            `(вх. № ${settings.registry_prescription_no} від ${formatDate(settings.registry_prescription_date)}), витяг із наказу ` +
-            `${settings.nomenclature} (по особовому складу) від ${formatDate(settings.order_date, false)} № ${settings.order_no}`;
+        directive += `.\nВступний інструктаж з охорони праці пройш${settings.gender === "ж" ? "ла" : "ов"} ` +
+            `${formatDate(settings.arrival_date, false)}.\n\nПідстава: припис ${settings.prescription_issuer} ` +
+            `від ${formatDate(settings.prescription_date)} № ${settings.prescription_no} (вх. № ${settings.registry_prescription_no} ` +
+            `від ${formatDate(settings.registry_prescription_date)}), витяг із наказу ${settings.nomenclature} ` +
+            `(по особовому складу) від ${formatDate(settings.order_date, false)} № ${settings.order_no}`;
         if (settings.ration_certificate_no)
             directive += `, продовольчий атестат від ${formatDate(settings.ration_certificate_date)} № ${settings.ration_certificate_no}`;
         directive += `, рапорт ${servantRankGenitive} ${settings.last_name_genitive} ` +
