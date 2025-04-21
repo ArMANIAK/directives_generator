@@ -441,7 +441,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                                 directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                             }
                             directive += GenerateServantBlock(servant, "remove", withSubClauses);
-                            directive += "Підстава: " + isEmployee(servant.servant_id) ? "заява " : " рапорт " +
+                            directive += "Підстава: " + (isEmployee(servant.servant_id) ? "заява " : "рапорт ") +
                                 GenerateRankAndName(servant.servant_id, "genitive") +
                                 " (вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
                                 " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
@@ -512,7 +512,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                     dateToRemove = dateMath(new Date(servant.order_date), 1);
                 }
                 directive += GenerateRemoveFromRation(servant.servant_id, formatDate(dateToRemove, false));
-                directive += "Підстава: " + (isEmployee(servant.servant_id) ? "заява " : " рапорт ") +
+                directive += "Підстава: " + (isEmployee(servant.servant_id) ? "заява " : "рапорт ") +
                     GenerateRankAndName(servant.servant_id, "genitive") + " (вх. № " + servant.reason + "), " +
                     certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
                     " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
@@ -538,7 +538,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                         directive += `${starting_index}.${middleCount}.${innerCount++}. `;
                     directive += GenerateServantBlock(servant, "remove", withSubClauses);
 
-                    directive += "Підстава: " + (isEmployee(servant.servant_id) ? "заява " : " рапорт ") +
+                    directive += "Підстава: " + (isEmployee(servant.servant_id) ? "заява " : "рапорт ") +
                         GenerateRankAndName(servant.servant_id, "genitive") +
                         " (вх. № " + servant.reason + "), " + certificate[servant.absence_type]['singular'] + " № " + servant.certificate +
                         " від " + formatDate(new Date(servant.certificate_issue_date)) + ".\n\n";
