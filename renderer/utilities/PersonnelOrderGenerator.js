@@ -50,7 +50,7 @@ export default function generatePersonnelOrder(pull) {
             )
 
         for (let rank of newRanks) {
-            text_block += `«${GenerateRankName(rank, "", "nominative").toUpperCase()}»${ isMultipleServants ? "" : "." }\n`
+            text_block += `"${GenerateRankName(rank, "", "nominative").toUpperCase()}"${ isMultipleServants ? "" : "." }\n`
             let servant_clauses = groupedPull.rank_change[rank];
             servant_clauses.sort((a, b) => {
                 if (GenerateName(a.servant_id, "nominative", "full") < GenerateName(b.servant_id, "nominative", "full"))
@@ -64,7 +64,7 @@ export default function generatePersonnelOrder(pull) {
                     let fullServant = GenerateServantRankNameAndTitle(servant.servant_id, "dative", "full");
                     text_block += `${ clause_no++ }. ${ fullServant[0].toLocaleUpperCase() + fullServant.slice(1) }.\n`;
                 }
-                text_block += `${ servant.year_of_birth } р.н., вислуга у званні - ${ servant.service_period },\n${ servant.VAT }.\n`
+                text_block += `${ servant.year_of_birth } р.н., вислуга у званні – ${ servant.service_period },\n${ servant.VAT }.\n`
             }
         }
         text_block += "\n";

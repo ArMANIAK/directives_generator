@@ -482,7 +482,7 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                     case "vacation":
                         vacationTerm = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id), false);
                         block += " в " + servant.destination + " на " + (parseInt(servant.day_count) < 10 ? "0" : "") + servant.day_count +
-                            " " + dayEnding(servant.day_count) + " у частину щорічної відпустки " + vacationTerm + ".\n\n";
+                            " " + dayEnding(servant.day_count) + " у частину щорічної основної відпустки " + vacationTerm + ".\n\n";
                         if (servant.settings?.financial_support)
                             block += `Виплатити ${GenerateRankAndName(servant.servant_id, "dative", "full")} ` +
                                 `грошову допомогу на оздоровлення за ${(new Date()).getFullYear()} рік у розмірі місячного ` +
