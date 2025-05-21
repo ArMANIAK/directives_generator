@@ -10,11 +10,13 @@ export default function AssignmentPage({ record, handleMultipleValueChange, hand
         first_name_genitive: "",
         first_name_dative: "",
         first_name_accusative: "",
+        first_name_instrumental: "",
         first_name_short: "",
         last_name_nominative: "",
         last_name_genitive: "",
         last_name_dative: "",
         last_name_accusative: "",
+        last_name_instrumental: "",
         rank: "",
         speciality: "",
         gender: "",
@@ -92,7 +94,7 @@ export default function AssignmentPage({ record, handleMultipleValueChange, hand
                         label="Імʼя та по батькові в називному відмінку"
                         name="first_name_nominative"
                         placeholder="Ігор Петрович"
-                        value={ record.settings.first_name_nominative || "" }
+                        value={ record.settings.first_name_nominative || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -103,7 +105,7 @@ export default function AssignmentPage({ record, handleMultipleValueChange, hand
                         label="Імʼя та по батькові в родовому відмінку"
                         name="first_name_genitive"
                         placeholder="Ігоря Петровича"
-                        value={ record.settings.first_name_genitive || "" }
+                        value={ record.settings.first_name_genitive || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -116,7 +118,7 @@ export default function AssignmentPage({ record, handleMultipleValueChange, hand
                         label="Імʼя та по батькові в давальному відмінку"
                         name="first_name_dative"
                         placeholder="Ігорю Петровичу"
-                        value={ record.settings.first_name_dative || "" }
+                        value={ record.settings.first_name_dative || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -127,7 +129,20 @@ export default function AssignmentPage({ record, handleMultipleValueChange, hand
                         label="Імʼя та по батькові в знахідному відмінку"
                         name="first_name_accusative"
                         placeholder="Ігоря Петровича"
-                        value={ record.settings.first_name_accusative || "" }
+                        value={ record.settings.first_name_accusative || ""}
+                        onChange={ handleChange }
+                        slotProps={ { inputLabel: { shrink: true } } }
+                    />
+                </Grid>
+            </Grid>
+            <Grid container>
+                <Grid size={5}>
+                    <TextField
+                        fullWidth
+                        label="Імʼя та по батькові в орудному відмінку"
+                        name="first_name_instrumental"
+                        placeholder="Ігорем Петровичем"
+                        value={ record.settings.first_name_instrumental || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -138,7 +153,7 @@ export default function AssignmentPage({ record, handleMultipleValueChange, hand
                         label="Ініціали"
                         name="first_name_short"
                         placeholder="І.П."
-                        value={ record.settings.first_name_short || "" }
+                        value={ record.settings.first_name_short || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -151,7 +166,7 @@ export default function AssignmentPage({ record, handleMultipleValueChange, hand
                         label="Прізвище в називному відмінку"
                         name="last_name_nominative"
                         placeholder="ТІТІКАКА"
-                        value={ record.settings.last_name_nominative || "" }
+                        value={ record.settings.last_name_nominative || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -162,7 +177,7 @@ export default function AssignmentPage({ record, handleMultipleValueChange, hand
                         label="Прізвище в родовому відмінку"
                         name="last_name_genitive"
                         placeholder="ТІТІКАКИ"
-                        value={ record.settings.last_name_genitive || "" }
+                        value={ record.settings.last_name_genitive || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -175,7 +190,7 @@ export default function AssignmentPage({ record, handleMultipleValueChange, hand
                         label="Прізвище в давальному відмінку"
                         name="last_name_dative"
                         placeholder="ТІТІКАЦІ"
-                        value={ record.settings.last_name_dative || "" }
+                        value={ record.settings.last_name_dative || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -186,7 +201,20 @@ export default function AssignmentPage({ record, handleMultipleValueChange, hand
                         label="Прізвище в знахідному відмінку"
                         name="last_name_accusative"
                         placeholder="ТІТІКАКУ"
-                        value={ record.settings.last_name_accusative || "" }
+                        value={ record.settings.last_name_accusative || ""}
+                        onChange={ handleChange }
+                        slotProps={ { inputLabel: { shrink: true } } }
+                    />
+                </Grid>
+            </Grid>
+            <Grid container>
+                <Grid size={5}>
+                    <TextField
+                        fullWidth
+                        label="Прізвище в орудному відмінку"
+                        name="last_name_instrumental"
+                        placeholder="ТІТІКАКОЮ"
+                        value={ record.settings.last_name_instrumental || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />
@@ -194,9 +222,10 @@ export default function AssignmentPage({ record, handleMultipleValueChange, hand
                 <Grid size={2}>
                     <TextField
                         fullWidth
-                        label="Гендер"
+                        label="Стать"
                         name="gender"
-                        value={ record.settings.gender || "" }
+                        placeholder="ж / ч"
+                        value={ record.settings.gender || ""}
                         onChange={ handleChange }
                         slotProps={ { inputLabel: { shrink: true } } }
                     />

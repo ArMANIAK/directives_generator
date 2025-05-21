@@ -80,7 +80,7 @@ export default function ServantsPage({ record, handleChange }) {
                 <Grid size={5}>
                     <TextField
                         fullWidth
-                        label="Імʼя та по батькові в давальному відмінку"
+                        label="Імʼя та по батькові в орудному відмінку"
                         name="first_name_instrumental"
                         placeholder="Ігорем Петровичем"
                         value={ record.first_name_instrumental || ""}
