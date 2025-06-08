@@ -1,5 +1,6 @@
 import { convertAmountIntoWords, getServantById, isEmployee, isFemale } from "../services/ServantsService";
 const certificate = require("../dictionaries/certificates.json");
+const { STATE_SECRET_FORMS } = require("../dictionaries/constants");
 
 import { formatDate, dateMath, dateStartToEndFormat, dayEnding } from "./DateUtilities";
 import {
@@ -147,9 +148,19 @@ function GroupPull(pull) {
 const addOtherPointsClauseToPull = (groupedPull, record) => {
     if (!groupedPull.other_points)
         groupedPull.other_points = {};
-    if (!groupedPull.other_points[record.sectionType])
-        groupedPull.other_points[record.sectionType] = [];
-    groupedPull.other_points[record.sectionType].push(record);
+    if (record.sectionType !== "state_secret") {
+        if (!groupedPull.other_points[record.sectionType])
+            groupedPull.other_points[record.sectionType] = [];
+        groupedPull.other_points[record.sectionType].push(record);
+    } else {
+        if (!groupedPull.other_points[record.sectionType])
+            groupedPull.other_points[record.sectionType] = {};
+        let block = record.settings.state_secret_access + "_"
+            + (record.settings.payed ? "payed" : "free") + "_" + record.settings.mobilization_access;
+        if (!groupedPull.other_points.state_secret[block])
+            groupedPull.other_points.state_secret[block] = [];
+        groupedPull.other_points.state_secret[block].push(record);
+    }
     return groupedPull;
 }
 const addArriveClauseToPull = (groupedPull, record) => {
@@ -481,10 +492,10 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                 switch (absence_type) {
                     case "vacation":
                         vacationTerm = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id), false);
-                        block += " в " + servant.destination + " на " + (parseInt(servant.day_count) < 10 ? "0" : "") + servant.day_count +
+                        block += ", в " + servant.destination + " на " + (parseInt(servant.day_count) < 10 ? "0" : "") + servant.day_count +
                             " " + dayEnding(servant.day_count) + " у частину щорічної основної відпустки " + vacationTerm + ".\n\n";
                         if (servant.settings?.financial_support)
-                            block += `Виплатити ${GenerateRankAndName(servant.servant_id, "dative", "full")} ` +
+                            block += `Виплатити ${GenerateRankAndName(servant.servant_id, "dative", "full")}, ` +
                                 `грошову допомогу на оздоровлення за ${(new Date()).getFullYear()} рік у розмірі місячного ` +
                                 `грошового забезпечення.\n\n`
                         break;
@@ -597,28 +608,72 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
                 `(вх. № ${servant.certificate} від ${formatDate(servant.certificate_issue_date)}).\n\n`;
         }
     }
-    if (otherClausesPull.financial_support) {
-        let middle_ind = 1;
-        directive = `виплатити грошову допомогу на оздоровлення за ${(new Date()).getFullYear()} рік згідно з ` +
-            `наказом Міністерства оборони України від 07.06.2018 № 260 "Про затвердження Порядку виплати грошового забезпечення` +
-            ` військовослужбовцям Збройних Сил України та деяким іншим особам" у розмірі місячного грошового забезпечення`;
-        if (otherClausesPull.financial_support.length > 1) {
-            directive = starting_index + ". Нижчепойменованим військовослужбовцям " + directive + ":\n\n";
-            for (let servant of otherClausesPull.financial_support) {
-                let currentServant = GenerateServantRankNameAndTitle(servant.servant_id, "dative", "full");
-                directive += `${starting_index}.${middle_ind++}. ` + currentServant[0].toLocaleUpperCase() +
-                    currentServant.slice(1) + ".\n\n" + "Підстава: рапорт " +
-                    GenerateRankAndName(servant.servant_id, "genitive") + " (вх. № " + servant.certificate +
-                    " від " + formatDate(new Date(servant.certificate_issue_date)) + ").\n\n";
+    if (otherClausesPull.state_secret) {
+        let middle_index = 1;
+        let generateMobilizationAccessBlock = mob_access => {
+            switch (mob_access) {
+                case "none":
+                    return " в межах функціональних обовʼязків";
+                case "limited":
+                    return " право доступу до мобілізаційної роботи та доступу до секретних мобілізаційних документів " +
+                        "в обсязі займаної посади";
+                case "full_access":
+                    return " право доступу до мобілізаційної роботи та доступу до секретних мобілізаційних документів " +
+                        "в повному обсязі";
+                default:
+                    return "";
             }
-        } else {
-            let servant = GenerateServantRankNameAndTitle(otherClausesPull.financial_support[0]["servant_id"], "dative", "full");
-            directive = `${starting_index}. ` + servant[0].toLocaleUpperCase() + servant.slice(1) + " " + directive + ".\n\n" + "Підстава: рапорт " +
-                GenerateRankAndName(otherClausesPull.financial_support[0].servant_id, "genitive") +
-                " (вх. № " + otherClausesPull.financial_support[0].certificate + " від " +
-                formatDate(new Date(otherClausesPull.financial_support[0].certificate_issue_date)) + ").\n\n";
         }
-        starting_index++;
+        for (let state_secret_block in otherClausesPull.state_secret) {
+            let servant_block = otherClausesPull.state_secret[state_secret_block];
+            let withSubClauses = false, sameForm = true;
+            if (Object.keys(servant_block).length > 1
+                || Object.values(servant_block).flat().length > 1)
+                withSubClauses = true;
+            directive += `${starting_index}. `;
+            if (withSubClauses) {
+                sameForm = servant_block.every(el =>
+                    el?.settings.state_secret === servant_block[0]?.settings.state_secret);
+                directive += "Нижчепойменованим " +
+                    (servant_block[0].settings.state_secret_access === "grant" ? "надати" : "припинити") +
+                    " доступ до секретної інформації " +
+                    (!sameForm ? "із нижче зазначеними ступенями секретності" : "із ступенем секретності "
+                        + STATE_SECRET_FORMS[servant_block[0].settings.state_secret].statement) +
+                    (servant_block[0].settings.state_secret_access === "grant"
+                        ? " в звʼязку з роботою, яка передбачає доступ до державної таємниці:\n\n"
+                        : ":\n\n");
+                for (let servant of servant_block) {
+                    if (!sameForm)
+                        directive += STATE_SECRET_FORMS[servant.settings.state_secret].statement + ":\n\n"
+                    let currentServant = GenerateServantRankNameAndTitle(servant.servant_id, "dative", "full");
+                    directive += `${starting_index}.${middle_index++}. ${currentServant[0].toLocaleUpperCase() + currentServant.slice(1)}, ` +
+                        (sameForm ? "" : STATE_SECRET_FORMS[servant.settings.state_secret].statement);
+                    directive += generateMobilizationAccessBlock(servant.settings.mobilization_access);
+                    if (servant.settings.payed)
+                        directive += ` та виплачувати адбавку за роботу в умовах режимних обмежень у розмірі ` +
+                            STATE_SECRET_FORMS[servant.settings.state_secret].value + ` % до посадового окладу з ` +
+                            (servant.settings.state_secret_access === "grant" ? "" : "1 по ") + formatDate(servant.order_date, false);
+                    directive += ".\n\n";
+                }
+            } else {
+                let servant = GenerateServantRankNameAndTitle(servant_block[0].servant_id, "dative", "full")
+                directive += `${servant[0].toLocaleUpperCase() + servant.slice(1)}, ` +
+                    (servant_block[0].settings.state_secret_access === "grant" ? "надати" : "припинити") +
+                    " доступ до секретної інформації із ступенем секретності " +
+                    STATE_SECRET_FORMS[servant_block[0].settings.state_secret].statement +
+                    (servant_block[0].settings.state_secret_access === "grant"
+                        ? " в звʼязку з роботою, яка передбачає доступ до державної таємниці," : "") +
+                    generateMobilizationAccessBlock(servant_block[0].settings.mobilization_access)
+                    if (servant_block[0].settings.payed)
+                        directive += ` та виплачувати надбавку за роботу в умовах режимних обмежень у розмірі ` +
+                            STATE_SECRET_FORMS[servant_block[0].settings.state_secret].value + ` % до посадового окладу з ` +
+                            (servant_block[0].settings.state_secret_access === "grant" ? "" : "1 по ") +
+                            formatDate(servant_block[0].order_date, false);
+                directive += ".\n\n";
+            }
+            directive += "Підстава: " + servant_block[0].settings.prescription_no + ".\n\n";
+            starting_index++;
+        }
     }
     if (otherClausesPull.social_support) {
         let middle_ind = 1;
@@ -636,7 +691,7 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
             }
         } else {
             let servant = GenerateServantRankNameAndTitle(otherClausesPull.social_support[0]["servant_id"], "dative", "full");
-            directive += `${starting_index}. ` + servant[0].toLocaleUpperCase() + servant.slice(1) + " " + text + ".\n\n" + "Підстава: рапорт " +
+            directive += `${starting_index}. ` + servant[0].toLocaleUpperCase() + servant.slice(1) + ", " + text + ".\n\n" + "Підстава: рапорт " +
                 GenerateRankAndName(otherClausesPull.social_support[0].servant_id, "genitive") +
                 " (вх. № " + otherClausesPull.social_support[0].certificate + " від " +
                 formatDate(new Date(otherClausesPull.social_support[0].certificate_issue_date)) + ").\n\n";

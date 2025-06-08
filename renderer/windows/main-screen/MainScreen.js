@@ -349,6 +349,8 @@ export default function MainScreen() {
                 }
                 updatedServants = [ ...servants, servant ]
             }
+            if (!el.id && el.id !== 0) newPoint.id = -(ind + 1);
+            else newPoint.id = el.id
             return newPoint;
         });
         if (updatedServants) {
@@ -439,6 +441,9 @@ export default function MainScreen() {
                     else if (row.sectionType === 'assignment') return "Призначення";
                     else if (row.sectionType === 'reassignment') return "Перепризначення";
                     else if (row.sectionType === 'payed_substitution') return "Допуск до ТВО за посадою";
+                    else if (row.sectionType === 'state_secret')
+                        return (row.settings.state_secret_access === "grant" ? "Надання" : "Припинення")
+                            + " доступу до державної таємниці";
                     else return 'інші пункти';
                 }
             }

@@ -3,7 +3,7 @@ import ServantSelector from "../../../components/ServantSelector";
 import { IoIosAddCircleOutline, IoIosTrash } from "react-icons/io";
 import { TextField } from "@mui/material";
 
-export default function FinancialSupport({ record, handleMultipleValueChange,addServant, deleteServant }) {
+export default function FinancialSupportPage({ record, handleMultipleValueChange,addServant, deleteServant }) {
 
     return (
         Array.isArray(record.servants) && record.servants.map((el, ind) => {

@@ -1,13 +1,14 @@
 import Grid from "@mui/material/Grid2";
 import { FormControl, MenuItem, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import FinancialSupport from "./FinancialSupport";
-import ReassignmentPage from "./ReassignmentPage";
-import AssignmentPage from "./AssignmentPage";
 import { useDispatch, useSelector } from "react-redux";
 import { GenerateFullTitle } from "../../../utilities/ServantsGenerators";
 import { setServants, setTitles } from "../../../store";
+import FinancialSupportPage from "./FinancialSupportPage";
+import ReassignmentPage from "./ReassignmentPage";
+import AssignmentPage from "./AssignmentPage";
 import SubstitutionPage from "./SubstitutionPage";
+import StateSecretPage from "./StateSecretPage";
 
 export default function OtherPointsPage({ handleOtherPointChange, record }) {
 
@@ -64,6 +65,10 @@ export default function OtherPointsPage({ handleOtherPointChange, record }) {
         {
             label: "Допуск до ТВО за посадою",
             value: "payed_substitution"
+        },
+        {
+            label: "Доступ до державної таємниці",
+            value: "state_secret"
         },
     ];
 
@@ -130,7 +135,7 @@ export default function OtherPointsPage({ handleOtherPointChange, record }) {
                 />
             }
             { (record.sectionType === "financial_support" || record.sectionType === "social_support") &&
-                <FinancialSupport
+                <FinancialSupportPage
                     record={ record }
                     handleMultipleValueChange={ handleMultipleValueChange }
                     addServant={ addServant }
@@ -151,6 +156,15 @@ export default function OtherPointsPage({ handleOtherPointChange, record }) {
                     handleMultipleValueChange={ handleMultipleValueChange }
                     handleOtherPointChange={ handleOtherPointChange }
                     titlesList={ titlesList }
+                />
+            }
+            { record.sectionType === "state_secret" &&
+                <StateSecretPage
+                    record={ record }
+                    handleMultipleValueChange={ handleMultipleValueChange }
+                    handleOtherPointChange={ handleOtherPointChange }
+                    addServant={ addServant }
+                    deleteServant={ deleteServant }
                 />
             }
         </Grid>
