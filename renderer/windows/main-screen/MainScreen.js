@@ -349,7 +349,7 @@ export default function MainScreen() {
                 }
                 updatedServants = [ ...servants, servant ]
             }
-            if (!el.id && el.id !== 0) newPoint.id = -(ind + 1);
+            if (!el.id && el.id !== 0) newPoint.id = -(pull.length + ind + 1);
             else newPoint.id = el.id
             return newPoint;
         });
@@ -461,7 +461,7 @@ export default function MainScreen() {
                         ?? 'Не релевантно')
         }, {
             label: "Куди",
-            eval: row => row.destination ? row.destination : 'Не релевантно'
+            eval: row => row.destination ? row.destination : ''
         }, {
             label: "з/по",
             eval: row => row.orderSection === "other_points"
