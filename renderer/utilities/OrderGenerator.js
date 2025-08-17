@@ -636,7 +636,7 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
                     el?.settings.state_secret === servant_block[0]?.settings.state_secret);
                 directive += "Нижчепойменованим " +
                     (servant_block[0].settings.state_secret_access === "grant" ? "надати" : "припинити") +
-                    " доступ до секретної інформації " +
+                    " доступ до інформації " +
                     (!sameForm ? "із нижче зазначеними ступенями секретності" : "із ступенем секретності "
                         + STATE_SECRET_FORMS[servant_block[0].settings.state_secret].statement) +
                     (servant_block[0].settings.state_secret_access === "grant"
@@ -659,7 +659,7 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
                 let servant = GenerateServantRankNameAndTitle(servant_block[0].servant_id, "dative", "full")
                 directive += `${servant[0].toLocaleUpperCase() + servant.slice(1)}, ` +
                     (servant_block[0].settings.state_secret_access === "grant" ? "надати" : "припинити") +
-                    " доступ до секретної інформації із ступенем секретності " +
+                    " доступ до інформації із ступенем секретності " +
                     STATE_SECRET_FORMS[servant_block[0].settings.state_secret].statement +
                     (servant_block[0].settings.state_secret_access === "grant"
                         ? " в звʼязку з роботою, яка передбачає доступ до державної таємниці," : "") +
@@ -677,11 +677,11 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
     }
     if (otherClausesPull.financial_support) {
         let middle_ind = 1;
-        directive = `виплатити грошову допомогу на оздоровлення за ${(new Date()).getFullYear()} рік згідно з ` +
+        let text = `виплатити грошову допомогу на оздоровлення за ${(new Date()).getFullYear()} рік згідно з ` +
             `наказом Міністерства оборони України від 07.06.2018 № 260 "Про затвердження Порядку виплати грошового забезпечення` +
             ` військовослужбовцям Збройних Сил України та деяким іншим особам" у розмірі місячного грошового забезпечення`;
         if (otherClausesPull.financial_support.length > 1) {
-            directive = starting_index + ". Нижчепойменованим військовослужбовцям " + directive + ":\n\n";
+            directive += starting_index + ". Нижчепойменованим військовослужбовцям " + text + ":\n\n";
             for (let servant of otherClausesPull.financial_support) {
                 let currentServant = GenerateServantRankNameAndTitle(servant.servant_id, "dative", "full");
                 directive += `${starting_index}.${middle_ind++}. ` + currentServant[0].toLocaleUpperCase() +
@@ -691,7 +691,7 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
             }
         } else {
             let servant = GenerateServantRankNameAndTitle(otherClausesPull.financial_support[0]["servant_id"], "dative", "full");
-            directive = `${starting_index}. ` + servant[0].toLocaleUpperCase() + servant.slice(1) + " " + directive + ".\n\n" + "Підстава: рапорт " +
+            directive += `${starting_index}. ` + servant[0].toLocaleUpperCase() + servant.slice(1) + " " + text + ".\n\n" + "Підстава: рапорт " +
                 GenerateRankAndName(otherClausesPull.financial_support[0].servant_id, "genitive") +
                 " (вх. № " + otherClausesPull.financial_support[0].certificate + " від " +
                 formatDate(new Date(otherClausesPull.financial_support[0].certificate_issue_date)) + ").\n\n";
