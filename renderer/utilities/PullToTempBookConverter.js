@@ -24,6 +24,8 @@ const convertPullToTempBook = row => {
         ? (row.trip_days ? `${row.day_count}+${row.trip_days}` : row.day_count)
         : "?";
     if (row.orderSection === "arrive") {
+        result.depart_order_no = row.depart_order_no || "";
+        result.depart_order_date = row.depart_order_date ? formatDate(new Date(row.depart_order_date)) : "";
         result.arrive_order_no = row.order_no;
         result.arrive_order_date = row.order_date ? formatDate(new Date(row.order_date)) : "";
         result.fact_date_end = row.fact_date_end ? formatDate(new Date(row.fact_date_end)) : "";
@@ -61,7 +63,9 @@ const convertTempBookToPull = record => {
         "with_ration_certificate": record.with_ration_certificate === "так",
         "from_temp_book": true,
         "depart_order_no": record.depart_order_no,
+        "depart_order_date": record.depart_order_date,
         "arrive_order_no": record.arrive_order_no,
+        "arrive_order_date": record.arrive_order_date,
         "purpose": record.purpose || "",
         "reason": record.reason || "",
         "substituting_servants": record.substituting_servant_id
