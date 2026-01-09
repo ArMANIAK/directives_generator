@@ -20,6 +20,11 @@
     "certificate": "Відпускний квиток"
   },
   {
+    "label": "Відпустка УБД",
+    "value": "combatant",
+    "certificate": "Відпускний квиток"
+  },
+  {
     "label": "Відпустка за сімейними обставинами",
     "value": "family_circumstances",
     "certificate": "Відпускний квиток"

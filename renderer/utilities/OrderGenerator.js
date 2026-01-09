@@ -187,6 +187,7 @@ const addArriveClauseToPull = (groupedPull, record) => {
                 break;
             }
         case "vacation":
+        case "combatant":
         case "family_circumstances":
         case "health_circumstances":
             if (!groupedPull.arrive[record.absence_type][record.fact_date_end])
@@ -239,6 +240,7 @@ const addDepartureClauseToPull = (groupedPull, record) => {
             groupedPull.depart[record.absence_type][groupDate].push(record);
             break;
         case "vacation":
+        case "combatant":
         case "family_circumstances":
         case "health_circumstances":
             if (!groupedPull.depart[record.absence_type])
@@ -259,6 +261,7 @@ const withDestination = [
 
 const withoutDestination = [
     "vacation",
+    "combatant",
     "family_circumstances",
     "health_circumstances",
     "sick_leave",
@@ -373,6 +376,9 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                 case "vacation":
                     header = "З щорічної відпустки";
                     break;
+                case "combatant":
+                    header = "З додаткової відпустки як учасник бойових дій";
+                    break;
                 case "family_circumstances":
                     header = "З відпустки за сімейними обставинами"
                     break;
@@ -463,13 +469,16 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
             }
         }
     }
-    for (let absence_type of ['vacation', 'family_circumstances', 'health_circumstances']) {
+    for (let absence_type of ['vacation', 'combatant', 'family_circumstances', 'health_circumstances']) {
         if (departurePullSection.hasOwnProperty(absence_type)) {
             let innerCount = 1;
             let header = "";
             switch (absence_type) {
                 case "vacation":
                     header = "У щорічну відпустку:\n\n";
+                    break;
+                case "combatant":
+                    header = "У додаткову відпустку як учасник бойових дій:\n\n";
                     break;
                 case "family_circumstances":
                     header = `У відпустку за сімейними обставинами та з інших поважних причин відповідно до Закону ` +
@@ -498,6 +507,11 @@ function GenerateDepartureClauses(departurePullSection, starting_index = 2) {
                             block += `Виплатити ${GenerateRankAndName(servant.servant_id, "dative", "full")}, ` +
                                 `грошову допомогу на оздоровлення за ${(new Date()).getFullYear()} рік у розмірі місячного ` +
                                 `грошового забезпечення.\n\n`
+                        break;
+                    case "combatant":
+                        vacationTerm = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id), false);
+                        block += ", в " + servant.destination + " на " + (parseInt(servant.day_count) < 10 ? "0" : "") + servant.day_count +
+                            " " + dayEnding(servant.day_count) + " " + vacationTerm + ".\n\n";
                         break;
                     case "health_circumstances":
                         vacationTerm = dateStartToEndFormat(servant.date_start, servant.planned_date_end, isEmployee(servant.servant_id), false);

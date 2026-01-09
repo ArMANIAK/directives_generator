@@ -32,7 +32,7 @@ const convertPullToTempBook = row => {
         result.depart_order_no = row.order_no;
         result.depart_order_date = row.order_date ? formatDate(new Date(row.order_date)) : "";
     }
-    if (['health_circumstances', 'vacation', 'family_circumstances', 'sick_leave'].includes(row.absence_type)) {
+    if (['health_circumstances', 'vacation', 'combatant', 'family_circumstances', 'sick_leave'].includes(row.absence_type)) {
         let trip_days = row.trip_days ? parseInt(row.trip_days) : 0;
         if (!isNaN(parseInt(row.day_count)))
             result.planned_date_end = formatDate(dateMath(row.date_start, parseInt(row.day_count) + trip_days));
@@ -72,7 +72,7 @@ const convertTempBookToPull = record => {
         result.day_count = record.day_count !== "?" ? record.day_count : "";
         result.trip_days = "";
     }
-    if (['health_circumstances', 'vacation', 'family_circumstances', 'sick_leave'].includes(result.absence_type)) {
+    if (['health_circumstances', 'vacation', 'combatant', 'family_circumstances', 'sick_leave'].includes(result.absence_type)) {
         let trip_days = parseInt(result.trip_days) || 0;
         result.planned_date_end = dateToDatepickerString(dateMath(result.planned_date_end, trip_days + 1, "subtract"));
     }

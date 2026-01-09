@@ -28,6 +28,7 @@ export default function ArrivalPage({
             reasonLabel = "Направлення №";
             break;
         case 'vacation':
+        case 'combatant':
         case 'family_circumstances':
             reasonLabel = "Відпускний квиток №";
             break;
@@ -68,7 +69,7 @@ export default function ArrivalPage({
                 </Grid>
             </Grid>
             <Grid container>
-                { !["sick_leave", "health_circumstances", "vacation", "family_circumstances"].includes(record.absence_type) &&
+                { !["sick_leave", "health_circumstances", "vacation", "combatant", "family_circumstances"].includes(record.absence_type) &&
                     <Grid size={7}>
                         <TextField
                             fullWidth

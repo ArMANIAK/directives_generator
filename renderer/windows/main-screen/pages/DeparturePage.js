@@ -170,7 +170,7 @@ export default function DeparturePage({
                         />
                     </Grid>
                 </> }
-                { ['vacation', 'family_circumstances', 'health_circumstances'].includes(record.absence_type) &&
+                { ['vacation', 'combatant', 'family_circumstances', 'health_circumstances'].includes(record.absence_type) &&
                     <Grid size={2}>
                         <TextField
                             type='number'
