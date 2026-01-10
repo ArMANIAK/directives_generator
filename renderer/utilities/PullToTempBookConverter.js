@@ -63,9 +63,9 @@ const convertTempBookToPull = record => {
         "with_ration_certificate": record.with_ration_certificate === "так",
         "from_temp_book": true,
         "depart_order_no": record.depart_order_no,
-        "depart_order_date": record.depart_order_date,
+        "depart_order_date": datePickerToDateString(record.depart_order_date),
         "arrive_order_no": record.arrive_order_no,
-        "arrive_order_date": record.arrive_order_date,
+        "arrive_order_date": datePickerToDateString(record.arrive_order_date),
         "purpose": record.purpose || "",
         "reason": record.reason || "",
         "substituting_servants": record.substituting_servant_id
