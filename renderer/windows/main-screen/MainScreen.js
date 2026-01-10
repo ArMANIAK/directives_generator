@@ -252,9 +252,9 @@ export default function MainScreen() {
             return (
             absentServant.absence_type === record.absence_type
                 && absentServant.servant_id === servant_id
-                && (record.destination && absentServant.destination === record.destination)
+                && ((record.destination && absentServant.destination === record.destination)
                     || (!["medical_care", "medical_board"].includes(record.absence_type) &&
-                        certificate && "" + absentServant.certificate === "" + certificate)
+                        certificate && "" + absentServant.certificate === "" + certificate))
         )})
     }
 
