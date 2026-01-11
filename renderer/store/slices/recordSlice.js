@@ -26,7 +26,8 @@ const initialState = {
     "settings": {},
     "start_substituting": [""],
     "stop_substituting": [""],
-    "substituting_servants": [""]
+    "substituting_servants": [""],
+    "as_substitute": [""]
 }
 
 export const recordSlice = createSlice({

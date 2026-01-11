@@ -3,6 +3,7 @@ import { Checkbox, FormControl, FormControlLabel, MenuItem, Paper, TextField } f
 import absence_types from "../../../dictionaries/absence_types.json";
 import ServantSelector from "../../../components/ServantSelector";
 import { IoIosAddCircleOutline, IoIosTrash } from "react-icons/io";
+import { hasSubstitutionRole } from "../../../services/ServantsService";
 
 export default function ArrivalPage({
                                         record,
@@ -110,6 +111,17 @@ export default function ArrivalPage({
                                 </Grid>
                                 { record.absence_type === "mission" &&
                                     <>
+                                        <Grid>
+                                            <FormControlLabel
+                                                control={ <Checkbox
+                                                    disabled={ !hasSubstitutionRole(record.servants[ind]) }
+                                                    name="as_substitute"
+                                                    checked={ !!record.as_substitute[ind] || false }
+                                                /> }
+                                                label="за ТВО посадою"
+                                                onChange={ handleMultipleValueChange(ind) }
+                                            />
+                                        </Grid>
                                         <Grid size={1}>
                                             <IoIosAddCircleOutline
                                                 size={30}

@@ -220,7 +220,7 @@ export default function MainScreen() {
 
     const handleMultipleValueChange = ind => event => {
         const field = event.target.name;
-        const value = ["start_substituting", "stop_substituting"].includes(field) ? event.target.checked : event.target.value
+        const value = ["start_substituting", "stop_substituting", "as_substitute"].includes(field) ? event.target.checked : event.target.value
         dispatch(setRecordArray({
             field,
             index: ind,
@@ -270,6 +270,7 @@ export default function MainScreen() {
                     stop_substituting: !!similarActivities[0].substituting_servants && similarActivities[0].substituting_servants !== 0
                 } : { ...record };
             result.servant_id = el;
+            result.as_substitute = record.as_substitute[ind];
             if (record.substituting_servants[ind]) {
                 result.start_substituting = !!record.start_substituting[ind];
                 result.stop_substituting = !!record.stop_substituting[ind];
@@ -349,6 +350,13 @@ export default function MainScreen() {
                 }
                 updatedServants = [ ...servants, servant ]
             }
+            if (record.sectionType === "payed_substitution") {
+                updatedServants = servants.map(el => {
+                    if (el.id === record.servants[0]) {
+                        return { ...el, subst_title_index: record.settings.title_index };
+                    } else return el;
+                })
+            }
             if (!el.id && el.id !== 0) newPoint.id = -(pull.length + ind + 1);
             else newPoint.id = el.id
             return newPoint;
@@ -423,6 +431,7 @@ export default function MainScreen() {
             record.start_substituting = [ record.start_substituting ];
             record.stop_substituting = [ record.stop_substituting ];
             record.substituting_servants = [ record.substituting_servants ];
+            record.as_substitute = [ record.as_substitute ];
         }
         dispatch(setRecord(record));
         dispatch(removeRow(record.id));

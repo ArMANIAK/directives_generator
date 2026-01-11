@@ -25,10 +25,10 @@ export function GetTitleByIndex(title_index) {
     return getTitles().find(el => "" + el.title_index === "" + title_index);
 }
 
-export function GetTitleIndex(servant_id) {
+export function GetTitleIndex(servant_id, as_substitute = false) {
     const servant = getServantById(servant_id);
     if (!servant) return "";
-    return servant.title_index;
+    return as_substitute ? servant.subst_title_index : servant.title_index;
 }
 
 export function GenerateName(id, nameCase = "accusative", form = "short") {
@@ -59,15 +59,33 @@ export function GenerateFullTitle(title, titleCase = "accusative") {
 
 }
 
-export function GenerateServantRankNameAndTitle(id, servantCase = "accusative", form = "short") {
+export function GenerateServantRankNameAndTitle(id, servantCase = "accusative", form = "short", as_substitute = false) {
     const servant = getServantById(id);
     if (!servant) return "";
     let fullText = GenerateRankAndName(id, servantCase, form);
-    const title = getTitles().find(el => el.title_index === servant.title_index);
+    const title = getTitles().find(el => el.title_index === (as_substitute ? servant.subst_title_index : servant.title_index));
     if (!title) return fullText;
     const fullTitle = GenerateFullTitle(title, servantCase);
-    if (fullTitle)
-        fullText += `, ${fullTitle}`
+    if (fullTitle) {
+        let subst_prefix = "тимчасово ";
+        switch (servantCase) {
+            case "nominative":
+                subst_prefix += "виконуючий ";
+                break;
+            case "genitive":
+            case "accusative":
+                subst_prefix += "виконуючого ";
+                break;
+            case "dative":
+                subst_prefix += "виконуючому ";
+                break;
+            case "instrumental":
+                subst_prefix += "виконуючим ";
+                break;
+        }
+        subst_prefix += " обовʼязки ";
+        fullText += `, ${ as_substitute ? subst_prefix : "" }${fullTitle}`
+    }
     return fullText;
 }
 

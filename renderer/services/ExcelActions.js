@@ -28,6 +28,7 @@ const servantsHeaderMapToRaw = {
     "gender": "Гендер",
     "supplied_by": "На котловому забезпеченні при...",
     "title_index": "Індекс посади",
+    "subst_title_index": "Індекс ТВО посади",
     "retired": "Звільнений/переведений"
 }
 
@@ -49,6 +50,7 @@ const servantsRawMapToHeader = {
     "Гендер": "gender",
     "На котловому забезпеченні при...": "supplied_by",
     "Індекс посади": "title_index",
+    "Індекс ТВО посади": "subst_title_index",
     "Звільнений/переведений": "retired"
 
 }

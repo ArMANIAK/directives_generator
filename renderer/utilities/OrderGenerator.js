@@ -40,12 +40,13 @@ function GenerateServantBlock(
         with_ration_certificate,
         start_substituting,
         stop_substituting,
-        substituting_servants
+        substituting_servants,
+        as_substitute
     },
     addOrRemove = "add",
     isCapitalised = false
 ) {
-    let servant = `${GenerateServantRankNameAndTitle(servant_id)}.\n\n`;
+    let servant = `${GenerateServantRankNameAndTitle(servant_id, "accusative", "short", as_substitute)}.\n\n`;
     let block = isCapitalised ? servant[0].toLocaleUpperCase() + servant.slice(1) : servant;
 
     block += GenerateSubstitutionBlock(servant_id, start_substituting, stop_substituting, substituting_servants)

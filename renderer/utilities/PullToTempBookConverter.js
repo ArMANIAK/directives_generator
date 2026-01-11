@@ -9,7 +9,7 @@ const convertPullToTempBook = row => {
         "certificate_issue_date": row.certificate_issue_date ? formatDate(new Date(row.certificate_issue_date)) : "",
         "rank": row.servant_id ? GenerateRankNameByServantId(row.servant_id, "nominative") : "",
         "servant_name": row.servant_id ? GenerateName(row.servant_id, "nominative", "full") : "",
-        "title_index": row.servant_id ? GetTitleIndex(row.servant_id) : "",
+        "title_index": row.servant_id ? GetTitleIndex(row.servant_id, row.as_substitute) : "",
         "absence_type": absence_type.find(el => el.value.toLowerCase() === row.absence_type.toLowerCase())?.label ?? "",
         "date_start": row.date_start ? formatDate(new Date(row.date_start)) : "",
         "destination": row.destination,
@@ -68,7 +68,8 @@ const convertTempBookToPull = record => {
         "arrive_order_date": datePickerToDateString(record.arrive_order_date),
         "purpose": record.purpose || "",
         "reason": record.reason || "",
-        "substituting_servants": record.substituting_servant_id
+        "substituting_servants": record.substituting_servant_id,
+        "as_substitute": record.title_index === GetTitleIndex(record.servant_id, true)
     }
     if ((String (record.day_count)).indexOf("+") !== -1) {
         [ result.day_count, result.trip_days ] = record.day_count.split("+")

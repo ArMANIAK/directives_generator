@@ -22,6 +22,11 @@ export const isFemale = id => {
     return servant?.gender.toLocaleLowerCase() === "ж";
 }
 
+export const hasSubstitutionRole = id => {
+    let servant = getServantById(id)
+    return servant && servant.subst_title_index !== "";
+}
+
 export const convertAmountIntoWords = amount => {
     let num = parseInt(amount)
     if (num === 0) return "нуль гривень";

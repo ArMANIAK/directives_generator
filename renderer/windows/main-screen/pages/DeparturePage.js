@@ -7,6 +7,7 @@ import { IoIosAddCircleOutline, IoIosTrash } from "react-icons/io";
 import { useState } from "react";
 import { GenerateRankAndName } from "../../../utilities/ServantsGenerators";
 import {formatDate} from "../../../utilities/DateUtilities";
+import { hasSubstitutionRole } from "../../../services/ServantsService";
 
 const modalStyle = {
     width: "30%",
@@ -220,6 +221,17 @@ export default function DeparturePage({
                                 </Grid>
                                 { record.absence_type === "mission" &&
                                     <>
+                                        <Grid>
+                                            <FormControlLabel
+                                                control={ <Checkbox
+                                                    disabled={ !hasSubstitutionRole(record.servants[ind]) }
+                                                    name="as_substitute"
+                                                    checked={ !!record.as_substitute[ind] || false }
+                                                /> }
+                                                label="за ТВО посадою"
+                                                onChange={ handleMultipleValueChange(ind) }
+                                            />
+                                        </Grid>
                                         <Grid size={1}>
                                             <IoIosAddCircleOutline
                                                 size={30}
