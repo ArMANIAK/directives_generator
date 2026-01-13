@@ -5,8 +5,8 @@ import absence_types from "../../../dictionaries/absence_types.json";
 import ServantSelector from "../../../components/ServantSelector";
 import { IoIosAddCircleOutline, IoIosTrash } from "react-icons/io";
 import { useState } from "react";
-import { GenerateRankAndName } from "../../../utilities/ServantsGenerators";
-import {formatDate} from "../../../utilities/DateUtilities";
+import { GenerateFullTitleByTitleIndex, GenerateRankAndName, GetTitleIndex } from "../../../utilities/ServantsGenerators";
+import { formatDate } from "../../../utilities/DateUtilities";
 import { hasSubstitutionRole } from "../../../services/ServantsService";
 
 const modalStyle = {
@@ -16,6 +16,7 @@ const modalStyle = {
     left: "35%",
     backgroundColor: "white",
     padding: "50px",
+    whiteSpace: "pre-line",
 }
 
 export default function DeparturePage({
@@ -30,7 +31,7 @@ export default function DeparturePage({
                                         absentServants
                                     }) {
 
-    const [ isDepartAbsentWarningOpen, setDepartWarningState ] = useState(false);
+    const [ isDepartWarningOpen, setDepartWarningState ] = useState(false);
     const [ currentServantState, setCurrentServantState]  = useState("");
 
     const handleCloseWarning = () => {
@@ -57,13 +58,20 @@ export default function DeparturePage({
 
     const handleServantSelectorChange = ind => event => {
         let id = event.target.value
+        let shouldWarn = false;
+        let message = "";
         handleMultipleValueChange(ind)(event)
         let currentDuties = absentServants.filter(el => el.servant_id === id);
+        if (record.absence_type !== "mission" && hasSubstitutionRole(id)) {
+            shouldWarn = true;
+            message += `УВАГА: ${GenerateRankAndName(id, "nominative")} тимчасово виконує обовʼязки за посадою` +
+                ` ${GenerateFullTitleByTitleIndex(GetTitleIndex(id, true))}.\n\n`
+        }
         if (currentDuties.length > 0) {
-            setDepartWarningState(true)
-            let message = currentDuties.reduce((text, el) => {
+            shouldWarn = true;
+            message += currentDuties.reduce((text, el) => {
                 let absence_type = absence_types.find(absence => absence.value === el.absence_type);
-                text += `${GenerateRankAndName(el.servant_id, "nominative")} тимчасово відсутній.` + "\n" +
+                text += `УВАГА: ${GenerateRankAndName(el.servant_id, "nominative")} тимчасово відсутній.` + "\n" +
                     `Тип зайнятості: ${absence_type?.label}.` + "\n";
                 if (el.destination) text += `Вибув до ${el.destination}\n`;
                 if (el.planned_date_end) text += `Запланована дата повернення ${formatDate(el.planned_date_end)}\n`
@@ -71,8 +79,9 @@ export default function DeparturePage({
                     text += `${absence_type?.certificate} № ${el.certificate} від ${formatDate(el.certificate_issue_date)}\n`
                 return text;
             }, "");
-            setCurrentServantState(message)
         }
+        setDepartWarningState(shouldWarn);
+        setCurrentServantState(message);
     }
 
     return (
@@ -325,7 +334,7 @@ export default function DeparturePage({
             </Grid>
 
             <Modal
-                open={ isDepartAbsentWarningOpen }
+                open={ isDepartWarningOpen }
                 onClose={ handleCloseWarning }
             >
                 <Box style={modalStyle}>
