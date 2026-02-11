@@ -324,7 +324,9 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
             // If there are more than one returning date from one destination point will generate separate dates within the clause
             // У випадку якщо з одного місця поверталися в різні дати, створює окремі підпункти під кожну дату
             directive += Object.keys(arrivePullSection.mission[destination]).length === 1 ? " " : ":\n\n";
-            for (let date in arrivePullSection.mission[destination]) {
+            let sortedDates = Object.keys(arrivePullSection.mission[destination]);
+            sortedDates.sort();
+            for (let date of sortedDates) {
                 if (arrivePullSection.mission[destination][date].length > 0) {
                     directive += `${formatDate(new Date(date), false)}:\n\n`;
                     for (let servant of arrivePullSection.mission[destination][date]) {
@@ -345,7 +347,9 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
                 // If there are more than one returning date from one destination point will generate separate dates within the clause
                 // У випадку якщо з одного місця поверталися в різні дати, створює окремі підпункти під кожну дату
                 directive += Object.keys(arrivePullSection[absence_type][destination]).length === 1 ? " " : ":\n\n";
-                for (let date in arrivePullSection[absence_type][destination]) {
+                let sortedDates = Object.keys(arrivePullSection[absence_type][destination]);
+                sortedDates.sort();
+                for (let date of sortedDates) {
                     if (arrivePullSection[absence_type][destination][date].length > 0) {
                         directive += `${formatDate(new Date(date), false)}:\n\n`;
                         for (let servant of arrivePullSection[absence_type][destination][date]) {
@@ -396,7 +400,9 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
             if (Object.keys(arrivePullSection[absence_type]).length > 1
                 || Object.values(arrivePullSection[absence_type]).flat().length > 1)
                 withSubClauses = true;
-            for (let date in arrivePullSection[absence_type]) {
+            let sortedDates = Object.keys(arrivePullSection[absence_type]);
+            sortedDates.sort();
+            for (let date of sortedDates) {
                 if (arrivePullSection[absence_type][date].length > 0) {
                     directive += `${formatDate(new Date(date), false)}:\n\n`;
                     for (let servant of arrivePullSection[absence_type][date]) {
