@@ -11,6 +11,8 @@ import {
     GetTitleIndex
 } from "./ServantsGenerators";
 
+let eaters = {};
+
 function GenerateAddToRation(servant_id, order_date = null) {
     const servant = getServantById(servant_id);
     // If supplier is not set up or a servant is an employee no add to ration is added
@@ -18,6 +20,13 @@ function GenerateAddToRation(servant_id, order_date = null) {
     if (!servant?.supplied_by || !servant?.rank) return "";
     const tomorrow = dateMath(order_date ? new Date(order_date) : new Date(), 1);
     const formattedTomorrow = formatDate(tomorrow, false);
+    if (!eaters.hasOwnProperty("arrived"))
+        eaters.arrived = {}
+    if (!eaters.arrived.hasOwnProperty(formattedTomorrow))
+        eaters.arrived[formattedTomorrow] = {}
+    !eaters.arrived[formattedTomorrow][servant.supplied_by]
+        ? eaters.arrived[formattedTomorrow][servant.supplied_by] = 1
+        : eaters.arrived[formattedTomorrow][servant.supplied_by]++
     return `Зарахувати ${GenerateRankAndName(servant_id)} на котлове забезпечення при ${servant.supplied_by} за каталогом продуктів – зі сніданку ${formattedTomorrow}.\n\n`
 }
 
@@ -26,6 +35,13 @@ function GenerateRemoveFromRation(servant_id, order_date, with_ration_certificat
     // If supplier is not set up or a servant is an employee no add to ration is added
     // Якщо для військовослужбовця не встановлено частину забезпечення котловим або він працівник ЗСУ, зняття з котлового не відбувається
     if (!servant?.supplied_by || !servant?.rank) return "";
+    if (!eaters.hasOwnProperty("departed"))
+        eaters.departed = {}
+    if (!eaters.departed.hasOwnProperty(order_date))
+        eaters.departed[order_date] = {}
+    !eaters.departed[order_date][servant.supplied_by]
+        ? eaters.departed[order_date][servant.supplied_by] = 1
+        : eaters.departed[order_date][servant.supplied_by]++
     let paragraph = `Зняти ${GenerateRankAndName(servant_id)} з котлового забезпечення при ${servant.supplied_by} за каталогом продуктів – зі сніданку ${order_date}`;
     if (with_ration_certificate) paragraph += " та видати продовольчий атестат";
     paragraph += ".\n\n";
@@ -133,6 +149,7 @@ console.dir(groupedPull);
     if (depart) directive += GenerateDepartureClauses(depart, starting_index++);
     if (other) directive += GenerateOtherClauses(other, starting_index++);
 
+    directive += GenerateEaters(starting_index)
     return directive;
 }
 
@@ -290,6 +307,13 @@ function GenerateAssignmentClauses(otherPullSection, starting_index = 1) {
             `і приступи${settings.gender === "ж" ? "ла" : "в"} до виконання службових обов’язків за посадою`;
         directive += `.\nЗарахувати ${servantRankAccusative} ${settings.last_name_accusative} ${settings.first_name_short} на котлове забезпечення при ` +
             `${settings.supplied_by} за каталогом продуктів – зі сніданку ${formattedTomorrow}.\n`;
+        if (!eaters.hasOwnProperty("arrived"))
+            eaters.arrived = {}
+        if (!eaters.arrived.hasOwnProperty(formattedTomorrow))
+            eaters.arrived[formattedTomorrow] = {}
+        !eaters.arrived[formattedTomorrow][settings.supplied_by]
+            ? eaters.arrived[formattedTomorrow][settings.supplied_by] = 1
+            : eaters.arrived[formattedTomorrow][settings.supplied_by]++
         directive += `Встановити посадовий оклад згідно з тарифним розрядом ${settings.tarif} у сумі ${settings.amount} ` +
             `(${convertAmountIntoWords(settings.amount)} 00 копійок на місяць.\n` +
             `Виплачувати щомісячну премію за особистий внесок у загальні результати служби в розмірі ` +
@@ -743,5 +767,29 @@ function GenerateOtherClauses(otherClausesPull, starting_index = 3) {
         starting_index++;
     }
 
+    return directive;
+}
+
+function GenerateEaters(starting_index) {
+    let middle_index = 1;
+    let directive = `${starting_index}. Зміни в особовому складі, що перебувають на котловому забезпеченні:\n\n`;
+    if (eaters.hasOwnProperty("arrived")) {
+        directive += `${starting_index}.${middle_index++}. Прибуло:\n\n`;
+        for (let date in eaters.arrived) {
+            directive += date + ":\n\n";
+            for (let supplier in eaters.arrived[date])
+                directive += `на забезпечення при ${supplier}: ${eaters.arrived[date][supplier]} особи/осіб.\n\n`;
+        }
+        middle_index = 1;
+    }
+    if (eaters.hasOwnProperty("departed")) {
+        directive += `${starting_index}.${middle_index++}. Вибуло:\n\n`;
+        for (let date in eaters.departed) {
+            directive += date + ":\n\n";
+            for (let supplier in eaters.departed[date])
+                directive += `на забезпечення при ${supplier}: ${eaters.departed[date][supplier]} особи/осіб.\n\n`;
+        }
+    }
+    eaters = {};
     return directive;
 }
