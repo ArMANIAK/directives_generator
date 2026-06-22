@@ -41,11 +41,14 @@ export const recordSlice = createSlice({
             return newState
         },
         resetRecord: (state) => {
-            return { ...initialState,
+            const newState = { ...initialState,
                 orderSection: state.orderSection,
                 order_no: state.order_no,
                 order_date: state.order_date
             };
+            if (state.orderSection === "other_points")
+                newState.sectionType = state.sectionType;
+            return newState;
         },
         setRecordArray: (state, action) => {
             const { field, index, value } = action.payload;
