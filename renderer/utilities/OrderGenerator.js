@@ -392,7 +392,8 @@ function GenerateArriveClauses(arrivePullSection, starting_index = 1) {
         }
     }
     for (let absence_type of withoutDestination) {
-        if (arrivePullSection.hasOwnProperty(absence_type)) {
+        if (arrivePullSection.hasOwnProperty(absence_type)
+            && Object.keys(arrivePullSection[absence_type]).length > 0) {
             let innerCount = 1;
             let header = "";
             switch (absence_type) {
